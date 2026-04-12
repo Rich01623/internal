@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frost Transport Solutions | Portal</title>
+    <title>Frost Transport Solutions | Full Enterprise Portal</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' }</script>
@@ -15,121 +15,152 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease; }
+        body { font-family: 'Inter', sans-serif; }
         :root { --frost-red: #c32026; --frost-dark-navy: #0f172a; }
 
-        /* Navigation Styles */
-        .sidebar-item { transition: all 0.2s ease; cursor: pointer; display: flex; align-items: center; width: 100%; }
-        .sidebar-item:hover { background-color: #1e293b; }
-        .active-tab { background-color: #1e293b; border-left: 3px solid #3b82f6; }
-        .submenu-item { cursor: pointer; display: block; padding: 8px 16px 8px 45px; font-size: 11px; transition: all 0.2s; color: #94a3b8; }
+        /* Sidebar Styles */
+        .sidebar-item { transition: all 0.2s ease; cursor: pointer; display: flex; align-items: center; width: 100%; border-left: 4px solid transparent; }
+        .sidebar-item:hover { background-color: #1e293b; color: white; }
+        .active-module { background-color: #1e293b; border-left-color: #3b82f6; color: white; }
+        
+        .submenu-item { cursor: pointer; display: block; padding: 8px 16px 8px 52px; font-size: 11px; transition: all 0.2s; color: #94a3b8; font-weight: 500; }
         .submenu-item:hover { background-color: #1e293b; color: white; border-left: 2px solid var(--frost-red); }
-        .rotate-180 { transform: rotate(180deg); }
-        .hidden { display: none; }
-
-        /* CRM Grid Styles */
+        
+        /* Layout Fixes */
+        #map { width: 100%; height: calc(100vh - 280px); min-height: 500px; border-radius: 12px; }
         .client-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
         .client-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 1.25rem; border-left: 4px solid #334155; transition: 0.2s; }
-        .client-card:hover { border-left-color: var(--frost-red); transform: translateX(4px); }
         
-        /* Map & Planner Styles */
-        #map { width: 100%; height: calc(100vh - 250px); min-height: 500px; border-radius: 12px; }
-        .sortable-item { display: flex; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; cursor: grab; font-weight: 800; font-size: 11px; color: var(--frost-dark-navy); }
-        .dark .sortable-item { background: #1e293b; border-color: #334155; color: #f1f5f9; }
+        .hidden { display: none; }
+        .rotate-180 { transform: rotate(180deg); }
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 flex h-screen overflow-hidden text-slate-900 dark:text-slate-100">
+<body class="bg-slate-950 flex h-screen overflow-hidden text-slate-100">
 
-    <aside class="w-60 bg-[#0f172a] text-slate-300 flex flex-col flex-shrink-0 border-r border-slate-800">
-        <div class="p-4 border-b border-slate-800 flex items-center space-x-3">
-            <div class="bg-blue-600 p-1.5 rounded-lg"><i class="fas fa-truck-fast text-white"></i></div>
-            <div>
-                <h1 class="text-white text-xs font-black uppercase tracking-widest">Frost Transport</h1>
-                <p class="text-[9px] text-slate-500 uppercase font-bold tracking-tighter">Solutions Portal</p>
-            </div>
+    <aside class="w-64 bg-[#0f172a] text-slate-300 flex flex-col flex-shrink-0 border-r border-slate-800">
+        <div class="p-6 border-b border-slate-800 flex items-center space-x-3">
+            <div class="bg-red-600 p-2 rounded-lg"><i class="fas fa-truck-fast text-white"></i></div>
+            <h1 class="text-white text-sm font-black uppercase tracking-widest">Frost Portal</h1>
         </div>
 
-        <nav class="flex-1 py-4 overflow-y-auto">
-            <a href="#" onclick="showModule('welcome')" class="sidebar-item px-4 py-3 text-xs font-bold">
-                <i class="fas fa-desktop w-6 text-blue-400"></i> DASHBOARD
-            </a>
+        <nav class="flex-1 py-4 overflow-y-auto scrollbar-hide">
+            
+            <div onclick="showModule('welcome')" class="sidebar-item px-6 py-3 text-xs font-bold mb-1 active-module" id="nav-welcome">
+                <i class="fas fa-chart-line w-6 text-blue-400"></i> DASHBOARD
+            </div>
 
-            <div class="mt-2">
-                <button onclick="toggleSubmenu('crm-menu', 'crm-arrow')" class="sidebar-item px-4 py-3 text-xs font-bold justify-between outline-none">
-                    <div class="flex items-center"><i class="fas fa-users w-6 text-slate-400"></i> CRM</div>
-                    <i id="crm-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
+            <div class="mb-1">
+                <button onclick="toggleSubmenu('tms-menu', 'tms-arrow')" class="sidebar-item px-6 py-3 text-xs font-bold justify-between outline-none w-full">
+                    <div class="flex items-center"><i class="fas fa-file-invoice w-6 text-orange-400"></i> TMS</div>
+                    <i id="tms-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
                 </button>
-                <div id="crm-menu" class="hidden bg-[#0a0f1d] py-1">
-                    <a href="#" onclick="showModule('clients')" class="submenu-item">Client List</a>
-                    <a href="https://rich01623.github.io/fts-directory/" target="main_frame" onclick="showModule('iframe')" class="submenu-item">Directory</a>
+                <div id="tms-menu" class="bg-[#0a0f1d] py-1 hidden">
+                    <div onclick="showModule('welcome')" class="submenu-item">Live Load Board</div>
+                    <div onclick="showModule('welcome')" class="submenu-item">Job Entry</div>
+                    <div onclick="showModule('welcome')" class="submenu-item">Invoicing</div>
                 </div>
             </div>
 
-            <div class="mt-2">
-                <button onclick="toggleSubmenu('ops-menu', 'ops-arrow')" class="sidebar-item px-4 py-3 text-xs font-bold justify-between outline-none">
-                    <div class="flex items-center"><i class="fas fa-route w-6 text-slate-400"></i> OPERATIONS</div>
-                    <i id="ops-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
+            <div class="mb-1">
+                <button onclick="toggleSubmenu('crm-menu', 'crm-arrow')" class="sidebar-item px-6 py-3 text-xs font-bold justify-between outline-none w-full">
+                    <div class="flex items-center"><i class="fas fa-users w-6 text-teal-400"></i> CRM</div>
+                    <i id="crm-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
                 </button>
-                <div id="ops-menu" class="hidden bg-[#0a0f1d] py-1">
-                    <a href="#" onclick="showModule('planner')" class="submenu-item">PF Route Planner</a>
-                    <a href="https://rich01623.github.io/Fleet-dash/" target="main_frame" onclick="showModule('iframe')" class="submenu-item">Driver Timesheets</a>
+                <div id="crm-menu" class="bg-[#0a0f1d] py-1 hidden">
+                    <div onclick="showModule('clients')" class="submenu-item">Customer Database</div>
+                    <div onclick="openExternal('https://rich01623.github.io/fts-directory/')" class="submenu-item">Directory</div>
+                </div>
+            </div>
+
+            <div class="mb-1">
+                <button onclick="toggleSubmenu('pf-menu', 'pf-arrow')" class="sidebar-item px-6 py-3 text-xs font-bold justify-between outline-none w-full">
+                    <div class="flex items-center"><i class="fas fa-box-open w-6 text-red-500"></i> PALLETFORCE</div>
+                    <i id="pf-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
+                </button>
+                <div id="pf-menu" class="bg-[#0a0f1d] py-1 hidden">
+                    <div onclick="showModule('planner')" class="submenu-item">PF Route Planner</div>
+                    <div onclick="showModule('welcome')" class="submenu-item">Hub Manifests</div>
+                </div>
+            </div>
+
+            <div class="mb-1">
+                <button onclick="toggleSubmenu('dr-menu', 'dr-arrow')" class="sidebar-item px-6 py-3 text-xs font-bold justify-between outline-none w-full">
+                    <div class="flex items-center"><i class="fas fa-id-card w-6 text-purple-400"></i> DRIVERS</div>
+                    <i id="dr-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
+                </button>
+                <div id="dr-menu" class="bg-[#0a0f1d] py-1 hidden">
+                    <div onclick="openExternal('https://rich01623.github.io/Fleet-dash/')" class="submenu-item">Timesheets</div>
+                    <div onclick="showModule('welcome')" class="submenu-item">Compliance</div>
+                </div>
+            </div>
+
+            <div class="mb-1">
+                <button onclick="toggleSubmenu('acc-menu', 'acc-arrow')" class="sidebar-item px-4 py-3 text-xs font-bold justify-between outline-none w-full pl-6">
+                    <div class="flex items-center"><i class="fas fa-vault w-6 text-green-400"></i> ACCOUNTING</div>
+                    <i id="acc-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
+                </button>
+                <div id="acc-menu" class="bg-[#0a0f1d] py-1 hidden">
+                    <div class="submenu-item">Sales Ledger</div>
+                    <div class="submenu-item">Purchase Ledger</div>
+                </div>
+            </div>
+
+            <div class="mb-1">
+                <button onclick="toggleSubmenu('fl-menu', 'fl-arrow')" class="sidebar-item px-4 py-3 text-xs font-bold justify-between outline-none w-full pl-6">
+                    <div class="flex items-center"><i class="fas fa-gas-pump w-6 text-yellow-500"></i> FLEET OPS</div>
+                    <i id="fl-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
+                </button>
+                <div id="fl-menu" class="bg-[#0a0f1d] py-1 hidden">
+                    <div class="submenu-item">Vehicle Maintenance</div>
+                    <div class="submenu-item">Fuel Tracking</div>
+                </div>
+            </div>
+
+            <div class="mb-1">
+                <div onclick="showModule('welcome')" class="sidebar-item px-6 py-3 text-xs font-bold">
+                    <i class="fas fa-microchip w-6 text-pink-500"></i> ANALYTICS
                 </div>
             </div>
         </nav>
-
-        <div class="p-4 border-t border-slate-800">
-            <button onclick="toggleDarkMode()" class="sidebar-item text-[10px] uppercase font-black text-slate-500 hover:text-white">
-                <i class="fas fa-sun mr-2 text-yellow-500"></i> Toggle Day Mode
-            </button>
-        </div>
     </aside>
 
     <div class="flex-1 flex flex-col min-w-0">
-        <header class="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 transition-colors">
-            <span id="module-title" class="text-[10px] font-black uppercase tracking-widest text-slate-400">System Ready</span>
-            <div class="flex items-center space-x-3">
-                <div class="text-right hidden sm:block">
-                    <p class="text-[11px] font-bold">Admin Portal</p>
-                    <p class="text-[9px] text-slate-500 uppercase">Frost Solutions</p>
-                </div>
-                <div class="h-8 w-8 rounded bg-blue-600 flex items-center justify-center text-white text-xs font-black">AD</div>
+        <header class="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-8">
+            <span id="header-title" class="text-[11px] font-black uppercase tracking-widest text-slate-500">System Ready</span>
+            <div class="flex items-center space-x-4">
+                <button onclick="document.documentElement.classList.toggle('dark')" class="text-slate-500 hover:text-white transition"><i class="fas fa-adjust"></i></button>
+                <div class="h-8 w-8 rounded bg-blue-600 flex items-center justify-center text-white text-xs font-black">SJ</div>
             </div>
         </header>
 
-        <main class="flex-1 overflow-auto p-6">
-            <div id="mod-welcome" class="h-full flex flex-col items-center justify-center text-slate-300 dark:text-slate-800">
-                <i class="fas fa-shield-halved text-6xl mb-4 opacity-20"></i>
-                <h2 class="text-sm font-black uppercase tracking-[0.3em]">Frost Control</h2>
+        <main class="flex-1 overflow-auto p-8">
+            <div id="mod-welcome" class="h-full flex flex-col items-center justify-center text-slate-700">
+                <i class="fas fa-cube text-6xl mb-4 opacity-10"></i>
+                <p class="uppercase tracking-widest font-black text-xs">Frost Operations Suite</p>
             </div>
 
-            <iframe id="mod-iframe" name="main_frame" src="about:blank" class="hidden w-full h-full rounded-xl border-none"></iframe>
+            <div id="mod-iframe" class="hidden h-full">
+                <iframe id="external-frame" src="" class="w-full h-full rounded-xl border border-slate-800 shadow-2xl"></iframe>
+            </div>
 
             <div id="mod-clients" class="hidden">
-                <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                    <div>
-                        <h2 class="text-2xl font-black italic uppercase text-slate-900 dark:text-white">Client Directory</h2>
-                        <p class="text-[10px] text-red-600 font-bold uppercase tracking-widest">Database: crm_customer</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Search Company..." class="bg-slate-200 dark:bg-[#0f172a] border border-slate-300 dark:border-slate-700 text-xs px-4 py-2 rounded-md outline-none focus:border-red-500 w-64">
-                        <button onclick="fetchClients()" class="bg-red-600 text-white px-4 py-2 rounded-md text-xs font-bold uppercase hover:bg-red-700"><i class="fas fa-sync"></i></button>
+                <div class="flex justify-between mb-8">
+                    <h2 class="text-2xl font-black italic uppercase text-white">Customer Database</h2>
+                    <div class="flex space-x-2">
+                        <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Filter..." class="bg-[#0f172a] border border-slate-700 text-xs px-4 py-2 rounded outline-none focus:ring-1 focus:ring-red-500 w-64">
                     </div>
                 </div>
-                <div id="client-loader" class="text-center py-20 hidden"><i class="fas fa-circle-notch fa-spin text-3xl text-red-600"></i></div>
                 <div id="client-container" class="client-grid"></div>
             </div>
 
             <div id="mod-planner" class="hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-1 space-y-6">
-                        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
-                            <h3 class="text-xs font-black uppercase text-red-600 italic mb-4">Route Destinations</h3>
-                            <div id="stopList" class="min-h-[200px]"></div>
-                            <button onclick="calculateRoute()" class="w-full mt-4 bg-slate-900 dark:bg-blue-600 text-white py-3 rounded-lg text-xs font-black uppercase tracking-widest hover:opacity-90 transition">Optimize Route</button>
-                        </div>
+                <div class="grid grid-cols-4 gap-6">
+                    <div class="col-span-1 bg-slate-900 p-4 rounded-xl border border-slate-800">
+                        <div id="stopList" class="min-h-[300px]"></div>
+                        <button onclick="calculateRoute()" class="w-full bg-blue-600 py-3 rounded text-xs font-black uppercase mt-4">Generate Route</button>
                     </div>
-                    <div class="lg:col-span-2">
-                        <div id="map" class="shadow-xl border-4 border-white dark:border-slate-900"></div>
+                    <div class="col-span-3">
+                        <div id="map" class="border-2 border-slate-800"></div>
                     </div>
                 </div>
             </div>
@@ -137,7 +168,7 @@
     </div>
 
     <script>
-        // --- CONFIG & SUPABASE ---
+        // Supabase
         const SUPABASE_URL = 'https://tdrzytgiqvdulityqttr.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkcnp5dGdpcXZkdWxpdHlxdHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTM5NTMsImV4cCI6MjA4ODcyOTk1M30.XN46i7u6STD-2afmN7-Jh1MltADGpEuWlLt_n7wknbA';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -145,48 +176,17 @@
         let allClients = [];
         let map, directionsService, directionsRenderer;
 
-        // --- CRM FUNCTIONS ---
-        async function fetchClients() {
-            const container = document.getElementById('client-container');
-            const loader = document.getElementById('client-loader');
-            container.innerHTML = '';
-            loader.classList.remove('hidden');
-            try {
-                const { data, error } = await _supabase.from('crm_customer').select('coname, town, county, pcode, phone, email').order('coname', { ascending: true });
-                if (error) throw error;
-                allClients = data;
-                renderClients(data);
-            } catch (e) { console.error(e); }
-            finally { loader.classList.add('hidden'); }
-        }
-
-        function renderClients(data) {
-            const container = document.getElementById('client-container');
-            container.innerHTML = data.map(c => `
-                <div class="client-card">
-                    <h4 class="text-white font-black uppercase text-xs mb-3 italic tracking-tight">${c.coname || 'UNTITLED'}</h4>
-                    <div class="space-y-2 text-[10px] text-slate-400 font-medium">
-                        <div class="flex items-center"><i class="fas fa-map-marker-alt w-5 text-red-500"></i> ${c.town}, ${c.pcode}</div>
-                        <div class="flex items-center"><i class="fas fa-phone w-5 text-blue-400"></i> ${c.phone || 'N/A'}</div>
-                        <div class="flex items-center"><i class="fas fa-envelope w-5 text-slate-500"></i> ${c.email || 'N/A'}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function filterClients() {
-            const term = document.getElementById('clientSearch').value.toLowerCase();
-            renderClients(allClients.filter(c => (c.coname || '').toLowerCase().includes(term)));
-        }
-
-        // --- CORE NAVIGATION ---
         function showModule(id) {
             ['mod-welcome', 'mod-iframe', 'mod-clients', 'mod-planner'].forEach(m => document.getElementById(m).classList.add('hidden'));
             document.getElementById('mod-' + id).classList.remove('hidden');
-            document.getElementById('module-title').innerText = id.toUpperCase();
-            
-            if (id === 'clients') fetchClients();
-            if (id === 'planner') initMap();
+            document.getElementById('header-title').innerText = id.toUpperCase();
+            if(id === 'clients') fetchClients();
+            if(id === 'planner') initMap();
+        }
+
+        function openExternal(url) {
+            showModule('iframe');
+            document.getElementById('external-frame').src = url;
         }
 
         function toggleSubmenu(id, arrowId) {
@@ -194,26 +194,28 @@
             document.getElementById(arrowId).classList.toggle('rotate-180');
         }
 
-        function toggleDarkMode() {
-            document.documentElement.classList.toggle('dark');
+        async function fetchClients() {
+            const { data } = await _supabase.from('crm_customer').select('*').order('coname');
+            allClients = data;
+            renderClients(data);
         }
 
-        // --- PLANNER FUNCTIONS ---
+        function renderClients(data) {
+            const container = document.getElementById('client-container');
+            container.innerHTML = data.map(c => `
+                <div class="client-card">
+                    <h4 class="text-white font-bold text-xs uppercase mb-2">${c.coname || 'N/A'}</h4>
+                    <p class="text-[10px] text-slate-500">${c.town}, ${c.pcode}</p>
+                </div>
+            `).join('');
+        }
+
         function initMap() {
-            if (map) return;
-            map = new google.maps.Map(document.getElementById('map'), {
-                center: { lat: 52.355, lng: -1.174 },
-                zoom: 7,
-                styles: [{ "featureType": "all", "elementType": "labels.text.fill", "color": "#ffffff" }] // Simplified dark style
-            });
+            if(map) return;
+            map = new google.maps.Map(document.getElementById('map'), { center: {lat: 52.4, lng: -1.5}, zoom: 7 });
             directionsService = new google.maps.DirectionsService();
-            directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
+            directionsRenderer = new google.maps.DirectionsRenderer({map});
         }
-
-        // Initialize App
-        document.addEventListener('DOMContentLoaded', () => {
-            // App is set to night mode by default via <html class="dark">
-        });
     </script>
 </body>
 </html>
