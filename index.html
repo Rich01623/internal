@@ -23,7 +23,6 @@
         .rotate-180 { transform: rotate(180deg); }
         .hidden { display: none; }
 
-        /* Dashboard UI Elements */
         .stat-card { background: white; border-radius: 12px; padding: 1.25rem; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 1rem; }
         .dark .stat-card { background: #1e293b; border-color: #334155; }
         
@@ -46,7 +45,7 @@
             <div class="bg-blue-600 p-1.5 rounded-lg"><i class="fas fa-truck-fast text-white text-sm"></i></div>
             <div>
                 <h1 class="text-white text-xs font-bold leading-tight uppercase tracking-wider">Frost Transport</h1>
-                <p class="text-[10px] text-slate-500 uppercase tracking-widest">v1.2.4 | NOTTM HUB</p>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest">v1.2.5 | NOTTM HUB</p>
             </div>
         </div>
 
@@ -168,11 +167,16 @@
                         <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-[#0f172a]">
                             <h3 class="text-xs font-black uppercase italic text-red-600">Local Weather Forecast</h3>
                         </div>
-                        <div class="p-0">
-                            <a class="weatherwidget-io" href="https://forecast7.com/en/52d95n1d15/nottingham/" data-label_1="NOTTINGHAM" data-label_2="WEATHER" data-font="Roboto" data-icons="Climacons Animated" data-theme="pure" data-basecolor="#1e293b" data-textcolor="#ffffff">NOTTINGHAM WEATHER</a>
-                            <script>
-                            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
-                            </script>
+                        <div class="p-0 min-h-[150px]">
+                            <a class="weatherwidget-io" 
+                               href="https://forecast7.com/en/52d95n1d15/nottingham/" 
+                               data-label_1="NOTTINGHAM" 
+                               data-label_2="WEATHER" 
+                               data-font="Roboto" 
+                               data-icons="Climacons Animated" 
+                               data-theme="pure" 
+                               data-basecolor="#1e293b" 
+                               data-textcolor="#ffffff">NOTTINGHAM WEATHER</a>
                         </div>
                     </div>
 
@@ -216,38 +220,37 @@
     </div>
 
     <script>
+        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+    </script>
+
+    <script>
         const SUPABASE_URL = 'https://tdrzytgiqvdulityqttr.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkcnp5dGdpcXZkdWxpdHlxdHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTM5NTMsImV4cCI6MjA4ODcyOTk1M30.XN46i7u6STD-2afmN7-Jh1MltADGpEuWlLt_n7wknbA';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let allClients = [];
 
         window.onload = function() {
-            // Live Clock
             setInterval(() => {
                 document.getElementById('live-clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             }, 1000);
 
-            // Restore last active module and link
             const lastModule = localStorage.getItem('frost_last_module') || 'welcome';
             const lastUrl = localStorage.getItem('frost_last_url');
             if (lastModule === 'iframe' && lastUrl) showModule('iframe', lastUrl);
             else showModule(lastModule);
+
+            // Re-trigger weather widget load in case of slow connection
+            if(window.__weatherwidget_init) window.__weatherwidget_init();
         };
 
         function showModule(modId, url = null) {
-            // Hide all
             ['mod-welcome', 'mod-iframe', 'mod-clients', 'mod-add-client'].forEach(id => document.getElementById(id).classList.add('hidden'));
-            
-            // Show target
             document.getElementById('mod-' + modId).classList.remove('hidden');
-            
-            // Handle iframes
             if (modId === 'iframe' && url) {
                 const frame = document.getElementById('mod-iframe');
                 if (frame.src !== url) frame.src = url;
                 localStorage.setItem('frost_last_url', url);
             }
-            
             localStorage.setItem('frost_last_module', modId);
             if(modId === 'clients') fetchClients();
             updateActiveTab(modId, url);
@@ -271,12 +274,7 @@
                 email: document.getElementById('new-email').value
             };
             const { error } = await _supabase.from('crm_customer').insert([payload]);
-            if(!error) { 
-                alert("Customer Saved Successfully!"); 
-                showModule('clients'); 
-            } else {
-                alert("Error connecting to database.");
-            }
+            if(!error) { alert("Customer Saved Successfully!"); showModule('clients'); }
         }
 
         async function fetchClients() {
@@ -284,10 +282,7 @@
             container.innerHTML = '<div class="col-span-full py-10 text-center text-[10px] uppercase font-bold text-slate-500 animate-pulse tracking-widest">Querying Supabase Ledger...</div>';
             try {
                 const { data, error } = await _supabase.from('crm_customer').select('*').order('coname', { ascending: true });
-                if (!error) { 
-                    allClients = data; 
-                    renderClients(data); 
-                }
+                if (!error) { allClients = data; renderClients(data); }
             } catch (e) { console.error(e); }
         }
 
