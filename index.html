@@ -10,8 +10,6 @@
     </script>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDOPkYduNBvti4HWX2izIhCrrQ02uk5SL0&libraries=geometry,places"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -39,15 +37,6 @@
         .frost-input:focus { border-color: var(--frost-red); }
         .section-header-red { font-size: 14px; font-weight: 900; color: var(--frost-red); text-transform: uppercase; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; font-style: italic; }
         .label-text { font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px; display: block; letter-spacing: 0.05em; }
-        
-        #map { width: 100%; height: calc(100vh - 250px); min-height: 500px; border-radius: 12px; background: #242f3e; }
-        .map-wrapper { background: var(--frost-dark-navy); padding: 12px; border-radius: 16px; height: fit-content; }
-        
-        .sortable-item { display: flex; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; cursor: grab; font-weight: 800; font-size: 12px; text-transform: uppercase; color: var(--frost-dark-navy); }
-        .dark .sortable-item { background: #0f172a; border-color: #334155; color: #f1f5f9; }
-        
-        .btn-clear { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; transition: color 0.2s; }
-        .btn-clear:hover { color: #ef4444; }
 
         .client-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
         .client-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; border-left: 4px solid #94a3b8; transition: 0.2s; }
@@ -104,7 +93,7 @@
                 </button>
                 <div id="palletforce-menu" class="hidden bg-[#0a0f1d] pb-1">
                     <a href="https://palletforce.net/Login.aspx" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Palletforce Login</a>
-                    <a href="#" onclick="showModule('planner')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">PF Route Planner</a>
+                    <a href="https://rich01623.github.io/jonstool/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">PF Route Planner</a>
                 </div>
             </div>
 
@@ -117,7 +106,6 @@
                 </button>
                 <div id="drivers-menu" class="hidden bg-[#0a0f1d] pb-1">
                     <a href="https://rich01623.github.io/Fleet-dash/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Driver Timesheets</a>
-                    <a href="#" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Driver Profile</a>
                 </div>
             </div>
 
@@ -138,12 +126,9 @@
                     <i id="fleet-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
                 </button>
                 <div id="fleet-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="#" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Vehicle List</a>
                     <a href="https://rich01623.github.io/Maintenance/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Maintenance Calendar</a>
                 </div>
             </div>
-
-            <a href="#" class="sidebar-item flex items-center px-4 py-2 mb-1 text-xs"><i class="fas fa-chart-line w-5 text-slate-400"></i><span>ANALYTICS</span></a>
         </nav>
 
         <div class="relative p-2 border-t border-slate-800">
@@ -220,52 +205,6 @@
                 <div id="client-loader" class="text-center py-20 hidden text-red-600"><i class="fas fa-circle-notch fa-spin text-3xl"></i></div>
                 <div id="client-container" class="client-grid"></div>
             </div>
-
-            <div id="mod-planner" class="hidden">
-                <div class="max-w-[1600px] mx-auto grid grid-cols-12 gap-6">
-                    <div class="col-span-4 space-y-4">
-                        <div class="frost-card">
-                            <div class="card-header-bar bg-red-600"></div>
-                            <div class="card-content">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h3 class="section-header-red">Route Sequence</h3>
-                                    <button onclick="clearAll()" class="btn-clear">Clear All</button>
-                                </div>
-                                <div id="sortable-list" class="mb-4 min-h-[50px]">
-                                    </div>
-                                <div class="relative">
-                                    <span class="label-text">Add Stop</span>
-                                    <input type="text" id="stopInput" class="frost-input pr-10" placeholder="Enter Postcode...">
-                                    <button onclick="addStop()" class="absolute right-2 bottom-1.5 text-blue-600 hover:text-red-600 transition-colors">
-                                        <i class="fas fa-plus-circle text-lg"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="frost-card">
-                            <div class="card-content">
-                                <div class="flex items-center justify-between mb-4">
-                                    <span class="label-text">Optimization</span>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" id="optimizeCheck" onchange="calculate()" class="sr-only peer">
-                                        <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
-                                    </label>
-                                </div>
-                                <button onclick="calculate()" class="w-full bg-slate-900 text-white py-3 rounded-lg text-[10px] tracking-widest font-black uppercase hover:bg-red-600 transition-all">
-                                    Update Map View
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-span-8">
-                        <div class="map-wrapper">
-                            <div id="map"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </main>
     </div>
 
@@ -276,14 +215,11 @@
         let allClients = [];
 
         function showModule(modId) {
-            ['mod-welcome', 'mod-iframe', 'mod-planner', 'mod-clients', 'mod-add-client'].forEach(id => {
+            ['mod-welcome', 'mod-iframe', 'mod-clients', 'mod-add-client'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById('mod-' + modId).classList.remove('hidden');
             if(modId === 'clients') fetchClients();
-            if(modId === 'planner') { 
-                setTimeout(() => { google.maps.event.trigger(map, "resize"); }, 100);
-            }
         }
 
         async function saveClient() {
@@ -364,60 +300,6 @@
         }
 
         function toggleSettings() { document.getElementById('settings-menu').classList.toggle('hidden'); }
-
-        /* PLANNER LOGIC */
-        let map, directionsRenderer, directionsService;
-        const FIXED_BASE = "NG13 8JA";
-        
-        function initMap() {
-            directionsService = new google.maps.DirectionsService();
-            directionsRenderer = new google.maps.DirectionsRenderer({
-                polylineOptions: { strokeColor: "#c32026", strokeWeight: 6, strokeOpacity: 0.9 }
-            });
-            map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 7, center: { lat: 52.95, lng: -0.95 },
-                styles: [{"elementType":"geometry","stylers":[{"color":"#242f3e"}]},{"featureType":"road","elementType":"geometry","stylers":[{"color":"#38414e"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#17263c"}]}]
-            });
-            directionsRenderer.setMap(map);
-            new Sortable(document.getElementById('sortable-list'), {
-                animation: 150, onEnd: function() { document.getElementById('optimizeCheck').checked = false; calculate(); }
-            });
-            document.getElementById('stopInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') addStop(); });
-        }
-
-        function addStop() {
-            const input = document.getElementById('stopInput');
-            const val = input.value.trim().toUpperCase();
-            if(!val) return;
-            const div = document.createElement('div');
-            div.className = 'sortable-item';
-            div.dataset.location = val;
-            div.innerHTML = `<span>${val}</span> <button onclick="this.parentElement.remove(); calculate();" class="ml-auto hover:text-red-500"><i class="fas fa-times"></i></button>`;
-            document.getElementById('sortable-list').appendChild(div);
-            input.value = '';
-            calculate();
-        }
-
-        function clearAll() {
-            document.getElementById('sortable-list').innerHTML = '';
-            directionsRenderer.setDirections({routes: []});
-        }
-
-        function calculate() {
-            const items = Array.from(document.querySelectorAll('.sortable-item'));
-            if(items.length === 0) { directionsRenderer.setDirections({routes: []}); return; }
-            directionsService.route({
-                origin: FIXED_BASE,
-                destination: FIXED_BASE,
-                waypoints: items.map(item => ({ location: item.dataset.location, stopover: true })),
-                optimizeWaypoints: document.getElementById('optimizeCheck').checked,
-                travelMode: 'DRIVING'
-            }, (response, status) => {
-                if (status === 'OK') directionsRenderer.setDirections(response);
-            });
-        }
-
-        window.onload = initMap;
     </script>
 </body>
 </html>
