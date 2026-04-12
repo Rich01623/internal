@@ -10,7 +10,6 @@
     </script>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -24,24 +23,20 @@
         .rotate-180 { transform: rotate(180deg); }
         .hidden { display: none; }
 
-        :root {
-            --frost-red: #c32026;
-            --frost-dark-navy: #0f172a;
-        }
-        
-        .stat-card { background: white; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 1rem; }
+        /* Dashboard UI Elements */
+        .stat-card { background: white; border-radius: 12px; padding: 1.25rem; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 1rem; }
         .dark .stat-card { background: #1e293b; border-color: #334155; }
         
-        .frost-card { background: white; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .frost-card { background: white; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); overflow: hidden; }
         .dark .frost-card { background: #1e293b; border-color: #334155; }
 
         .client-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
-        .client-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; border-left: 4px solid #94a3b8; transition: 0.2s; }
+        .client-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; border-left: 4px solid #94a3b8; }
         .dark .client-card { background: #1e293b; border-color: #334155; }
         
         .frost-input { border: 2px solid #e2e8f0; background: #fff; padding: 0.35rem 0.75rem; border-radius: 6px; width: 100%; font-size: 0.85rem; outline: none; color: #000; }
         .dark .frost-input { background: #0f172a; border-color: #334155; color: white; }
-        .label-text { font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px; display: block; letter-spacing: 0.05em; }
+        .label-text { font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px; display: block; }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 flex h-screen overflow-hidden">
@@ -51,7 +46,7 @@
             <div class="bg-blue-600 p-1.5 rounded-lg"><i class="fas fa-truck-fast text-white text-sm"></i></div>
             <div>
                 <h1 class="text-white text-xs font-bold leading-tight uppercase tracking-wider">Frost Transport</h1>
-                <p class="text-[10px] text-slate-500 uppercase tracking-widest text-opacity-70">v1.2.2 | Full Build</p>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest">v1.2.4 | NOTTM HUB</p>
             </div>
         </div>
 
@@ -126,23 +121,23 @@
                     <i id="fleet-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
                 </button>
                 <div id="fleet-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="https://rich01623.github.io/Maintenance/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Calendar</a>
+                    <a href="https://rich01623.github.io/Maintenance/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Maintenance Calendar</a>
                 </div>
             </div>
         </nav>
 
         <div class="p-2 border-t border-slate-800">
             <button onclick="toggleSettings()" class="w-full sidebar-item flex items-center justify-between px-4 py-2 text-xs rounded-md">
-                <div class="flex items-center"><i class="fas fa-cog w-5 text-slate-400"></i><span>NIGHT MODE TOGGLE</span></div>
+                <div class="flex items-center"><i class="fas fa-moon w-5 text-slate-400"></i><span>NIGHT MODE TOGGLE</span></div>
             </button>
         </div>
     </aside>
 
     <div class="flex-1 flex flex-col min-w-0">
         <header class="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 no-print">
-            <h2 class="text-sm font-bold uppercase tracking-widest text-slate-500">Frost Command Center</h2>
+            <h2 class="text-sm font-bold uppercase tracking-widest text-slate-500">Nottingham Hub Control Center</h2>
             <div class="flex items-center space-x-4">
-                <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">FT</div>
+                <div class="h-8 w-8 rounded-full bg-red-600 flex items-center justify-center text-white text-xs font-bold italic">FTS</div>
             </div>
         </header>
 
@@ -152,29 +147,29 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div class="stat-card">
                         <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl"><i class="fas fa-truck text-lg"></i></div>
-                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Fleet</p><p class="text-lg font-black dark:text-white">ACTIVE</p></div>
+                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Fleet Status</p><p class="text-lg font-black dark:text-white uppercase">Active</p></div>
                     </div>
                     <div class="stat-card">
-                        <div class="p-3 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-xl"><i class="fas fa-calendar-check text-lg"></i></div>
-                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Jobs Today</p><p class="text-lg font-black dark:text-white">LIVE</p></div>
+                        <div class="p-3 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-xl"><i class="fas fa-route text-lg"></i></div>
+                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Planner Status</p><p class="text-lg font-black dark:text-white uppercase">Live</p></div>
                     </div>
                     <div class="stat-card">
                         <div class="p-3 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-xl"><i class="fas fa-clock text-lg"></i></div>
-                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Local Time</p><p id="live-clock" class="text-lg font-black dark:text-white">00:00</p></div>
+                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Current Time</p><p id="live-clock" class="text-lg font-black dark:text-white">00:00</p></div>
                     </div>
                     <div class="stat-card">
                         <div class="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-xl"><i class="fas fa-map-marker-alt text-lg"></i></div>
-                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Hub Zone</p><p class="text-lg font-black dark:text-white">NOTTM</p></div>
+                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Region</p><p class="text-lg font-black dark:text-white uppercase">Nottingham</p></div>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="frost-card lg:col-span-1">
-                        <div class="p-4 border-b border-slate-100 dark:border-slate-800">
-                            <h3 class="text-xs font-black uppercase italic text-red-600">Weather Forecast</h3>
+                        <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-[#0f172a]">
+                            <h3 class="text-xs font-black uppercase italic text-red-600">Local Weather Forecast</h3>
                         </div>
                         <div class="p-0">
-                            <a class="weatherwidget-io" href="https://forecast7.com/en/52d95n1d15/nottingham/" data-label_1="NOTTINGHAM" data-label_2="WEATHER" data-font="Roboto" data-icons="Climacons Animated" data-theme="pure" data-basecolor="#1e293b" data-textcolor="#ffffff" >NOTTINGHAM WEATHER</a>
+                            <a class="weatherwidget-io" href="https://forecast7.com/en/52d95n1d15/nottingham/" data-label_1="NOTTINGHAM" data-label_2="WEATHER" data-font="Roboto" data-icons="Climacons Animated" data-theme="pure" data-basecolor="#1e293b" data-textcolor="#ffffff">NOTTINGHAM WEATHER</a>
                             <script>
                             !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
                             </script>
@@ -182,41 +177,38 @@
                     </div>
 
                     <div class="frost-card lg:col-span-2">
-                        <div class="p-4 border-b border-slate-100 dark:border-slate-800">
-                            <h3 class="text-xs font-black uppercase italic text-red-600">Live Traffic Control</h3>
+                        <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-[#0f172a]">
+                            <h3 class="text-xs font-black uppercase italic text-red-600">Live Traffic Control Hub (M1/A52/A453)</h3>
                         </div>
                         <div class="h-[400px]">
-                            <iframe width="100%" height="100%" frameborder="0" style="border:0" 
-                                src="https://www.google.com/maps/embed/v1/view?key=YOUR_API_KEY_OR_GENERIC_MAP&center=52.9548,-1.1581&zoom=11&maptype=roadmap&layer=traffic" 
-                                allowfullscreen></iframe>
-                            </div>
+                            <iframe src="https://embed.waze.com/iframe?zoom=12&lat=52.9548&lon=-1.1581&pin=1" width="100%" height="100%" allowfullscreen style="border:none;"></iframe>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <iframe id="mod-iframe" name="main_frame" src="about:blank" class="hidden w-full h-full rounded-xl border-none"></iframe>
+            <iframe id="mod-iframe" name="main_frame" src="about:blank" class="hidden w-full h-full rounded-xl border-none shadow-2xl"></iframe>
 
             <div id="mod-clients" class="hidden">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-black italic uppercase dark:text-white">Customer Database</h2>
-                    <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Filter..." class="bg-white dark:bg-slate-800 border border-slate-700 text-xs px-4 py-2 rounded-lg">
+                    <h2 class="text-2xl font-black italic uppercase dark:text-white tracking-tighter">Customer Database</h2>
+                    <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Quick Search..." class="bg-white dark:bg-slate-800 border border-slate-700 text-xs px-4 py-2 rounded-lg outline-none focus:border-blue-500">
                 </div>
                 <div id="client-container" class="client-grid"></div>
             </div>
 
             <div id="mod-add-client" class="hidden max-w-2xl mx-auto">
-                <div class="frost-card">
+                <div class="frost-card border-t-4 border-t-red-600 shadow-xl">
                     <div class="p-6">
-                        <h2 class="text-xs font-black text-red-600 uppercase mb-4 italic border-b pb-2">New Customer Entry</h2>
+                        <h2 class="text-xs font-black text-slate-800 dark:text-white uppercase mb-6 italic tracking-widest border-b pb-2">New Account Setup</h2>
                         <div class="grid grid-cols-2 gap-4">
-                           <div class="col-span-2"><span class="label-text">Company Name</span><input type="text" id="new-coname" class="frost-input"></div>
-                           <div><span class="label-text">Town</span><input type="text" id="new-town" class="frost-input"></div>
-                           <div><span class="label-text">County</span><input type="text" id="new-county" class="frost-input"></div>
+                           <div class="col-span-2"><span class="label-text">Full Company Name</span><input type="text" id="new-coname" class="frost-input"></div>
+                           <div><span class="label-text">City/Town</span><input type="text" id="new-town" class="frost-input"></div>
                            <div><span class="label-text">Postcode</span><input type="text" id="new-pcode" class="frost-input"></div>
-                           <div><span class="label-text">Phone</span><input type="text" id="new-phone" class="frost-input"></div>
-                           <div class="col-span-2"><span class="label-text">Email</span><input type="email" id="new-email" class="frost-input"></div>
+                           <div><span class="label-text">Contact Phone</span><input type="text" id="new-phone" class="frost-input"></div>
+                           <div class="col-span-2"><span class="label-text">Billing Email</span><input type="email" id="new-email" class="frost-input"></div>
                         </div>
-                        <button onclick="saveClient()" class="w-full mt-6 bg-slate-900 text-white font-black py-3 rounded-lg uppercase text-xs tracking-widest hover:bg-red-600 transition-all">Save Customer</button>
+                        <button onclick="saveClient()" class="w-full mt-6 bg-blue-700 text-white font-black py-4 rounded-lg uppercase text-xs tracking-widest hover:bg-red-600 transition-all shadow-lg">Commit to Database</button>
                     </div>
                 </div>
             </div>
@@ -230,10 +222,12 @@
         let allClients = [];
 
         window.onload = function() {
+            // Live Clock
             setInterval(() => {
                 document.getElementById('live-clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             }, 1000);
 
+            // Restore last active module and link
             const lastModule = localStorage.getItem('frost_last_module') || 'welcome';
             const lastUrl = localStorage.getItem('frost_last_url');
             if (lastModule === 'iframe' && lastUrl) showModule('iframe', lastUrl);
@@ -241,9 +235,13 @@
         };
 
         function showModule(modId, url = null) {
+            // Hide all
             ['mod-welcome', 'mod-iframe', 'mod-clients', 'mod-add-client'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            
+            // Show target
             document.getElementById('mod-' + modId).classList.remove('hidden');
             
+            // Handle iframes
             if (modId === 'iframe' && url) {
                 const frame = document.getElementById('mod-iframe');
                 if (frame.src !== url) frame.src = url;
@@ -268,31 +266,44 @@
             const payload = {
                 coname: document.getElementById('new-coname').value,
                 town: document.getElementById('new-town').value,
-                county: document.getElementById('new-county').value,
                 pcode: document.getElementById('new-pcode').value.toUpperCase(),
                 phone: document.getElementById('new-phone').value,
                 email: document.getElementById('new-email').value
             };
             const { error } = await _supabase.from('crm_customer').insert([payload]);
-            if(!error) { alert("Saved!"); showModule('clients'); }
+            if(!error) { 
+                alert("Customer Saved Successfully!"); 
+                showModule('clients'); 
+            } else {
+                alert("Error connecting to database.");
+            }
         }
 
         async function fetchClients() {
             const container = document.getElementById('client-container');
-            container.innerHTML = '<p class="text-xs text-slate-500 uppercase">Loading Database...</p>';
-            const { data, error } = await _supabase.from('crm_customer').select('*').order('coname', { ascending: true });
-            if (!error) { allClients = data; renderClients(data); }
+            container.innerHTML = '<div class="col-span-full py-10 text-center text-[10px] uppercase font-bold text-slate-500 animate-pulse tracking-widest">Querying Supabase Ledger...</div>';
+            try {
+                const { data, error } = await _supabase.from('crm_customer').select('*').order('coname', { ascending: true });
+                if (!error) { 
+                    allClients = data; 
+                    renderClients(data); 
+                }
+            } catch (e) { console.error(e); }
         }
 
         function renderClients(data) {
             const container = document.getElementById('client-container');
+            if (data.length === 0) {
+                container.innerHTML = '<p class="col-span-full text-center py-10 text-slate-500 uppercase text-xs">No records found.</p>';
+                return;
+            }
             container.innerHTML = data.map(c => `
-                <div class="client-card">
-                    <h4 class="dark:text-white font-black uppercase text-[11px] mb-2 italic tracking-tighter">${c.coname || 'UNKNOWN'}</h4>
+                <div class="client-card shadow-sm hover:shadow-md transition-shadow">
+                    <h4 class="dark:text-white font-black uppercase text-[11px] mb-2 italic tracking-tighter truncate">${c.coname || 'UNKNOWN COMPANY'}</h4>
                     <div class="space-y-1 text-[10px] text-slate-500 font-bold uppercase">
-                        <div><i class="fas fa-location-dot w-4"></i> ${c.town || ''}, ${c.pcode || ''}</div>
-                        <div><i class="fas fa-phone w-4"></i> <a href="tel:${c.phone}" style="color:inherit; text-decoration:none;">${c.phone || 'N/A'}</a></div>
-                        <div><i class="fas fa-envelope w-4"></i> <a href="mailto:${c.email}" style="color:inherit; text-decoration:none;">${c.email || 'N/A'}</a></div>
+                        <div><i class="fas fa-location-dot w-4 text-slate-400"></i> ${c.town || '---'}, ${c.pcode || '---'}</div>
+                        <div><i class="fas fa-phone w-4 text-slate-400"></i> <a href="tel:${c.phone}" class="hover:text-blue-500">${c.phone || 'N/A'}</a></div>
+                        <div class="truncate"><i class="fas fa-envelope w-4 text-slate-400"></i> <a href="mailto:${c.email}" class="hover:text-blue-500 lowercase font-normal">${c.email || 'N/A'}</a></div>
                     </div>
                 </div>
             `).join('');
