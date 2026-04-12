@@ -3,164 +3,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frost Transport Solutions | Full Enterprise Portal</title>
-    
+    <title>Frost Transport Solutions | Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config = { darkMode: 'class' }</script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDOPkYduNBvti4HWX2izIhCrrQ02uk5SL0&libraries=geometry,places"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        :root { --frost-red: #c32026; --frost-dark-navy: #0f172a; }
-
-        /* Sidebar Styles */
-        .sidebar-item { transition: all 0.2s ease; cursor: pointer; display: flex; align-items: center; width: 100%; border-left: 4px solid transparent; }
-        .sidebar-item:hover { background-color: #1e293b; color: white; }
-        .active-module { background-color: #1e293b; border-left-color: #3b82f6; color: white; }
-        
-        .submenu-item { cursor: pointer; display: block; padding: 8px 16px 8px 52px; font-size: 11px; transition: all 0.2s; color: #94a3b8; font-weight: 500; }
-        .submenu-item:hover { background-color: #1e293b; color: white; border-left: 2px solid var(--frost-red); }
-        
-        /* Layout Fixes */
-        #map { width: 100%; height: calc(100vh - 280px); min-height: 500px; border-radius: 12px; }
-        .client-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
-        .client-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 1.25rem; border-left: 4px solid #334155; transition: 0.2s; }
-        
-        .hidden { display: none; }
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease; }
+        .sidebar-item { transition: all 0.2s ease; cursor: pointer; }
+        .sidebar-item:hover { background-color: #1e293b; }
+        .active-tab { background-color: #1e293b; border-left: 3px solid #3b82f6; }
+        .submenu-item { transition: all 0.2s ease; cursor: pointer; display: block; }
+        .submenu-item:hover { color: #ffffff; background-color: #1e293b; }
         .rotate-180 { transform: rotate(180deg); }
+        .hidden { display: none; }
+
+        :root {
+            --frost-red: #c32026;
+            --frost-dark-navy: #0f172a;
+        }
+        .frost-card { background: white; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .dark .frost-card { background: #1e293b; border-color: #334155; }
+        .card-header-bar { height: 6px; background: var(--frost-dark-navy); width: 100%; }
+        .card-content { padding: 1.25rem; }
+        .frost-input { border: 2px solid #e2e8f0; background: #fff; padding: 0.35rem 0.75rem; border-radius: 6px; width: 100%; font-size: 0.85rem; outline: none; color: #000; }
+        .frost-input:focus { border-color: var(--frost-red); }
+        .section-header-red { font-size: 14px; font-weight: 900; color: var(--frost-red); text-transform: uppercase; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; font-style: italic; }
+        .label-text { font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px; display: block; letter-spacing: 0.05em; }
+        #map { width: 100%; height: calc(100vh - 250px); min-height: 500px; border-radius: 12px; background: #242f3e; }
+        .map-wrapper { background: var(--frost-dark-navy); padding: 12px; border-radius: 16px; height: fit-content; }
+        .sortable-item { display: flex; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; cursor: grab; font-weight: 800; font-size: 12px; text-transform: uppercase; color: var(--frost-dark-navy); }
+        .dark .sortable-item { background: #0f172a; border-color: #334155; color: #f1f5f9; }
+        
+        .btn-clear { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; transition: color 0.2s; }
+        .btn-clear:hover { color: #ef4444; }
+
+        /* CRM Grid Styles */
+        .client-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+        .client-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; border-left: 4px solid #94a3b8; transition: 0.2s; }
+        .dark .client-card { background: #1e293b; border-color: #334155; }
+        .client-card:hover { border-left-color: var(--frost-red); transform: translateX(4px); }
     </style>
 </head>
-<body class="bg-slate-950 flex h-screen overflow-hidden text-slate-100">
+<body class="bg-slate-100 dark:bg-slate-950 flex h-screen overflow-hidden">
 
-    <aside class="w-64 bg-[#0f172a] text-slate-300 flex flex-col flex-shrink-0 border-r border-slate-800">
-        <div class="p-6 border-b border-slate-800 flex items-center space-x-3">
-            <div class="bg-red-600 p-2 rounded-lg"><i class="fas fa-truck-fast text-white"></i></div>
-            <h1 class="text-white text-sm font-black uppercase tracking-widest">Frost Portal</h1>
+    <aside class="w-56 bg-[#0f172a] text-slate-300 flex flex-col flex-shrink-0 border-r border-slate-800 no-print">
+        <div class="p-4 border-b border-slate-800 flex items-center space-x-3">
+            <div class="bg-blue-600 p-1.5 rounded-lg"><i class="fas fa-truck-fast text-white text-sm"></i></div>
+            <div>
+                <h1 class="text-white text-xs font-bold leading-tight uppercase tracking-wider">Frost Transport</h1>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest">Solutions Portal</p>
+            </div>
         </div>
 
-        <nav class="flex-1 py-4 overflow-y-auto scrollbar-hide">
+        <nav class="flex-1 pt-4 overflow-y-auto">
+            <div class="px-4 mb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-widest text-opacity-50">Core Modules</div>
+            <a href="#" onclick="showModule('welcome')" class="sidebar-item active-tab flex items-center px-4 py-2 mb-1 text-xs">
+                <i class="fas fa-desktop w-5 text-blue-400"></i><span>DASHBOARD</span>
+            </a>
             
-            <div onclick="showModule('welcome')" class="sidebar-item px-6 py-3 text-xs font-bold mb-1 active-module" id="nav-welcome">
-                <i class="fas fa-chart-line w-6 text-blue-400"></i> DASHBOARD
-            </div>
-
-            <div class="mb-1">
-                <button onclick="toggleSubmenu('tms-menu', 'tms-arrow')" class="sidebar-item px-6 py-3 text-xs font-bold justify-between outline-none w-full">
-                    <div class="flex items-center"><i class="fas fa-file-invoice w-6 text-orange-400"></i> TMS</div>
-                    <i id="tms-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
+            <div>
+                <button onclick="toggleSubmenu('tms-menu', 'tms-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
+                    <div class="flex items-center"><i class="fas fa-route w-5 text-slate-400"></i><span>TMS</span></div>
+                    <i id="tms-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
                 </button>
-                <div id="tms-menu" class="bg-[#0a0f1d] py-1 hidden">
-                    <div onclick="showModule('welcome')" class="submenu-item">Live Load Board</div>
-                    <div onclick="showModule('welcome')" class="submenu-item">Job Entry</div>
-                    <div onclick="showModule('welcome')" class="submenu-item">Invoicing</div>
+                <div id="tms-menu" class="hidden bg-[#0a0f1d] pb-1">
+                    <a href="https://rich01623.github.io/Planner/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Planner</a>
+                    <a href="https://rich01623.github.io/ratetest/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Rate Card</a>
+                    <a href="https://rich01623.github.io/FTS-Customer-Portal/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">QTS Rates</a>
+                    <a href="https://rich01623.github.io/lasershape/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">LaserShape Rates</a>
                 </div>
             </div>
 
-            <div class="mb-1">
-                <button onclick="toggleSubmenu('crm-menu', 'crm-arrow')" class="sidebar-item px-6 py-3 text-xs font-bold justify-between outline-none w-full">
-                    <div class="flex items-center"><i class="fas fa-users w-6 text-teal-400"></i> CRM</div>
-                    <i id="crm-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
+            <div>
+                <button onclick="toggleSubmenu('crm-menu', 'crm-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
+                    <div class="flex items-center"><i class="fas fa-users w-5 text-slate-400"></i><span>CRM</span></div>
+                    <i id="crm-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
                 </button>
-                <div id="crm-menu" class="bg-[#0a0f1d] py-1 hidden">
-                    <div onclick="showModule('clients')" class="submenu-item">Customer Database</div>
-                    <div onclick="openExternal('https://rich01623.github.io/fts-directory/')" class="submenu-item">Directory</div>
+                <div id="crm-menu" class="hidden bg-[#0a0f1d] pb-1">
+                    <a href="#" onclick="showModule('clients')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Customer Database</a>
+                    <a href="#" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Add New Client</a>
+                    <a href="https://rich01623.github.io/fts-directory/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Directory</a>
+                    <a href="#" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Mailing List</a>
                 </div>
             </div>
 
-            <div class="mb-1">
-                <button onclick="toggleSubmenu('pf-menu', 'pf-arrow')" class="sidebar-item px-6 py-3 text-xs font-bold justify-between outline-none w-full">
-                    <div class="flex items-center"><i class="fas fa-box-open w-6 text-red-500"></i> PALLETFORCE</div>
-                    <i id="pf-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
+            <div>
+                <button onclick="toggleSubmenu('palletforce-menu', 'pallet-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
+                    <div class="flex items-center"><i class="fas fa-box w-5 text-slate-400"></i><span>PALLETFORCE</span></div>
+                    <i id="pallet-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
                 </button>
-                <div id="pf-menu" class="bg-[#0a0f1d] py-1 hidden">
-                    <div onclick="showModule('planner')" class="submenu-item">PF Route Planner</div>
-                    <div onclick="showModule('welcome')" class="submenu-item">Hub Manifests</div>
+                <div id="palletforce-menu" class="hidden bg-[#0a0f1d] pb-1">
+                    <a href="https://palletforce.net/Login.aspx" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Palletforce Login</a>
+                    <a href="#" onclick="showModule('planner')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">PF Route Planner</a>
                 </div>
             </div>
 
-            <div class="mb-1">
-                <button onclick="toggleSubmenu('dr-menu', 'dr-arrow')" class="sidebar-item px-6 py-3 text-xs font-bold justify-between outline-none w-full">
-                    <div class="flex items-center"><i class="fas fa-id-card w-6 text-purple-400"></i> DRIVERS</div>
-                    <i id="dr-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
+            <div class="px-4 mt-6 mb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-widest text-opacity-50">Operations</div>
+            
+            <div>
+                <button onclick="toggleSubmenu('drivers-menu', 'drivers-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
+                    <div class="flex items-center"><i class="fas fa-id-card w-5 text-slate-400"></i><span>DRIVERS</span></div>
+                    <i id="drivers-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
                 </button>
-                <div id="dr-menu" class="bg-[#0a0f1d] py-1 hidden">
-                    <div onclick="openExternal('https://rich01623.github.io/Fleet-dash/')" class="submenu-item">Timesheets</div>
-                    <div onclick="showModule('welcome')" class="submenu-item">Compliance</div>
+                <div id="drivers-menu" class="hidden bg-[#0a0f1d] pb-1">
+                    <a href="https://rich01623.github.io/Fleet-dash/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Driver Timesheets</a>
+                    <a href="#" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Driver Profile</a>
                 </div>
             </div>
 
-            <div class="mb-1">
-                <button onclick="toggleSubmenu('acc-menu', 'acc-arrow')" class="sidebar-item px-4 py-3 text-xs font-bold justify-between outline-none w-full pl-6">
-                    <div class="flex items-center"><i class="fas fa-vault w-6 text-green-400"></i> ACCOUNTING</div>
-                    <i id="acc-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
+            <div>
+                <button onclick="toggleSubmenu('accounting-menu', 'accounting-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
+                    <div class="flex items-center"><i class="fas fa-file-invoice-dollar w-5 text-slate-400"></i><span>ACCOUNTING</span></div>
+                    <i id="accounting-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
                 </button>
-                <div id="acc-menu" class="bg-[#0a0f1d] py-1 hidden">
-                    <div class="submenu-item">Sales Ledger</div>
-                    <div class="submenu-item">Purchase Ledger</div>
+                <div id="accounting-menu" class="hidden bg-[#0a0f1d] pb-1">
+                    <a href="https://login.xero.com/identity/user/login" target="_blank" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Login to Xero</a>
+                    <a href="https://drive.google.com/drive/folders/1-5IyWRXZXwbSLePeQpSgWSRl370vM3am?usp=sharing" target="_blank" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Invoices</a>
+                    <a href="#" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Create Manual Invoice</a>
                 </div>
             </div>
 
-            <div class="mb-1">
-                <button onclick="toggleSubmenu('fl-menu', 'fl-arrow')" class="sidebar-item px-4 py-3 text-xs font-bold justify-between outline-none w-full pl-6">
-                    <div class="flex items-center"><i class="fas fa-gas-pump w-6 text-yellow-500"></i> FLEET OPS</div>
-                    <i id="fl-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
+            <div>
+                <button onclick="toggleSubmenu('fleet-menu', 'fleet-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
+                    <div class="flex items-center"><i class="fas fa-gas-pump w-5 text-slate-400"></i><span>FLEET OPERATIONS</span></div>
+                    <i id="fleet-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
                 </button>
-                <div id="fl-menu" class="bg-[#0a0f1d] py-1 hidden">
-                    <div class="submenu-item">Vehicle Maintenance</div>
-                    <div class="submenu-item">Fuel Tracking</div>
+                <div id="fleet-menu" class="hidden bg-[#0a0f1d] pb-1">
+                    <a href="#" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Vehicle List</a>
+                    <a href="https://rich01623.github.io/Maintenance/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Maintenance Calendar</a>
                 </div>
             </div>
 
-            <div class="mb-1">
-                <div onclick="showModule('welcome')" class="sidebar-item px-6 py-3 text-xs font-bold">
-                    <i class="fas fa-microchip w-6 text-pink-500"></i> ANALYTICS
-                </div>
-            </div>
+            <a href="#" class="sidebar-item flex items-center px-4 py-2 mb-1 text-xs"><i class="fas fa-chart-line w-5 text-slate-400"></i><span>ANALYTICS</span></a>
         </nav>
+
+        <div class="relative p-2 border-t border-slate-800">
+            <div id="settings-menu" class="hidden absolute bottom-14 left-2 right-2 bg-[#1e293b] rounded-lg shadow-xl border border-slate-700 p-2 mb-2 z-50">
+                <button onclick="toggleDarkMode()" class="w-full flex items-center justify-between px-3 py-2 text-[11px] hover:bg-slate-700 rounded transition-colors text-slate-300">
+                    <div class="flex items-center">
+                        <i id="mode-icon" class="fas fa-sun w-4 text-yellow-400 mr-2"></i>
+                        <span id="mode-text">Day Mode</span>
+                    </div>
+                    <div class="w-6 h-3.5 flex items-center bg-blue-600 rounded-full p-0.5" id="toggle-bg">
+                        <div class="bg-white w-2.5 h-2.5 rounded-full shadow-sm transform translate-x-2.5 duration-200" id="toggle-dot"></div>
+                    </div>
+                </button>
+            </div>
+            <button onclick="toggleSettings()" class="w-full sidebar-item flex items-center justify-between px-4 py-2 text-xs rounded-md">
+                <div class="flex items-center"><i class="fas fa-cog w-5 text-slate-400"></i><span>SETTINGS</span></div>
+                <i class="fas fa-chevron-up text-[10px] text-slate-500"></i>
+            </button>
+        </div>
     </aside>
 
     <div class="flex-1 flex flex-col min-w-0">
-        <header class="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-8">
-            <span id="header-title" class="text-[11px] font-black uppercase tracking-widest text-slate-500">System Ready</span>
+        <header class="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 no-print transition-colors">
+            <div class="flex items-center flex-1">
+                <div class="relative w-96">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i class="fas fa-search text-xs"></i></span>
+                    <input type="text" class="block w-full pl-10 pr-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-md bg-slate-50 dark:bg-slate-800 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500" placeholder="Search orders...">
+                </div>
+            </div>
             <div class="flex items-center space-x-4">
-                <button onclick="document.documentElement.classList.toggle('dark')" class="text-slate-500 hover:text-white transition"><i class="fas fa-adjust"></i></button>
-                <div class="h-8 w-8 rounded bg-blue-600 flex items-center justify-center text-white text-xs font-black">SJ</div>
+                <div class="text-right">
+                    <p class="text-xs font-semibold text-slate-700 dark:text-slate-200 leading-none">Sarah Jenkins</p>
+                    <p class="text-[10px] text-slate-500 uppercase tracking-tighter">Dispatch Manager</p>
+                </div>
+                <div class="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-300 text-xs font-bold ml-2">SJ</div>
             </div>
         </header>
 
-        <main class="flex-1 overflow-auto p-8">
-            <div id="mod-welcome" class="h-full flex flex-col items-center justify-center text-slate-700">
-                <i class="fas fa-cube text-6xl mb-4 opacity-10"></i>
-                <p class="uppercase tracking-widest font-black text-xs">Frost Operations Suite</p>
+        <main class="flex-1 overflow-auto p-6 relative">
+            <div id="mod-welcome" class="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-700">
+                <i class="fas fa-layer-group text-4xl mb-4 opacity-20"></i>
+                <h2 class="text-lg font-medium uppercase tracking-widest">Main Stage</h2>
+                <p class="text-sm">Select a module from the sidebar.</p>
             </div>
 
-            <div id="mod-iframe" class="hidden h-full">
-                <iframe id="external-frame" src="" class="w-full h-full rounded-xl border border-slate-800 shadow-2xl"></iframe>
-            </div>
+            <iframe id="mod-iframe" name="main_frame" src="about:blank" class="hidden w-full h-full rounded-xl border-none" allowtransparency="true"></iframe>
 
             <div id="mod-clients" class="hidden">
-                <div class="flex justify-between mb-8">
-                    <h2 class="text-2xl font-black italic uppercase text-white">Customer Database</h2>
-                    <div class="flex space-x-2">
-                        <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Filter..." class="bg-[#0f172a] border border-slate-700 text-xs px-4 py-2 rounded outline-none focus:ring-1 focus:ring-red-500 w-64">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-2xl font-black italic uppercase dark:text-white">Customer Database</h2>
+                        <p class="text-[10px] text-red-600 font-bold uppercase tracking-widest">Live Supabase Sync</p>
                     </div>
+                    <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Filter companies..." class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs px-4 py-2 rounded-lg w-64 outline-none">
                 </div>
+                <div id="client-loader" class="text-center py-20 hidden text-red-600"><i class="fas fa-circle-notch fa-spin text-3xl"></i></div>
                 <div id="client-container" class="client-grid"></div>
             </div>
 
             <div id="mod-planner" class="hidden">
-                <div class="grid grid-cols-4 gap-6">
-                    <div class="col-span-1 bg-slate-900 p-4 rounded-xl border border-slate-800">
-                        <div id="stopList" class="min-h-[300px]"></div>
-                        <button onclick="calculateRoute()" class="w-full bg-blue-600 py-3 rounded text-xs font-black uppercase mt-4">Generate Route</button>
-                    </div>
-                    <div class="col-span-3">
-                        <div id="map" class="border-2 border-slate-800"></div>
+                <div class="max-w-[1600px] mx-auto">
+                    <header class="flex justify-between items-end mb-6 no-print">
+                        <div class="bg-slate-800 p-2 rounded">
+                            <h2 class="text-white text-xl font-black italic">FROST</h2>
+                        </div>
+                        <div class="text-right">
+                            <h2 class="text-[10px] font-black uppercase tracking-widest text-slate-400">Palletforce Dept</h2>
+                            <p class="text-xs font-bold text-slate-500 italic">Sync-Optimised Engine v6.9.1</p>
+                        </div>
+                    </header>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <div class="lg:col-span-4 xl:col-span-3 space-y-6">
+                            <section class="frost-card">
+                                <div class="card-header-bar"></div>
+                                <div class="card-content">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <h3 class="section-header-red" style="border:none;">01. Route Manifest</h3>
+                                        <button onclick="clearJourney()" class="btn-clear no-print"><i class="fas fa-trash-can mr-1"></i> Clear All</button>
+                                    </div>
+                                    <div class="mb-4">
+                                        <span class="label-text">Base Depot (Fixed)</span>
+                                        <div class="frost-input bg-gray-50 font-black text-slate-500 flex items-center gap-2">
+                                            <i class="fas fa-warehouse text-[10px]"></i> NG13 8JA
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <span class="label-text text-red-600 font-black italic">Add Postcode & Press Enter</span>
+                                        <div class="flex gap-2 mb-3">
+                                            <input type="text" id="pc-input" class="frost-input uppercase font-black" placeholder="e.g. DE1 1AA">
+                                            <button onclick="addWaypoint()" class="bg-slate-800 text-white px-4 rounded-lg hover:bg-red-600 transition-colors"><i class="fas fa-plus"></i></button>
+                                        </div>
+                                        <div id="sortable-list" class="max-h-[350px] overflow-y-auto pr-2"></div>
+                                    </div>
+                                    <div class="flex flex-col gap-3 mb-6 no-print">
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" id="optimizeCheck" class="accent-green-600" onchange="calculate()">
+                                            <span class="label-text" style="margin:0">Route Optimisation</span>
+                                            <span id="optiBadge" style="background: #10b981; color: white; font-size: 8px; padding: 1px 4px; border-radius: 4px; display:none;">ON</span>
+                                        </label>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div class="p-2 bg-slate-50 rounded-lg text-center"><span class="label-text">Miles (+5%)</span><div id="mileDisp" class="font-black text-lg text-slate-800">0</div></div>
+                                        <div class="p-2 bg-slate-50 rounded-lg text-center"><span class="label-text">Time (x1.25)</span><div id="timeDisp" class="font-black text-lg text-slate-800">0.00h</div></div>
+                                    </div>
+                                </div>
+                            </section>
+                            <button class="w-full bg-slate-800 text-white font-black py-4 rounded-lg uppercase text-xs tracking-widest no-print hover:bg-red-600 transition-colors shadow-lg" onclick="window.print()">Print Manifest</button>
+                        </div>
+                        <div class="lg:col-span-8 xl:col-span-9">
+                            <div class="map-wrapper shadow-2xl">
+                                <div id="map"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -168,25 +265,62 @@
     </div>
 
     <script>
-        // Supabase
+        // Supabase Init
         const SUPABASE_URL = 'https://tdrzytgiqvdulityqttr.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkcnp5dGdpcXZkdWxpdHlxdHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTM5NTMsImV4cCI6MjA4ODcyOTk1M30.XN46i7u6STD-2afmN7-Jh1MltADGpEuWlLt_n7wknbA';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
         let allClients = [];
-        let map, directionsService, directionsRenderer;
 
-        function showModule(id) {
-            ['mod-welcome', 'mod-iframe', 'mod-clients', 'mod-planner'].forEach(m => document.getElementById(m).classList.add('hidden'));
-            document.getElementById('mod-' + id).classList.remove('hidden');
-            document.getElementById('header-title').innerText = id.toUpperCase();
-            if(id === 'clients') fetchClients();
-            if(id === 'planner') initMap();
+        function showModule(modId) {
+            document.getElementById('mod-welcome').classList.add('hidden');
+            document.getElementById('mod-iframe').classList.add('hidden');
+            document.getElementById('mod-planner').classList.add('hidden');
+            document.getElementById('mod-clients').classList.add('hidden');
+            
+            document.getElementById('mod-' + modId).classList.remove('hidden');
+
+            if(modId === 'clients') fetchClients();
+            if(modId === 'planner') { 
+                setTimeout(() => {
+                    google.maps.event.trigger(map, "resize");
+                }, 100);
+            }
         }
 
-        function openExternal(url) {
-            showModule('iframe');
-            document.getElementById('external-frame').src = url;
+        async function fetchClients() {
+            const container = document.getElementById('client-container');
+            const loader = document.getElementById('client-loader');
+            container.innerHTML = '';
+            loader.classList.remove('hidden');
+            try {
+                const { data, error } = await _supabase.from('crm_customer').select('*').order('coname', { ascending: true });
+                if (error) throw error;
+                allClients = data;
+                renderClients(data);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        function renderClients(data) {
+            const container = document.getElementById('client-container');
+            container.innerHTML = data.map(c => `
+                <div class="client-card">
+                    <h4 class="dark:text-white font-black uppercase text-xs mb-2 italic tracking-tighter">${c.coname || 'UNKNOWN'}</h4>
+                    <div class="space-y-1 text-[10px] text-slate-500 font-bold uppercase">
+                        <div><i class="fas fa-location-dot w-4"></i> ${c.town || ''}, ${c.pcode || ''}</div>
+                        <div><i class="fas fa-phone w-4"></i> ${c.phone || 'N/A'}</div>
+                        <div><i class="fas fa-envelope w-4"></i> ${c.email || 'N/A'}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterClients() {
+            const term = document.getElementById('clientSearch').value.toLowerCase();
+            renderClients(allClients.filter(c => (c.coname || '').toLowerCase().includes(term)));
         }
 
         function toggleSubmenu(id, arrowId) {
@@ -194,28 +328,70 @@
             document.getElementById(arrowId).classList.toggle('rotate-180');
         }
 
-        async function fetchClients() {
-            const { data } = await _supabase.from('crm_customer').select('*').order('coname');
-            allClients = data;
-            renderClients(data);
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const isDark = html.classList.toggle('dark');
+            document.getElementById('mode-text').innerText = isDark ? "Day Mode" : "Night Mode";
+            document.getElementById('toggle-bg').className = isDark ? "w-6 h-3.5 flex items-center bg-blue-600 rounded-full p-0.5" : "w-6 h-3.5 flex items-center bg-slate-500 rounded-full p-0.5";
+            document.getElementById('toggle-dot').className = isDark ? "bg-white w-2.5 h-2.5 rounded-full shadow-sm transform translate-x-2.5 duration-200" : "bg-white w-2.5 h-2.5 rounded-full shadow-sm transform duration-200";
         }
 
-        function renderClients(data) {
-            const container = document.getElementById('client-container');
-            container.innerHTML = data.map(c => `
-                <div class="client-card">
-                    <h4 class="text-white font-bold text-xs uppercase mb-2">${c.coname || 'N/A'}</h4>
-                    <p class="text-[10px] text-slate-500">${c.town}, ${c.pcode}</p>
-                </div>
-            `).join('');
-        }
+        function toggleSettings() { document.getElementById('settings-menu').classList.toggle('hidden'); }
 
+        let map, directionsRenderer, directionsService;
+        const FIXED_BASE = "NG13 8JA";
+        
         function initMap() {
-            if(map) return;
-            map = new google.maps.Map(document.getElementById('map'), { center: {lat: 52.4, lng: -1.5}, zoom: 7 });
             directionsService = new google.maps.DirectionsService();
-            directionsRenderer = new google.maps.DirectionsRenderer({map});
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                polylineOptions: { strokeColor: "#c32026", strokeWeight: 6, strokeOpacity: 0.9 }
+            });
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 7, center: { lat: 52.95, lng: -0.95 },
+                styles: [{"elementType":"geometry","stylers":[{"color":"#242f3e"}]},{"featureType":"road","elementType":"geometry","stylers":[{"color":"#38414e"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#17263c"}]}]
+            });
+            directionsRenderer.setMap(map);
+            new Sortable(document.getElementById('sortable-list'), {
+                animation: 150, onEnd: function() { document.getElementById('optimizeCheck').checked = false; calculate(); }
+            });
         }
+
+        document.getElementById('pc-input').addEventListener('keypress', function(e) { if(e.key === 'Enter') addWaypoint(); });
+
+        function addWaypoint() {
+            const input = document.getElementById('pc-input');
+            const val = input.value.trim().toUpperCase();
+            if (val.length < 3) return;
+            const item = document.createElement('div');
+            item.className = 'sortable-item';
+            item.innerHTML = `<i class="fas fa-grip-lines mr-3 text-slate-400"></i><span class="flex-grow">${val}</span><button onclick="this.parentElement.remove(); calculate();" class="text-slate-400 hover:text-red-600 ml-2"><i class="fas fa-times"></i></button>`;
+            document.getElementById('sortable-list').appendChild(item);
+            input.value = ''; calculate();
+        }
+
+        function calculate() {
+            const items = Array.from(document.querySelectorAll('#sortable-list .sortable-item span'));
+            const shouldOptimize = document.getElementById('optimizeCheck').checked;
+            document.getElementById('optiBadge').style.display = shouldOptimize ? 'inline-block' : 'none';
+            if (items.length === 0) { directionsRenderer.setDirections({routes: []}); return; }
+            directionsService.route({
+                origin: FIXED_BASE, destination: FIXED_BASE,
+                waypoints: items.map(span => ({ location: span.innerText, stopover: true })),
+                optimizeWaypoints: shouldOptimize, travelMode: 'DRIVING'
+            }, (res, stat) => {
+                if (stat === 'OK') {
+                    directionsRenderer.setDirections(res);
+                    let m = 0; let s = 0;
+                    res.routes[0].legs.forEach(leg => { m += leg.distance.value; s += leg.duration.value; });
+                    document.getElementById('mileDisp').innerText = Math.round((m * 0.000621371) * 1.05);
+                    document.getElementById('timeDisp').innerText = ((s / 3600) * 1.25).toFixed(2) + 'h';
+                }
+            });
+        }
+
+        function clearJourney() { document.getElementById('sortable-list').innerHTML = ''; calculate(); }
+
+        window.onload = initMap;
     </script>
 </body>
 </html>
