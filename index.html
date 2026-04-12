@@ -81,6 +81,7 @@
                     <a href="https://rich01623.github.io/Planner/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Planner</a>
                     <a href="https://rich01623.github.io/ratetest/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Rate Card</a>
                     <a href="https://rich01623.github.io/FTS-Customer-Portal/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">QTS Rates</a>
+                    <a href="https://rich01623.github.io/lasershape/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">LaserShape Rates</a>
                 </div>
             </div>
 
@@ -104,6 +105,39 @@
                 <div id="palletforce-menu" class="hidden bg-[#0a0f1d] pb-1">
                     <a href="https://palletforce.net/Login.aspx" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Palletforce Login</a>
                     <a href="#" onclick="showModule('planner')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">PF Route Planner</a>
+                </div>
+            </div>
+
+            <div class="px-4 mt-6 mb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-widest text-opacity-50">Operations</div>
+            
+            <div>
+                <button onclick="toggleSubmenu('drivers-menu', 'drivers-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
+                    <div class="flex items-center"><i class="fas fa-id-card w-5 text-slate-400"></i><span>DRIVERS</span></div>
+                    <i id="drivers-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
+                </button>
+                <div id="drivers-menu" class="hidden bg-[#0a0f1d] pb-1">
+                    <a href="https://rich01623.github.io/Fleet-dash/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Driver Timesheets</a>
+                </div>
+            </div>
+
+            <div>
+                <button onclick="toggleSubmenu('accounting-menu', 'accounting-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
+                    <div class="flex items-center"><i class="fas fa-file-invoice-dollar w-5 text-slate-400"></i><span>ACCOUNTING</span></div>
+                    <i id="accounting-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
+                </button>
+                <div id="accounting-menu" class="hidden bg-[#0a0f1d] pb-1">
+                    <a href="https://login.xero.com/identity/user/login" target="_blank" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Login to Xero</a>
+                    <a href="https://drive.google.com/drive/folders/1-5IyWRXZXwbSLePeQpSgWSRl370vM3am?usp=sharing" target="_blank" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Invoices</a>
+                </div>
+            </div>
+
+            <div>
+                <button onclick="toggleSubmenu('fleet-menu', 'fleet-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
+                    <div class="flex items-center"><i class="fas fa-gas-pump w-5 text-slate-400"></i><span>FLEET OPERATIONS</span></div>
+                    <i id="fleet-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
+                </button>
+                <div id="fleet-menu" class="hidden bg-[#0a0f1d] pb-1">
+                    <a href="https://rich01623.github.io/Maintenance/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Maintenance Calendar</a>
                 </div>
             </div>
 
@@ -146,34 +180,14 @@
                     <div class="card-content">
                         <h2 class="section-header-red mb-6">Create New Customer Record</h2>
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="col-span-2">
-                                <span class="label-text">Customer Name</span>
-                                <input type="text" id="new-coname" class="frost-input" placeholder="e.g. Frost Transport Solutions">
-                            </div>
-                            <div>
-                                <span class="label-text">Town</span>
-                                <input type="text" id="new-town" class="frost-input">
-                            </div>
-                            <div>
-                                <span class="label-text">County</span>
-                                <input type="text" id="new-county" class="frost-input">
-                            </div>
-                            <div>
-                                <span class="label-text">Postcode</span>
-                                <input type="text" id="new-pcode" class="frost-input uppercase">
-                            </div>
-                            <div>
-                                <span class="label-text">Phone Number</span>
-                                <input type="text" id="new-phone" class="frost-input">
-                            </div>
-                            <div class="col-span-2">
-                                <span class="label-text">Email Address</span>
-                                <input type="email" id="new-email" class="frost-input">
-                            </div>
+                            <div class="col-span-2"><span class="label-text">Customer Name</span><input type="text" id="new-coname" class="frost-input"></div>
+                            <div><span class="label-text">Town</span><input type="text" id="new-town" class="frost-input"></div>
+                            <div><span class="label-text">County</span><input type="text" id="new-county" class="frost-input"></div>
+                            <div><span class="label-text">Postcode</span><input type="text" id="new-pcode" class="frost-input uppercase"></div>
+                            <div><span class="label-text">Phone</span><input type="text" id="new-phone" class="frost-input"></div>
+                            <div class="col-span-2"><span class="label-text">Email</span><input type="email" id="new-email" class="frost-input"></div>
                         </div>
-                        <button onclick="saveClient()" id="saveBtn" class="w-full mt-8 bg-slate-900 text-white font-black py-4 rounded-lg uppercase text-xs tracking-widest hover:bg-red-600 transition-all flex items-center justify-center gap-2">
-                            <i class="fas fa-save"></i> Save to Database
-                        </button>
+                        <button onclick="saveClient()" id="saveBtn" class="w-full mt-8 bg-slate-900 text-white font-black py-4 rounded-lg uppercase text-xs tracking-widest hover:bg-red-600 transition-all">Save to Database</button>
                         <p id="form-msg" class="text-center mt-4 text-[10px] font-bold uppercase hidden"></p>
                     </div>
                 </div>
@@ -181,54 +195,30 @@
 
             <div id="mod-clients" class="hidden">
                 <div class="flex justify-between items-center mb-6">
-                    <div>
-                        <h2 class="text-2xl font-black italic uppercase dark:text-white">Customer Database</h2>
-                        <p class="text-[10px] text-red-600 font-bold uppercase tracking-widest">Live Supabase Sync</p>
-                    </div>
-                    <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Filter companies..." class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs px-4 py-2 rounded-lg w-64 outline-none">
+                    <div><h2 class="text-2xl font-black italic uppercase dark:text-white">Customer Database</h2><p class="text-[10px] text-red-600 font-bold uppercase tracking-widest">Live Supabase Sync</p></div>
+                    <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Filter..." class="bg-white dark:bg-slate-800 border border-slate-700 text-xs px-4 py-2 rounded-lg">
                 </div>
                 <div id="client-loader" class="text-center py-20 hidden text-red-600"><i class="fas fa-circle-notch fa-spin text-3xl"></i></div>
                 <div id="client-container" class="client-grid"></div>
             </div>
 
             <div id="mod-planner" class="hidden">
-                <div class="max-w-[1600px] mx-auto">
-                    <div class="grid grid-cols-12 gap-6">
-                        <div class="col-span-4 space-y-4">
-                            <div class="frost-card">
-                                <div class="card-header-bar bg-red-600"></div>
-                                <div class="card-content">
-                                    <div class="flex justify-between items-center mb-4">
-                                        <h3 class="section-header-red">Route Sequence</h3>
-                                        <button onclick="clearAll()" class="btn-clear">Clear All</button>
-                                    </div>
-                                    <div id="sortable-list" class="mb-4 min-h-[50px]"></div>
-                                    <div class="relative">
-                                        <span class="label-text">Add New Stop</span>
-                                        <input type="text" id="stopInput" class="frost-input pr-10" placeholder="Enter Postcode...">
-                                        <button onclick="addStop()" class="absolute right-2 bottom-1.5 text-blue-600 hover:text-red-600"><i class="fas fa-plus-circle text-lg"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="frost-card">
-                                <div class="card-content">
-                                    <div class="flex items-center justify-between mb-4">
-                                        <span class="label-text">Optimization</span>
-                                        <label class="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" id="optimizeCheck" class="sr-only peer" onchange="calculate()">
-                                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
-                                        </label>
-                                    </div>
-                                    <button onclick="calculate()" class="w-full bg-slate-900 text-white font-black py-3 rounded-lg uppercase text-[10px] tracking-widest hover:bg-blue-600 transition-colors">
-                                        <i class="fas fa-sync-alt mr-2"></i> Update Route Map
-                                    </button>
-                                </div>
+                <div class="max-w-[1600px] mx-auto grid grid-cols-12 gap-6">
+                    <div class="col-span-4 space-y-4">
+                        <div class="frost-card">
+                            <div class="card-header-bar bg-red-600"></div>
+                            <div class="card-content">
+                                <div class="flex justify-between items-center mb-4"><h3 class="section-header-red">Route Sequence</h3><button onclick="clearAll()" class="btn-clear">Clear All</button></div>
+                                <div id="sortable-list" class="mb-4 min-h-[50px]"></div>
+                                <div class="relative"><span class="label-text">Add Stop</span><input type="text" id="stopInput" class="frost-input pr-10" placeholder="Postcode..."><button onclick="addStop()" class="absolute right-2 bottom-1.5 text-blue-600"><i class="fas fa-plus-circle text-lg"></i></button></div>
                             </div>
                         </div>
-                        <div class="col-span-8">
-                            <div class="map-wrapper shadow-2xl"><div id="map"></div></div>
-                        </div>
+                        <div class="frost-card"><div class="card-content">
+                            <div class="flex items-center justify-between mb-4"><span class="label-text">Optimization</span><input type="checkbox" id="optimizeCheck" onchange="calculate()"></div>
+                            <button onclick="calculate()" class="w-full bg-slate-900 text-white py-3 rounded-lg text-[10px] tracking-widest font-black uppercase">Update Map</button>
+                        </div></div>
                     </div>
+                    <div class="col-span-8"><div class="map-wrapper"><div id="map"></div></div></div>
                 </div>
             </div>
         </main>
@@ -241,12 +231,15 @@
         let allClients = [];
 
         function showModule(modId) {
-            ['mod-welcome', 'mod-iframe', 'mod-planner', 'mod-clients', 'mod-add-client'].forEach(id => {
-                document.getElementById(id).classList.add('hidden');
-            });
+            ['mod-welcome', 'mod-iframe', 'mod-planner', 'mod-clients', 'mod-add-client'].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById('mod-' + modId).classList.remove('hidden');
             if(modId === 'clients') fetchClients();
             if(modId === 'planner') { setTimeout(() => { google.maps.event.trigger(map, "resize"); }, 100); }
+        }
+
+        function toggleSubmenu(id, arrowId) {
+            document.getElementById(id).classList.toggle('hidden');
+            document.getElementById(arrowId).classList.toggle('rotate-180');
         }
 
         async function saveClient() {
@@ -260,49 +253,33 @@
                 phone: document.getElementById('new-phone').value,
                 email: document.getElementById('new-email').value
             };
-            if(!payload.coname) return alert("Company Name is required");
+            if(!payload.coname) return alert("Name required");
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
             try {
                 const { error } = await _supabase.from('crm_customer').insert([payload]);
                 if(error) throw error;
-                msg.innerText = "Customer Saved Successfully!";
-                msg.className = "text-center mt-4 text-[10px] font-bold uppercase text-green-500";
-                msg.classList.remove('hidden');
+                msg.innerText = "Saved!"; msg.classList.remove('hidden');
                 ['new-coname','new-town','new-county','new-pcode','new-phone','new-email'].forEach(id => document.getElementById(id).value = '');
-            } catch (e) {
-                msg.innerText = "Error: " + e.message;
-                msg.className = "text-center mt-4 text-[10px] font-bold uppercase text-red-500";
-                msg.classList.remove('hidden');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-save"></i> Save to Database';
-            }
+            } catch (e) { alert(e.message); } finally { btn.disabled = false; }
         }
 
         async function fetchClients() {
-            const container = document.getElementById('client-container');
             const loader = document.getElementById('client-loader');
-            container.innerHTML = '';
             loader.classList.remove('hidden');
             try {
                 const { data, error } = await _supabase.from('crm_customer').select('*').order('coname', { ascending: true });
                 if (error) throw error;
                 allClients = data;
                 renderClients(data);
-            } catch (e) { console.error(e); } 
-            finally { loader.classList.add('hidden'); }
+            } finally { loader.classList.add('hidden'); }
         }
 
         function renderClients(data) {
-            const container = document.getElementById('client-container');
-            container.innerHTML = data.map(c => `
+            document.getElementById('client-container').innerHTML = data.map(c => `
                 <div class="client-card">
-                    <h4 class="dark:text-white font-black uppercase text-xs mb-2 italic tracking-tighter">${c.coname || 'UNKNOWN'}</h4>
+                    <h4 class="dark:text-white font-black uppercase text-xs mb-2 italic">${c.coname || 'UNKNOWN'}</h4>
                     <div class="space-y-1 text-[10px] text-slate-500 font-bold uppercase">
                         <div><i class="fas fa-location-dot w-4"></i> ${c.town || ''}, ${c.pcode || ''}</div>
-                        <div><i class="fas fa-phone w-4"></i> ${c.phone || 'N/A'}</div>
-                        <div><i class="fas fa-envelope w-4"></i> ${c.email || 'N/A'}</div>
                     </div>
                 </div>
             `).join('');
@@ -313,11 +290,6 @@
             renderClients(allClients.filter(c => (c.coname || '').toLowerCase().includes(term)));
         }
 
-        function toggleSubmenu(id, arrowId) {
-            document.getElementById(id).classList.toggle('hidden');
-            document.getElementById(arrowId).classList.toggle('rotate-180');
-        }
-
         function toggleDarkMode() {
             const html = document.documentElement;
             const isDark = html.classList.toggle('dark');
@@ -325,25 +297,15 @@
             document.getElementById('mode-icon').className = isDark ? "fas fa-sun w-5 text-yellow-400" : "fas fa-moon w-5 text-slate-400";
         }
 
-        // MAP LOGIC
         let map, directionsRenderer, directionsService;
         const FIXED_BASE = "NG13 8JA";
-        
         function initMap() {
             directionsService = new google.maps.DirectionsService();
-            directionsRenderer = new google.maps.DirectionsRenderer({
-                polylineOptions: { strokeColor: "#c32026", strokeWeight: 6, strokeOpacity: 0.9 }
-            });
-            map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 7, center: { lat: 52.95, lng: -0.95 },
-                styles: [{"elementType":"geometry","stylers":[{"color":"#242f3e"}]},{"featureType":"road","elementType":"geometry","stylers":[{"color":"#38414e"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#17263c"}]}]
-            });
+            directionsRenderer = new google.maps.DirectionsRenderer({ polylineOptions: { strokeColor: "#c32026", strokeWeight: 6 } });
+            map = new google.maps.Map(document.getElementById("map"), { zoom: 7, center: { lat: 52.95, lng: -0.95 }, styles: [{"elementType":"geometry","stylers":[{"color":"#242f3e"}]}] });
             directionsRenderer.setMap(map);
             new Sortable(document.getElementById('sortable-list'), { animation: 150 });
-            
-            document.getElementById('stopInput').addEventListener('keypress', (e) => {
-                if(e.key === 'Enter') addStop();
-            });
+            document.getElementById('stopInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') addStop(); });
         }
 
         function addStop() {
@@ -351,45 +313,24 @@
             const val = input.value.trim().toUpperCase();
             if(!val) return;
             const div = document.createElement('div');
-            div.className = 'sortable-item';
-            div.dataset.location = val;
-            div.innerHTML = `<i class="fas fa-grip-vertical mr-3 opacity-30"></i> <span>${val}</span> <button onclick="this.parentElement.remove(); calculate();" class="ml-auto text-slate-400 hover:text-red-600"><i class="fas fa-times"></i></button>`;
+            div.className = 'sortable-item'; div.dataset.location = val;
+            div.innerHTML = `<span>${val}</span> <button onclick="this.parentElement.remove(); calculate();" class="ml-auto"><i class="fas fa-times"></i></button>`;
             document.getElementById('sortable-list').appendChild(div);
-            input.value = '';
-            calculate();
+            input.value = ''; calculate();
         }
 
-        function clearAll() {
-            document.getElementById('sortable-list').innerHTML = '';
-            directionsRenderer.setDirections({routes: []});
-        }
+        function clearAll() { document.getElementById('sortable-list').innerHTML = ''; directionsRenderer.setDirections({routes: []}); }
 
         function calculate() {
             const items = Array.from(document.querySelectorAll('.sortable-item'));
             if(items.length === 0) return;
-            const waypoints = items.map(item => ({ location: item.dataset.location, stopover: true }));
-            const optimize = document.getElementById('optimizeCheck').checked;
-            
             directionsService.route({
-                origin: FIXED_BASE,
-                destination: FIXED_BASE,
-                waypoints: waypoints,
-                optimizeWaypoints: optimize,
+                origin: FIXED_BASE, destination: FIXED_BASE,
+                waypoints: items.map(item => ({ location: item.dataset.location, stopover: true })),
+                optimizeWaypoints: document.getElementById('optimizeCheck').checked,
                 travelMode: 'DRIVING'
-            }, (response, status) => {
-                if (status === 'OK') {
-                    directionsRenderer.setDirections(response);
-                    if(optimize) {
-                        const order = response.routes[0].waypoint_order;
-                        const list = document.getElementById('sortable-list');
-                        const sortedItems = order.map(idx => items[idx]);
-                        list.innerHTML = '';
-                        sortedItems.forEach(el => list.appendChild(el));
-                    }
-                }
-            });
+            }, (response, status) => { if (status === 'OK') directionsRenderer.setDirections(response); });
         }
-
         window.onload = initMap;
     </script>
 </body>
