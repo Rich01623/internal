@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frost Transport Solutions | Nottingham Hub</title>
+    <title>Frost Transport Solutions | Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { darkMode: 'class' }
@@ -29,7 +29,6 @@
             --frost-dark-navy: #0f172a;
         }
         
-        /* Dashboard Card Styles */
         .stat-card { background: white; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 1rem; }
         .dark .stat-card { background: #1e293b; border-color: #334155; }
         
@@ -40,7 +39,6 @@
         .client-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; border-left: 4px solid #94a3b8; transition: 0.2s; }
         .dark .client-card { background: #1e293b; border-color: #334155; }
         
-        /* Input Styles */
         .frost-input { border: 2px solid #e2e8f0; background: #fff; padding: 0.35rem 0.75rem; border-radius: 6px; width: 100%; font-size: 0.85rem; outline: none; color: #000; }
         .dark .frost-input { background: #0f172a; border-color: #334155; color: white; }
         .label-text { font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px; display: block; letter-spacing: 0.05em; }
@@ -53,7 +51,7 @@
             <div class="bg-blue-600 p-1.5 rounded-lg"><i class="fas fa-truck-fast text-white text-sm"></i></div>
             <div>
                 <h1 class="text-white text-xs font-bold leading-tight uppercase tracking-wider">Frost Transport</h1>
-                <p class="text-[10px] text-slate-500 uppercase tracking-widest">v1.2.1 | Nottingham</p>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest text-opacity-70">v1.2.2 | Full Build</p>
             </div>
         </div>
 
@@ -72,6 +70,7 @@
                     <a href="https://rich01623.github.io/Planner/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Planner</a>
                     <a href="https://rich01623.github.io/ratetest/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Rate Card</a>
                     <a href="https://rich01623.github.io/FTS-Customer-Portal/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">QTS Rates</a>
+                    <a href="https://rich01623.github.io/lasershape/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">LaserShape Rates</a>
                 </div>
             </div>
 
@@ -83,31 +82,65 @@
                 <div id="crm-menu" class="hidden bg-[#0a0f1d] pb-1">
                     <a href="#" onclick="showModule('clients')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Customer Database</a>
                     <a href="#" onclick="showModule('add-client')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Add New Client</a>
+                    <a href="https://rich01623.github.io/fts-directory/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Directory</a>
+                </div>
+            </div>
+
+            <div>
+                <button onclick="toggleSubmenu('palletforce-menu', 'pallet-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
+                    <div class="flex items-center"><i class="fas fa-box w-5 text-slate-400"></i><span>PALLETFORCE</span></div>
+                    <i id="pallet-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
+                </button>
+                <div id="palletforce-menu" class="hidden bg-[#0a0f1d] pb-1">
+                    <a href="https://palletforce.net/Login.aspx" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Login</a>
+                    <a href="https://rich01623.github.io/jonstool/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">PF Route Planner</a>
                 </div>
             </div>
 
             <div class="px-4 mt-6 mb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-widest text-opacity-50">Operations</div>
+            
             <div>
                 <button onclick="toggleSubmenu('drivers-menu', 'drivers-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
                     <div class="flex items-center"><i class="fas fa-id-card w-5 text-slate-400"></i><span>DRIVERS</span></div>
                     <i id="drivers-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
                 </button>
                 <div id="drivers-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="https://rich01623.github.io/Fleet-dash/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Driver Timesheets</a>
+                    <a href="https://rich01623.github.io/Fleet-dash/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Timesheets</a>
+                </div>
+            </div>
+
+            <div>
+                <button onclick="toggleSubmenu('accounting-menu', 'accounting-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
+                    <div class="flex items-center"><i class="fas fa-file-invoice-dollar w-5 text-slate-400"></i><span>ACCOUNTING</span></div>
+                    <i id="accounting-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
+                </button>
+                <div id="accounting-menu" class="hidden bg-[#0a0f1d] pb-1">
+                    <a href="https://login.xero.com/" target="_blank" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Xero Login</a>
+                    <a href="https://drive.google.com/drive/folders/1-5IyWRXZXwbSLePeQpSgWSRl370vM3am" target="_blank" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Invoices Folder</a>
+                </div>
+            </div>
+
+            <div>
+                <button onclick="toggleSubmenu('fleet-menu', 'fleet-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
+                    <div class="flex items-center"><i class="fas fa-gas-pump w-5 text-slate-400"></i><span>FLEET OPS</span></div>
+                    <i id="fleet-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
+                </button>
+                <div id="fleet-menu" class="hidden bg-[#0a0f1d] pb-1">
+                    <a href="https://rich01623.github.io/Maintenance/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Calendar</a>
                 </div>
             </div>
         </nav>
 
         <div class="p-2 border-t border-slate-800">
             <button onclick="toggleSettings()" class="w-full sidebar-item flex items-center justify-between px-4 py-2 text-xs rounded-md">
-                <div class="flex items-center"><i class="fas fa-cog w-5 text-slate-400"></i><span>SETTINGS</span></div>
+                <div class="flex items-center"><i class="fas fa-cog w-5 text-slate-400"></i><span>NIGHT MODE TOGGLE</span></div>
             </button>
         </div>
     </aside>
 
     <div class="flex-1 flex flex-col min-w-0">
         <header class="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 no-print">
-            <h2 class="text-sm font-bold uppercase tracking-widest text-slate-500">Nottingham Hub Control</h2>
+            <h2 class="text-sm font-bold uppercase tracking-widest text-slate-500">Frost Command Center</h2>
             <div class="flex items-center space-x-4">
                 <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">FT</div>
             </div>
@@ -116,7 +149,6 @@
         <main class="flex-1 overflow-auto p-6 relative">
             
             <div id="mod-welcome" class="space-y-6">
-                
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div class="stat-card">
                         <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl"><i class="fas fa-truck text-lg"></i></div>
@@ -124,25 +156,25 @@
                     </div>
                     <div class="stat-card">
                         <div class="p-3 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-xl"><i class="fas fa-calendar-check text-lg"></i></div>
-                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Jobs</p><p class="text-lg font-black dark:text-white">12 Pending</p></div>
+                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Jobs Today</p><p class="text-lg font-black dark:text-white">LIVE</p></div>
                     </div>
                     <div class="stat-card">
                         <div class="p-3 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-xl"><i class="fas fa-clock text-lg"></i></div>
-                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Time</p><p id="live-clock" class="text-lg font-black dark:text-white">00:00</p></div>
+                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Local Time</p><p id="live-clock" class="text-lg font-black dark:text-white">00:00</p></div>
                     </div>
                     <div class="stat-card">
                         <div class="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-xl"><i class="fas fa-map-marker-alt text-lg"></i></div>
-                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Zone</p><p class="text-lg font-black dark:text-white">NOTTM</p></div>
+                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Hub Zone</p><p class="text-lg font-black dark:text-white">NOTTM</p></div>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="frost-card lg:col-span-1">
-                        <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                            <h3 class="text-xs font-black uppercase italic text-red-600">Nottingham Forecast</h3>
+                        <div class="p-4 border-b border-slate-100 dark:border-slate-800">
+                            <h3 class="text-xs font-black uppercase italic text-red-600">Weather Forecast</h3>
                         </div>
                         <div class="p-0">
-                            <a class="weatherwidget-io" href="https://forecast7.com/en/52d95n1d15/nottingham/" data-label_1="NOTTINGHAM" data-label_2="WEATHER" data-font="Roboto" data-icons="Climacons Animated" data-theme="pure" data-basecolor="#1e293b" data-accent="" data-textcolor="#ffffff" >NOTTINGHAM WEATHER</a>
+                            <a class="weatherwidget-io" href="https://forecast7.com/en/52d95n1d15/nottingham/" data-label_1="NOTTINGHAM" data-label_2="WEATHER" data-font="Roboto" data-icons="Climacons Animated" data-theme="pure" data-basecolor="#1e293b" data-textcolor="#ffffff" >NOTTINGHAM WEATHER</a>
                             <script>
                             !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
                             </script>
@@ -150,14 +182,14 @@
                     </div>
 
                     <div class="frost-card lg:col-span-2">
-                        <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                            <h3 class="text-xs font-black uppercase italic text-red-600">Nottingham Traffic Live</h3>
+                        <div class="p-4 border-b border-slate-100 dark:border-slate-800">
+                            <h3 class="text-xs font-black uppercase italic text-red-600">Live Traffic Control</h3>
                         </div>
                         <div class="h-[400px]">
                             <iframe width="100%" height="100%" frameborder="0" style="border:0" 
-                                src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d76935.5398293798!2d-1.15!3d52.95!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2suk!4v1620000000000!5m2!1sen!2suk&layer=t" 
+                                src="https://www.google.com/maps/embed/v1/view?key=YOUR_API_KEY_OR_GENERIC_MAP&center=52.9548,-1.1581&zoom=11&maptype=roadmap&layer=traffic" 
                                 allowfullscreen></iframe>
-                        </div>
+                            </div>
                     </div>
                 </div>
             </div>
@@ -165,6 +197,10 @@
             <iframe id="mod-iframe" name="main_frame" src="about:blank" class="hidden w-full h-full rounded-xl border-none"></iframe>
 
             <div id="mod-clients" class="hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-black italic uppercase dark:text-white">Customer Database</h2>
+                    <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Filter..." class="bg-white dark:bg-slate-800 border border-slate-700 text-xs px-4 py-2 rounded-lg">
+                </div>
                 <div id="client-container" class="client-grid"></div>
             </div>
 
@@ -174,10 +210,13 @@
                         <h2 class="text-xs font-black text-red-600 uppercase mb-4 italic border-b pb-2">New Customer Entry</h2>
                         <div class="grid grid-cols-2 gap-4">
                            <div class="col-span-2"><span class="label-text">Company Name</span><input type="text" id="new-coname" class="frost-input"></div>
+                           <div><span class="label-text">Town</span><input type="text" id="new-town" class="frost-input"></div>
+                           <div><span class="label-text">County</span><input type="text" id="new-county" class="frost-input"></div>
                            <div><span class="label-text">Postcode</span><input type="text" id="new-pcode" class="frost-input"></div>
                            <div><span class="label-text">Phone</span><input type="text" id="new-phone" class="frost-input"></div>
+                           <div class="col-span-2"><span class="label-text">Email</span><input type="email" id="new-email" class="frost-input"></div>
                         </div>
-                        <button onclick="saveClient()" class="w-full mt-6 bg-slate-900 text-white font-black py-3 rounded-lg uppercase text-xs tracking-widest hover:bg-red-600 transition-all">Save to Database</button>
+                        <button onclick="saveClient()" class="w-full mt-6 bg-slate-900 text-white font-black py-3 rounded-lg uppercase text-xs tracking-widest hover:bg-red-600 transition-all">Save Customer</button>
                     </div>
                 </div>
             </div>
@@ -191,12 +230,10 @@
         let allClients = [];
 
         window.onload = function() {
-            // Live Clock Logic
             setInterval(() => {
                 document.getElementById('live-clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             }, 1000);
 
-            // Restore last active module
             const lastModule = localStorage.getItem('frost_last_module') || 'welcome';
             const lastUrl = localStorage.getItem('frost_last_url');
             if (lastModule === 'iframe' && lastUrl) showModule('iframe', lastUrl);
@@ -227,24 +264,24 @@
             }
         }
 
-        function toggleSubmenu(id, arrowId) {
-            document.getElementById(id).classList.toggle('hidden');
-            document.getElementById(arrowId).classList.toggle('rotate-180');
+        async function saveClient() {
+            const payload = {
+                coname: document.getElementById('new-coname').value,
+                town: document.getElementById('new-town').value,
+                county: document.getElementById('new-county').value,
+                pcode: document.getElementById('new-pcode').value.toUpperCase(),
+                phone: document.getElementById('new-phone').value,
+                email: document.getElementById('new-email').value
+            };
+            const { error } = await _supabase.from('crm_customer').insert([payload]);
+            if(!error) { alert("Saved!"); showModule('clients'); }
         }
 
-        function toggleSettings() {
-            document.documentElement.classList.toggle('dark');
-        }
-
-        // --- CRM LOGIC ---
         async function fetchClients() {
             const container = document.getElementById('client-container');
-            container.innerHTML = '<p class="text-xs text-white uppercase animate-pulse">Loading DB...</p>';
-            try {
-                const { data, error } = await _supabase.from('crm_customer').select('*').order('coname', { ascending: true });
-                if (error) throw error;
-                renderClients(data);
-            } catch (e) { console.error(e); }
+            container.innerHTML = '<p class="text-xs text-slate-500 uppercase">Loading Database...</p>';
+            const { data, error } = await _supabase.from('crm_customer').select('*').order('coname', { ascending: true });
+            if (!error) { allClients = data; renderClients(data); }
         }
 
         function renderClients(data) {
@@ -255,9 +292,24 @@
                     <div class="space-y-1 text-[10px] text-slate-500 font-bold uppercase">
                         <div><i class="fas fa-location-dot w-4"></i> ${c.town || ''}, ${c.pcode || ''}</div>
                         <div><i class="fas fa-phone w-4"></i> <a href="tel:${c.phone}" style="color:inherit; text-decoration:none;">${c.phone || 'N/A'}</a></div>
+                        <div><i class="fas fa-envelope w-4"></i> <a href="mailto:${c.email}" style="color:inherit; text-decoration:none;">${c.email || 'N/A'}</a></div>
                     </div>
                 </div>
             `).join('');
+        }
+
+        function filterClients() {
+            const term = document.getElementById('clientSearch').value.toLowerCase();
+            renderClients(allClients.filter(c => (c.coname || '').toLowerCase().includes(term)));
+        }
+
+        function toggleSubmenu(id, arrowId) {
+            document.getElementById(id).classList.toggle('hidden');
+            document.getElementById(arrowId).classList.toggle('rotate-180');
+        }
+
+        function toggleSettings() {
+            document.documentElement.classList.toggle('dark');
         }
     </script>
 </body>
