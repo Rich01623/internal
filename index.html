@@ -39,8 +39,10 @@
         .frost-input:focus { border-color: var(--frost-red); }
         .section-header-red { font-size: 14px; font-weight: 900; color: var(--frost-red); text-transform: uppercase; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; font-style: italic; }
         .label-text { font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px; display: block; letter-spacing: 0.05em; }
-        #map { width: 100%; height: calc(100vh - 250px); min-height: 500px; border-radius: 12px; background: #242f3e; }
+        
+        #map { width: 100%; height: calc(100vh - 250px); min-height: 550px; border-radius: 12px; background: #242f3e; }
         .map-wrapper { background: var(--frost-dark-navy); padding: 12px; border-radius: 16px; height: fit-content; }
+        
         .sortable-item { display: flex; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; cursor: grab; font-weight: 800; font-size: 12px; text-transform: uppercase; color: var(--frost-dark-navy); }
         .dark .sortable-item { background: #0f172a; border-color: #334155; color: #f1f5f9; }
         
@@ -79,7 +81,6 @@
                     <a href="https://rich01623.github.io/Planner/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Planner</a>
                     <a href="https://rich01623.github.io/ratetest/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Rate Card</a>
                     <a href="https://rich01623.github.io/FTS-Customer-Portal/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">QTS Rates</a>
-                    <a href="https://rich01623.github.io/lasershape/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">LaserShape Rates</a>
                 </div>
             </div>
 
@@ -106,69 +107,19 @@
                 </div>
             </div>
 
-            <div class="px-4 mt-6 mb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-widest text-opacity-50">Operations</div>
-            
-            <div>
-                <button onclick="toggleSubmenu('drivers-menu', 'drivers-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
-                    <div class="flex items-center"><i class="fas fa-id-card w-5 text-slate-400"></i><span>DRIVERS</span></div>
-                    <i id="drivers-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
-                </button>
-                <div id="drivers-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="https://rich01623.github.io/Fleet-dash/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Driver Timesheets</a>
-                    <a href="#" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Driver Profile</a>
-                </div>
-            </div>
-
-            <div>
-                <button onclick="toggleSubmenu('accounting-menu', 'accounting-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
-                    <div class="flex items-center"><i class="fas fa-file-invoice-dollar w-5 text-slate-400"></i><span>ACCOUNTING</span></div>
-                    <i id="accounting-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
-                </button>
-                <div id="accounting-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="https://login.xero.com/identity/user/login" target="_blank" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Login to Xero</a>
-                    <a href="https://drive.google.com/drive/folders/1-5IyWRXZXwbSLePeQpSgWSRl370vM3am?usp=sharing" target="_blank" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Invoices</a>
-                </div>
-            </div>
-
-            <div>
-                <button onclick="toggleSubmenu('fleet-menu', 'fleet-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
-                    <div class="flex items-center"><i class="fas fa-gas-pump w-5 text-slate-400"></i><span>FLEET OPERATIONS</span></div>
-                    <i id="fleet-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
-                </button>
-                <div id="fleet-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="#" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Vehicle List</a>
-                    <a href="https://rich01623.github.io/Maintenance/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Maintenance Calendar</a>
-                </div>
-            </div>
-
-            <a href="#" class="sidebar-item flex items-center px-4 py-2 mb-1 text-xs"><i class="fas fa-chart-line w-5 text-slate-400"></i><span>ANALYTICS</span></a>
-        </nav>
-
-        <div class="relative p-2 border-t border-slate-800">
-            <div id="settings-menu" class="hidden absolute bottom-14 left-2 right-2 bg-[#1e293b] rounded-lg shadow-xl border border-slate-700 p-2 mb-2 z-50">
-                <button onclick="toggleDarkMode()" class="w-full flex items-center justify-between px-3 py-2 text-[11px] hover:bg-slate-700 rounded transition-colors text-slate-300">
-                    <div class="flex items-center">
-                        <i id="mode-icon" class="fas fa-sun w-4 text-yellow-400 mr-2"></i>
-                        <span id="mode-text">Day Mode</span>
-                    </div>
-                    <div class="w-6 h-3.5 flex items-center bg-blue-600 rounded-full p-0.5" id="toggle-bg">
-                        <div class="bg-white w-2.5 h-2.5 rounded-full shadow-sm transform translate-x-2.5 duration-200" id="toggle-dot"></div>
-                    </div>
-                </button>
-            </div>
-            <button onclick="toggleSettings()" class="w-full sidebar-item flex items-center justify-between px-4 py-2 text-xs rounded-md">
-                <div class="flex items-center"><i class="fas fa-cog w-5 text-slate-400"></i><span>SETTINGS</span></div>
-                <i class="fas fa-chevron-up text-[10px] text-slate-500"></i>
+            <div class="px-4 mt-6 mb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-widest text-opacity-50">Settings</div>
+            <button onclick="toggleDarkMode()" class="w-full sidebar-item flex items-center px-4 py-2 mb-1 text-xs outline-none">
+                <i id="mode-icon" class="fas fa-sun w-5 text-yellow-400"></i><span id="mode-text">Day Mode</span>
             </button>
-        </div>
+        </nav>
     </aside>
 
     <div class="flex-1 flex flex-col min-w-0">
-        <header class="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 no-print transition-colors">
+        <header class="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 no-print">
             <div class="flex items-center flex-1">
                 <div class="relative w-96">
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i class="fas fa-search text-xs"></i></span>
-                    <input type="text" class="block w-full pl-10 pr-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-md bg-slate-50 dark:bg-slate-800 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500" placeholder="Search orders...">
+                    <input type="text" class="block w-full pl-10 pr-3 py-1.5 border border-slate-200 dark:border-slate-700 rounded-md bg-slate-50 dark:bg-slate-800 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500" placeholder="Global search...">
                 </div>
             </div>
             <div class="flex items-center space-x-4">
@@ -176,7 +127,7 @@
                     <p class="text-xs font-semibold text-slate-700 dark:text-slate-200 leading-none">Sarah Jenkins</p>
                     <p class="text-[10px] text-slate-500 uppercase tracking-tighter">Dispatch Manager</p>
                 </div>
-                <div class="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-300 text-xs font-bold ml-2">SJ</div>
+                <div class="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-300 text-xs font-bold">SJ</div>
             </div>
         </header>
 
@@ -242,12 +193,43 @@
 
             <div id="mod-planner" class="hidden">
                 <div class="max-w-[1600px] mx-auto">
-                    <header class="flex justify-between items-end mb-6 no-print">
-                        <div class="bg-slate-800 p-2 rounded">
-                            <h2 class="text-white text-xl font-black italic">FROST</h2>
+                    <div class="grid grid-cols-12 gap-6">
+                        <div class="col-span-4 space-y-4">
+                            <div class="frost-card">
+                                <div class="card-header-bar bg-red-600"></div>
+                                <div class="card-content">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <h3 class="section-header-red">Route Sequence</h3>
+                                        <button onclick="clearAll()" class="btn-clear">Clear All</button>
+                                    </div>
+                                    <div id="sortable-list" class="mb-4 min-h-[50px]"></div>
+                                    <div class="relative">
+                                        <span class="label-text">Add New Stop</span>
+                                        <input type="text" id="stopInput" class="frost-input pr-10" placeholder="Enter Postcode...">
+                                        <button onclick="addStop()" class="absolute right-2 bottom-1.5 text-blue-600 hover:text-red-600"><i class="fas fa-plus-circle text-lg"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="frost-card">
+                                <div class="card-content">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="label-text">Optimization</span>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" id="optimizeCheck" class="sr-only peer" onchange="calculate()">
+                                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+                                    <button onclick="calculate()" class="w-full bg-slate-900 text-white font-black py-3 rounded-lg uppercase text-[10px] tracking-widest hover:bg-blue-600 transition-colors">
+                                        <i class="fas fa-sync-alt mr-2"></i> Update Route Map
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                    </header>
+                        <div class="col-span-8">
+                            <div class="map-wrapper shadow-2xl"><div id="map"></div></div>
+                        </div>
                     </div>
+                </div>
             </div>
         </main>
     </div>
@@ -262,19 +244,14 @@
             ['mod-welcome', 'mod-iframe', 'mod-planner', 'mod-clients', 'mod-add-client'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
-            
             document.getElementById('mod-' + modId).classList.remove('hidden');
-
             if(modId === 'clients') fetchClients();
-            if(modId === 'planner') { 
-                setTimeout(() => { google.maps.event.trigger(map, "resize"); }, 100);
-            }
+            if(modId === 'planner') { setTimeout(() => { google.maps.event.trigger(map, "resize"); }, 100); }
         }
 
         async function saveClient() {
             const btn = document.getElementById('saveBtn');
             const msg = document.getElementById('form-msg');
-            
             const payload = {
                 coname: document.getElementById('new-coname').value,
                 town: document.getElementById('new-town').value,
@@ -283,25 +260,16 @@
                 phone: document.getElementById('new-phone').value,
                 email: document.getElementById('new-email').value
             };
-
             if(!payload.coname) return alert("Company Name is required");
-
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
-
             try {
                 const { error } = await _supabase.from('crm_customer').insert([payload]);
                 if(error) throw error;
-                
                 msg.innerText = "Customer Saved Successfully!";
                 msg.className = "text-center mt-4 text-[10px] font-bold uppercase text-green-500";
                 msg.classList.remove('hidden');
-                
-                // Clear Form
-                ['new-coname','new-town','new-county','new-pcode','new-phone','new-email'].forEach(id => {
-                    document.getElementById(id).value = '';
-                });
-
+                ['new-coname','new-town','new-county','new-pcode','new-phone','new-email'].forEach(id => document.getElementById(id).value = '');
             } catch (e) {
                 msg.innerText = "Error: " + e.message;
                 msg.className = "text-center mt-4 text-[10px] font-bold uppercase text-red-500";
@@ -354,12 +322,10 @@
             const html = document.documentElement;
             const isDark = html.classList.toggle('dark');
             document.getElementById('mode-text').innerText = isDark ? "Day Mode" : "Night Mode";
-            document.getElementById('toggle-bg').className = isDark ? "w-6 h-3.5 flex items-center bg-blue-600 rounded-full p-0.5" : "w-6 h-3.5 flex items-center bg-slate-500 rounded-full p-0.5";
-            document.getElementById('toggle-dot').className = isDark ? "bg-white w-2.5 h-2.5 rounded-full shadow-sm transform translate-x-2.5 duration-200" : "bg-white w-2.5 h-2.5 rounded-full shadow-sm transform duration-200";
+            document.getElementById('mode-icon').className = isDark ? "fas fa-sun w-5 text-yellow-400" : "fas fa-moon w-5 text-slate-400";
         }
 
-        function toggleSettings() { document.getElementById('settings-menu').classList.toggle('hidden'); }
-
+        // MAP LOGIC
         let map, directionsRenderer, directionsService;
         const FIXED_BASE = "NG13 8JA";
         
@@ -373,8 +339,54 @@
                 styles: [{"elementType":"geometry","stylers":[{"color":"#242f3e"}]},{"featureType":"road","elementType":"geometry","stylers":[{"color":"#38414e"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#17263c"}]}]
             });
             directionsRenderer.setMap(map);
-            new Sortable(document.getElementById('sortable-list'), {
-                animation: 150, onEnd: function() { document.getElementById('optimizeCheck').checked = false; calculate(); }
+            new Sortable(document.getElementById('sortable-list'), { animation: 150 });
+            
+            document.getElementById('stopInput').addEventListener('keypress', (e) => {
+                if(e.key === 'Enter') addStop();
+            });
+        }
+
+        function addStop() {
+            const input = document.getElementById('stopInput');
+            const val = input.value.trim().toUpperCase();
+            if(!val) return;
+            const div = document.createElement('div');
+            div.className = 'sortable-item';
+            div.dataset.location = val;
+            div.innerHTML = `<i class="fas fa-grip-vertical mr-3 opacity-30"></i> <span>${val}</span> <button onclick="this.parentElement.remove(); calculate();" class="ml-auto text-slate-400 hover:text-red-600"><i class="fas fa-times"></i></button>`;
+            document.getElementById('sortable-list').appendChild(div);
+            input.value = '';
+            calculate();
+        }
+
+        function clearAll() {
+            document.getElementById('sortable-list').innerHTML = '';
+            directionsRenderer.setDirections({routes: []});
+        }
+
+        function calculate() {
+            const items = Array.from(document.querySelectorAll('.sortable-item'));
+            if(items.length === 0) return;
+            const waypoints = items.map(item => ({ location: item.dataset.location, stopover: true }));
+            const optimize = document.getElementById('optimizeCheck').checked;
+            
+            directionsService.route({
+                origin: FIXED_BASE,
+                destination: FIXED_BASE,
+                waypoints: waypoints,
+                optimizeWaypoints: optimize,
+                travelMode: 'DRIVING'
+            }, (response, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(response);
+                    if(optimize) {
+                        const order = response.routes[0].waypoint_order;
+                        const list = document.getElementById('sortable-list');
+                        const sortedItems = order.map(idx => items[idx]);
+                        list.innerHTML = '';
+                        sortedItems.forEach(el => list.appendChild(el));
+                    }
+                }
             });
         }
 
