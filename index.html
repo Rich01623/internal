@@ -22,17 +22,13 @@
         .submenu-item:hover { color: #ffffff; background-color: #1e293b; }
         .rotate-180 { transform: rotate(180deg); }
         .hidden { display: none; }
-
         .stat-card { background: white; border-radius: 12px; padding: 1.25rem; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 1rem; }
         .dark .stat-card { background: #1e293b; border-color: #334155; }
-        
         .frost-card { background: white; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); overflow: hidden; }
         .dark .frost-card { background: #1e293b; border-color: #334155; }
-
         .client-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
         .client-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; border-left: 4px solid #94a3b8; }
         .dark .client-card { background: #1e293b; border-color: #334155; }
-        
         .frost-input { border: 2px solid #e2e8f0; background: #fff; padding: 0.35rem 0.75rem; border-radius: 6px; width: 100%; font-size: 0.85rem; outline: none; color: #000; }
         .dark .frost-input { background: #0f172a; border-color: #334155; color: white; }
         .label-text { font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px; display: block; }
@@ -45,7 +41,7 @@
             <div class="bg-blue-600 p-1.5 rounded-lg"><i class="fas fa-truck-fast text-white text-sm"></i></div>
             <div>
                 <h1 class="text-white text-xs font-bold leading-tight uppercase tracking-wider">Frost Transport</h1>
-                <p class="text-[10px] text-slate-500 uppercase tracking-widest">v1.2.5 | NOTTM HUB</p>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest">v1.2.6 | NOTTM HUB</p>
             </div>
         </div>
 
@@ -141,7 +137,6 @@
         </header>
 
         <main class="flex-1 overflow-auto p-6 relative">
-            
             <div id="mod-welcome" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div class="stat-card">
@@ -167,32 +162,23 @@
                         <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-[#0f172a]">
                             <h3 class="text-xs font-black uppercase italic text-red-600">Local Weather Forecast</h3>
                         </div>
-                        <div class="p-0 min-h-[150px]">
-                            <a class="weatherwidget-io" 
-                               href="https://forecast7.com/en/52d95n1d15/nottingham/" 
-                               data-label_1="NOTTINGHAM" 
-                               data-label_2="WEATHER" 
-                               data-font="Roboto" 
-                               data-icons="Climacons Animated" 
-                               data-theme="pure" 
-                               data-basecolor="#1e293b" 
-                               data-textcolor="#ffffff">NOTTINGHAM WEATHER</a>
+                        <div class="h-[400px]">
+                            <iframe src="https://www.meteoblue.com/en/weather/widget/daily/nottingham_united-kingdom_2641170?geoloc=fixed&days=4&tempunit=CELSIUS&windunit=MILE_PER_HOUR&precipunit=MILLIMETRE&coloured=coloured&pictoicon=1&elm%5B0%5D=min&elm%5B1%5D=max&elm%5B2%5D=wind&elm%5B3%5D=precipitation&elm%5B4%5D=sun&layout=light"  frameborder="0" scrolling="NO" allowtransparency="true" style="width: 100%; height: 100%;"></iframe>
                         </div>
                     </div>
 
                     <div class="frost-card lg:col-span-2">
                         <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-[#0f172a]">
-                            <h3 class="text-xs font-black uppercase italic text-red-600">Live Traffic Control Hub (M1/A52/A453)</h3>
+                            <h3 class="text-xs font-black uppercase italic text-red-600">Live Traffic Control Hub</h3>
                         </div>
                         <div class="h-[400px]">
-                            <iframe src="https://embed.waze.com/iframe?zoom=12&lat=52.9548&lon=-1.1581&pin=1" width="100%" height="100%" allowfullscreen style="border:none;"></iframe>
+                            <iframe src="https://www.waze.com/live-map/directions?latlng=52.9548%2C-1.1581&zoom=13" width="100%" height="100%" allowfullscreen style="border:none;"></iframe>
                         </div>
                     </div>
                 </div>
             </div>
 
             <iframe id="mod-iframe" name="main_frame" src="about:blank" class="hidden w-full h-full rounded-xl border-none shadow-2xl"></iframe>
-
             <div id="mod-clients" class="hidden">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-black italic uppercase dark:text-white tracking-tighter">Customer Database</h2>
@@ -200,7 +186,6 @@
                 </div>
                 <div id="client-container" class="client-grid"></div>
             </div>
-
             <div id="mod-add-client" class="hidden max-w-2xl mx-auto">
                 <div class="frost-card border-t-4 border-t-red-600 shadow-xl">
                     <div class="p-6">
@@ -220,10 +205,6 @@
     </div>
 
     <script>
-        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
-    </script>
-
-    <script>
         const SUPABASE_URL = 'https://tdrzytgiqvdulityqttr.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkcnp5dGdpcXZkdWxpdHlxdHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTM5NTMsImV4cCI6MjA4ODcyOTk1M30.XN46i7u6STD-2afmN7-Jh1MltADGpEuWlLt_n7wknbA';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -233,14 +214,10 @@
             setInterval(() => {
                 document.getElementById('live-clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             }, 1000);
-
             const lastModule = localStorage.getItem('frost_last_module') || 'welcome';
             const lastUrl = localStorage.getItem('frost_last_url');
             if (lastModule === 'iframe' && lastUrl) showModule('iframe', lastUrl);
             else showModule(lastModule);
-
-            // Re-trigger weather widget load in case of slow connection
-            if(window.__weatherwidget_init) window.__weatherwidget_init();
         };
 
         function showModule(modId, url = null) {
