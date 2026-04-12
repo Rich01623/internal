@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frost Transport Solutions | Portal v1.1.1</title>
+    <title>Frost Transport Solutions | Portal v1.1.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { darkMode: 'class' }
@@ -51,13 +51,13 @@
             <div class="bg-blue-600 p-1.5 rounded-lg"><i class="fas fa-truck-fast text-white text-sm"></i></div>
             <div>
                 <h1 class="text-white text-xs font-bold leading-tight uppercase tracking-wider">Frost Transport</h1>
-                <p class="text-[10px] text-slate-500 uppercase tracking-widest">v1.1.1 | Portal</p>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest">v1.1.2 | Portal</p>
             </div>
         </div>
 
         <nav class="flex-1 pt-4 overflow-y-auto">
             <div class="px-4 mb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-widest text-opacity-50">Core Modules</div>
-            <a href="#" onclick="showModule('welcome')" class="sidebar-item active-tab flex items-center px-4 py-2 mb-1 text-xs">
+            <a href="#" id="nav-welcome" onclick="showModule('welcome')" class="sidebar-item flex items-center px-4 py-2 mb-1 text-xs">
                 <i class="fas fa-desktop w-5 text-blue-400"></i><span>DASHBOARD</span>
             </a>
             
@@ -67,10 +67,10 @@
                     <i id="tms-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
                 </button>
                 <div id="tms-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="https://rich01623.github.io/Planner/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Planner</a>
-                    <a href="https://rich01623.github.io/ratetest/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Rate Card</a>
-                    <a href="https://rich01623.github.io/FTS-Customer-Portal/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">QTS Rates</a>
-                    <a href="https://rich01623.github.io/lasershape/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">LaserShape Rates</a>
+                    <a href="https://rich01623.github.io/Planner/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Planner</a>
+                    <a href="https://rich01623.github.io/ratetest/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Rate Card</a>
+                    <a href="https://rich01623.github.io/FTS-Customer-Portal/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">QTS Rates</a>
+                    <a href="https://rich01623.github.io/lasershape/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">LaserShape Rates</a>
                 </div>
             </div>
 
@@ -82,7 +82,7 @@
                 <div id="crm-menu" class="hidden bg-[#0a0f1d] pb-1">
                     <a href="#" onclick="showModule('clients')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Customer Database</a>
                     <a href="#" onclick="showModule('add-client')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Add New Client</a>
-                    <a href="https://rich01623.github.io/fts-directory/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Directory</a>
+                    <a href="https://rich01623.github.io/fts-directory/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Directory</a>
                 </div>
             </div>
 
@@ -92,8 +92,8 @@
                     <i id="pallet-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
                 </button>
                 <div id="palletforce-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="https://palletforce.net/Login.aspx" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Palletforce Login</a>
-                    <a href="https://rich01623.github.io/jonstool/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">PF Route Planner</a>
+                    <a href="https://palletforce.net/Login.aspx" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Palletforce Login</a>
+                    <a href="https://rich01623.github.io/jonstool/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">PF Route Planner</a>
                 </div>
             </div>
 
@@ -105,7 +105,7 @@
                     <i id="drivers-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
                 </button>
                 <div id="drivers-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="https://rich01623.github.io/Fleet-dash/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Driver Timesheets</a>
+                    <a href="https://rich01623.github.io/Fleet-dash/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Driver Timesheets</a>
                 </div>
             </div>
 
@@ -126,7 +126,7 @@
                     <i id="fleet-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
                 </button>
                 <div id="fleet-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="https://rich01623.github.io/Maintenance/" target="main_frame" onclick="showModule('iframe')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Maintenance Calendar</a>
+                    <a href="https://rich01623.github.io/Maintenance/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Maintenance Calendar</a>
                 </div>
             </div>
         </nav>
@@ -214,12 +214,54 @@
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let allClients = [];
 
-        function showModule(modId) {
+        // LOAD PERSISTENT STATE ON START
+        window.onload = function() {
+            const lastModule = localStorage.getItem('frost_last_module') || 'welcome';
+            const lastUrl = localStorage.getItem('frost_last_url');
+            
+            if (lastModule === 'iframe' && lastUrl) {
+                showModule('iframe', lastUrl);
+            } else {
+                showModule(lastModule);
+            }
+        };
+
+        function showModule(modId, url = null) {
+            // Hide all
             ['mod-welcome', 'mod-iframe', 'mod-clients', 'mod-add-client'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
-            document.getElementById('mod-' + modId).classList.remove('hidden');
+            
+            // Show target
+            const target = document.getElementById('mod-' + modId);
+            target.classList.remove('hidden');
+            
+            // Handle Iframe specifically
+            if (modId === 'iframe' && url) {
+                const frame = document.getElementById('mod-iframe');
+                if (frame.src !== url) frame.src = url;
+                localStorage.setItem('frost_last_url', url);
+            }
+
+            // Persistence
+            localStorage.setItem('frost_last_module', modId);
+
+            // Fetch data if needed
             if(modId === 'clients') fetchClients();
+            
+            updateActiveTab(modId, url);
+        }
+
+        function updateActiveTab(modId, url) {
+            document.querySelectorAll('.sidebar-item, .submenu-item').forEach(el => el.classList.remove('active-tab'));
+            
+            if (modId === 'welcome') {
+                document.getElementById('nav-welcome').classList.add('active-tab');
+            } else if (url) {
+                // Find link with matching href
+                const activeLink = Array.from(document.querySelectorAll('.submenu-item')).find(a => a.href === url);
+                if (activeLink) activeLink.classList.add('active-tab');
+            }
         }
 
         async function saveClient() {
@@ -272,8 +314,6 @@
             container.innerHTML = data.map(c => {
                 const phone = c.phone || 'N/A';
                 const email = c.email || 'N/A';
-                
-                // Clickable CTA logic
                 const phoneLink = phone !== 'N/A' ? `<a href="tel:${phone}" style="color:inherit; text-decoration:none;">${phone}</a>` : phone;
                 const emailLink = email !== 'N/A' ? `<a href="mailto:${email}" style="color:inherit; text-decoration:none;">${email}</a>` : email;
 
