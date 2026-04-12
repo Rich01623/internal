@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frost Transport Solutions | Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-item { transition: all 0.2s ease; cursor: pointer; display: flex; align-items: center; width: 100%; }
+        .sidebar-item:hover { background-color: #1e293b; }
+        .active-tab { background-color: #1e293b; border-left: 3px solid #3b82f6; }
+        .submenu-item { cursor: pointer; display: block; padding: 8px 16px 8px 40px; font-size: 11px; transition: all 0.2s; }
+        .submenu-item:hover { background-color: #1e293b; color: white; border-left: 2px solid #c32026; }
+        .rotate-180 { transform: rotate(180deg); }
+        .hidden { display: none; }
+        
+        :root { --frost-red: #c32026; --frost-dark-navy: #0f172a; }
+        .client-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+        .client-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 1.25rem; border-left: 4px solid #334155; }
+        .client-card:hover { border-left-color: var(--frost-red); background: #242f42; }
+        .search-input { background: #0f172a; border: 1px solid #475569; color: white; padding: 6px 12px; border-radius: 4px; font-size: 12px; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-300 flex h-screen overflow-hidden">
+
+    <aside class="w-60 bg-[#0f172a] flex flex-col border-r border-slate-800">
+        <div class="p-4 border-b border-slate-800 flex items-center space-x-3">
+            <div class="bg-blue-600 p-1.5 rounded-lg"><i class="fas fa-truck-fast text-white"></i></div>
+            <span class="font-bold text-xs uppercase tracking-widest text-white">Frost Transport</span>
+        </div>
+
+        <nav class="flex-1 py-4 overflow-y-auto">
+            <a href="#" onclick="showModule('welcome')" class="sidebar-item px-4 py-3 text-xs">
+                <i class="fas fa-desktop w-6 text-blue-400"></i> DASHBOARD
+            </a>
+
+            <div class="mt-2">
+                <button onclick="toggleSubmenu('crm-menu', 'crm-arrow')" class="sidebar-item px-4 py-3 text-xs justify-between">
+                    <div class="flex items-center"><i class="fas fa-users w-6 text-slate-400"></i> CRM</div>
+                    <i id="crm-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
+                </button>
+                <div id="crm-menu" class="bg-[#0a0f1d]">
+                    <a href="#" onclick="showModule('clients')" class="submenu-item text-blue-400 font-bold">
+                        <i class="fas fa-list-ul mr-2"></i> Client List
+                    </a>
+                    <a href="#" onclick="showModule('iframe')" class="submenu-item">
+                        <i class="fas fa-address-book mr-2"></i> Directory
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-2">
+                <button onclick="toggleSubmenu('ops-menu', 'ops-arrow')" class="sidebar-item px-4 py-3 text-xs justify-between">
+                    <div class="flex items-center"><i class="fas fa-route w-6 text-slate-400"></i> OPERATIONS</div>
+                    <i id="ops-arrow" class="fas fa-chevron-down text-[10px]"></i>
+                </button>
+                <div id="ops-menu" class="hidden bg-[#0a0f1d]">
+                    <a href="#" onclick="showModule('planner')" class="submenu-item">Route Planner</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="p-4 border-t border-slate-800">
+            <button onclick="toggleDarkMode()" class="sidebar-item text-[10px] uppercase font-bold text-slate-500">
+                <i class="fas fa-moon mr-2"></i> Night Mode Active
+            </button>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col">
+        <header class="h-14 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6">
+            <span id="module-title" class="text-[10px] font-black uppercase tracking-widest text-slate-500">System Ready</span>
+            <div class="flex items-center space-x-3">
+                <span class="text-xs font-bold text-slate-300">SJ</span>
+                <div class="h-8 w-8 rounded bg-blue-600 flex items-center justify-center text-white text-xs">SJ</div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-auto p-6">
+            <div id="mod-welcome" class="h-full flex flex-col items-center justify-center text-slate-600">
+                <i class="fas fa-ship text-5xl mb-4 opacity-10"></i>
+                <p class="uppercase tracking-widest text-sm">Frost Control Center</p>
+            </div>
+
+            <div id="mod-clients" class="hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-black italic uppercase text-white">Client Directory</h2>
+                    <div class="flex gap-3">
+                        <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Filter..." class="search-input">
+                        <button onclick="fetchClients()" class="bg-red-600 text-white px-3 py-1 rounded text-[10px] font-bold uppercase"><i class="fas fa-sync"></i></button>
+                    </div>
+                </div>
+                <div id="client-loader" class="text-center py-10 hidden"><i class="fas fa-spinner fa-spin text-red-500 text-2xl"></i></div>
+                <div id="client-container" class="client-grid"></div>
+            </div>
+
+            <div id="mod-planner" class="hidden">
+                <div id="map" style="height: 500px; width:100%;" class="bg-slate-900 rounded-xl"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://tdrzytgiqvdulityqttr.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkcnp5dGdpcXZkdWxpdHlxdHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTM5NTMsImV4cCI6MjA4ODcyOTk1M30.XN46i7u6STD-2afmN7-Jh1MltADGpEuWlLt_n7wknbA';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let allClients = [];
+
+        async function fetchClients() {
+            const container = document.getElementById('client-container');
+            const loader = document.getElementById('client-loader');
+            container.innerHTML = '';
+            loader.classList.remove('hidden');
+
+            try {
+                const { data, error } = await _supabase
+                    .from('crm_customer')
+                    .select('coname, town, county, pcode, phone, email')
+                    .order('coname', { ascending: true });
+
+                if (error) throw error;
+                allClients = data;
+                renderClients(allClients);
+            } catch (err) {
+                container.innerHTML = `<div class="text-red-500 text-xs uppercase p-4 border border-red-900 bg-red-900/10 rounded">Error: ${err.message}</div>`;
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        function renderClients(data) {
+            const container = document.getElementById('client-container');
+            container.innerHTML = data.map(c => `
+                <div class="client-card">
+                    <h4 class="text-white font-black uppercase text-xs mb-2 italic">${c.coname || 'No Name'}</h4>
+                    <div class="text-[10px] space-y-1 text-slate-400">
+                        <div class="flex"><i class="fas fa-map-marker-alt w-4 text-red-500"></i> ${c.town}, ${c.pcode}</div>
+                        <div class="flex"><i class="fas fa-phone w-4 text-blue-400"></i> ${c.phone || '-'}</div>
+                        <div class="flex"><i class="fas fa-envelope w-4 text-slate-500"></i> ${c.email || '-'}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterClients() {
+            const val = document.getElementById('clientSearch').value.toLowerCase();
+            renderClients(allClients.filter(c => (c.coname || '').toLowerCase().includes(val)));
+        }
+
+        function showModule(id) {
+            ['mod-welcome', 'mod-clients', 'mod-planner'].forEach(m => document.getElementById(m).classList.add('hidden'));
+            const target = document.getElementById('mod-' + id);
+            if(target) target.classList.remove('hidden');
+            document.getElementById('module-title').innerText = id.toUpperCase();
+            if(id === 'clients') fetchClients();
+        }
+
+        function toggleSubmenu(id, arrowId) {
+            const el = document.getElementById(id);
+            const arrow = document.getElementById(arrowId);
+            el.classList.toggle('hidden');
+            if(arrow) arrow.classList.toggle('rotate-180');
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            alert("Toggle Pressed - System remains in Night Mode by default.");
+        }
+    </script>
+</body>
+</html>
