@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease; }
+        body { font-family: 'Inter', sans-serif; transition: all 0.3s ease; }
         .sidebar-item { transition: all 0.2s ease; cursor: pointer; }
         .sidebar-item:hover { background-color: #1e293b; }
         .active-tab { background-color: #1e293b; border-left: 3px solid #3b82f6; }
@@ -22,20 +22,26 @@
         .rotate-180 { transform: rotate(180deg); }
         .hidden { display: none; }
         
-        /* Night Mode Colors */
+        /* Night Mode Overrides */
         .dark body, .dark main { background-color: #020617 !important; }
         .dark aside { background-color: #0f172a; }
+        .dark .frost-field { background: #0f172a !important; color: #ffffff !important; border: 1px solid #334155 !important; }
         
-        .stat-card { background: white; border-radius: 8px; padding: 1rem; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 0.75rem; }
-        .dark .stat-card { background: #1e293b; border-color: #334155; }
-        .client-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 12px; border-left: 4px solid #2563eb; }
+        /* Day Mode Overrides (Contrast Fix) */
+        body:not(.dark) .frost-field { background: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
         
-        .frost-input { width: 100%; background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 6px; color: white; font-size: 13px; outline: none; }
-        .label-text { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 4px; display: block; }
-
-        #traffic-feed::-webkit-scrollbar { width: 4px; }
-        #traffic-feed::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        .traffic-item { border-bottom: 1px solid #334155; padding: 10px; font-size: 11px; }
+        .client-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; border-left: 4px solid #2563eb; }
+        .dark .client-card { background: #1e293b; border-color: #334155; }
+        
+        .frost-field { width: 100%; padding: 12px; border-radius: 6px; font-size: 14px; outline: none; display: block; }
+        .frost-field:focus { border-color: #3b82f6 !important; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+        
+        .label-text { font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase; margin-bottom: 6px; display: block; }
+        .dark .label-text { color: #94a3b8; }
+        
+        .comms-link { transition: color 0.2s; }
+        .comms-link:hover { text-decoration: underline; color: #2563eb !important; }
+        .dark .comms-link:hover { color: #60a5fa !important; }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 flex h-screen overflow-hidden">
@@ -50,7 +56,7 @@
         </div>
 
         <nav class="flex-1 pt-4 overflow-y-auto">
-            <a href="#" id="nav-welcome" onclick="showModule('welcome')" class="sidebar-item flex items-center px-4 py-2 mb-1 text-xs active-tab">
+            <a href="#" onclick="showModule('welcome')" class="sidebar-item flex items-center px-4 py-2 mb-1 text-xs active-tab">
                 <i class="fas fa-desktop w-5 text-blue-400"></i><span>DASHBOARD</span>
             </a>
             
@@ -74,7 +80,7 @@
                 </button>
                 <div id="crm-menu" class="hidden bg-[#0a0f1d] pb-1">
                     <a href="#" onclick="showModule('clients')" class="submenu-item pl-10 py-2 text-[11px]">Database</a>
-                    <a href="#" onclick="showModule('add-client')" class="submenu-item pl-10 py-2 text-[11px]">Add New</a>
+                    <a href="#" onclick="showModule('add-client')" class="submenu-item pl-10 py-2 text-[11px]">Add New Client</a>
                     <a href="https://rich01623.github.io/fts-directory/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item pl-10 py-2 text-[11px]">Directory</a>
                 </div>
             </div>
@@ -90,38 +96,10 @@
                 </div>
             </div>
 
-            <div class="px-4 mt-6 mb-2 text-[10px] font-semibold text-slate-500 uppercase">Back Office</div>
-            
-            <div>
-                <button onclick="toggleSubmenu('dr-menu', 'dr-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
-                    <div class="flex items-center"><i class="fas fa-id-card w-5 text-slate-400"></i><span>DRIVERS</span></div>
-                    <i id="dr-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
-                </button>
-                <div id="dr-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="https://rich01623.github.io/Fleet-dash/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item pl-10 py-2 text-[11px]">Timesheets</a>
-                </div>
-            </div>
-
-            <div>
-                <button onclick="toggleSubmenu('ac-menu', 'ac-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
-                    <div class="flex items-center"><i class="fas fa-file-invoice-dollar w-5 text-slate-400"></i><span>ACCOUNTING</span></div>
-                    <i id="ac-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
-                </button>
-                <div id="ac-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="https://login.xero.com/" target="_blank" class="submenu-item pl-10 py-2 text-[11px]">Xero</a>
-                    <a href="https://drive.google.com/drive/folders/1-5IyWRXZXwbSLePeQpSgWSRl370vM3am" target="_blank" class="submenu-item pl-10 py-2 text-[11px]">Invoices Folder</a>
-                </div>
-            </div>
-
-            <div>
-                <button onclick="toggleSubmenu('mt-menu', 'mt-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
-                    <div class="flex items-center"><i class="fas fa-gas-pump w-5 text-slate-400"></i><span>MAINTENANCE</span></div>
-                    <i id="mt-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
-                </button>
-                <div id="mt-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="https://rich01623.github.io/Maintenance/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item pl-10 py-2 text-[11px]">Fleet Calendar</a>
-                </div>
-            </div>
+            <div class="px-4 mt-6 mb-2 text-[10px] font-black uppercase text-slate-600">Operations</div>
+            <a href="https://rich01623.github.io/Fleet-dash/" target="main_frame" onclick="showModule('iframe', this.href)" class="sidebar-item flex items-center px-4 py-2 text-xs"><i class="fas fa-id-card w-5"></i><span>TIMESHEETS</span></a>
+            <a href="https://rich01623.github.io/Maintenance/" target="main_frame" onclick="showModule('iframe', this.href)" class="sidebar-item flex items-center px-4 py-2 text-xs"><i class="fas fa-gas-pump w-5"></i><span>MAINTENANCE</span></a>
+            <a href="https://login.xero.com/" target="_blank" class="sidebar-item flex items-center px-4 py-2 text-xs"><i class="fas fa-file-invoice-dollar w-5"></i><span>XERO</span></a>
         </nav>
 
         <div class="p-2 border-t border-slate-800">
@@ -133,7 +111,7 @@
 
     <div class="flex-1 flex flex-col min-w-0">
         <header class="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6">
-            <h2 class="text-xs font-black uppercase tracking-widest text-slate-500 italic">Nottingham HQ</h2>
+            <h2 class="text-xs font-black uppercase tracking-widest text-slate-500 italic">Nottingham HQ Hub</h2>
             <div class="flex items-center space-x-4">
                 <span id="live-clock" class="text-xs font-mono font-bold dark:text-slate-400">00:00:00</span>
                 <div class="h-6 w-12 bg-red-600 rounded flex items-center justify-center text-[10px] text-white font-black italic">FTS</div>
@@ -143,12 +121,12 @@
         <main class="flex-1 overflow-auto p-6">
             <div id="mod-welcome" class="space-y-6">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="frost-card h-[500px]">
-                        <div class="px-4 py-3 border-b border-slate-800 bg-slate-50 dark:bg-[#0f172a]"><h3 class="text-[10px] font-black uppercase italic text-blue-500">Weather Radar</h3></div>
+                    <div class="bg-white dark:bg-[#0f172a] rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden h-[500px]">
+                        <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-800"><h3 class="text-[10px] font-black uppercase italic text-blue-500">Weather Radar</h3></div>
                         <iframe src="https://www.meteoblue.com/en/weather/maps/widget/nottingham_united-kingdom_2641170?satellite=1&cloudsAndPrecipitation=1&geoloc=fixed&tempunit=C&windunit=mph&zoom=7" frameborder="0" style="width: 100%; height: 90%;"></iframe>
                     </div>
-                    <div class="frost-card h-[500px]">
-                        <div class="px-4 py-3 border-b border-slate-800 bg-slate-50 dark:bg-[#0f172a] flex justify-between"><h3 class="text-[10px] font-black uppercase italic text-red-600">Road Incidents</h3><span class="animate-pulse text-[9px] text-red-500 font-bold">● LIVE</span></div>
+                    <div class="bg-white dark:bg-[#0f172a] rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden h-[500px]">
+                        <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex justify-between"><h3 class="text-[10px] font-black uppercase italic text-red-600">Road Incident Feed</h3><span class="animate-pulse text-[9px] text-red-500 font-bold">● LIVE</span></div>
                         <div id="traffic-feed" class="h-[440px] overflow-y-auto p-2 space-y-2"></div>
                     </div>
                 </div>
@@ -159,22 +137,37 @@
             <div id="mod-clients" class="hidden">
                  <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xl font-black italic uppercase dark:text-white">Customer Database</h2>
-                    <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Quick Search..." class="bg-slate-800 border border-slate-700 text-xs px-4 py-2 rounded text-white outline-none">
+                    <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Search..." class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs px-4 py-2 rounded dark:text-white outline-none">
                 </div>
                 <div id="client-container" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
             </div>
 
             <div id="mod-add-client" class="hidden max-w-2xl mx-auto">
-                 <div class="frost-card p-8 border-t-4 border-blue-600">
-                    <h2 class="text-xs font-black uppercase mb-8 text-white border-b border-slate-700 pb-2 italic tracking-widest">Add New Client</h2>
+                 <div class="bg-white dark:bg-[#0f172a] rounded-lg p-8 border-t-4 border-blue-600 shadow-xl">
+                    <h2 class="text-xs font-black uppercase mb-8 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-2 italic tracking-widest">Add New Client</h2>
                     <div class="grid grid-cols-2 gap-6">
-                        <div class="col-span-2"><span class="label-text">Company Name</span><input type="text" id="new-coname" class="frost-input"></div>
-                        <div><span class="label-text">Town</span><input type="text" id="new-town" class="frost-input"></div>
-                        <div><span class="label-text">Postcode</span><input type="text" id="new-pcode" class="frost-input"></div>
-                        <div><span class="label-text">Phone</span><input type="text" id="new-phone" class="frost-input"></div>
-                        <div><span class="label-text">Email</span><input type="email" id="new-email" class="frost-input"></div>
+                        <div class="col-span-2">
+                            <label class="label-text">Company Name</label>
+                            <input type="text" id="new-coname" class="frost-field" placeholder="Enter name...">
+                        </div>
+                        <div>
+                            <label class="label-text">Town</label>
+                            <input type="text" id="new-town" class="frost-field" placeholder="Enter town...">
+                        </div>
+                        <div>
+                            <label class="label-text">Postcode</label>
+                            <input type="text" id="new-pcode" class="frost-field" placeholder="Enter postcode...">
+                        </div>
+                        <div>
+                            <label class="label-text">Phone Number</label>
+                            <input type="text" id="new-phone" class="frost-field" placeholder="Enter number...">
+                        </div>
+                        <div>
+                            <label class="label-text">Email Address</label>
+                            <input type="email" id="new-email" class="frost-field" placeholder="Enter email...">
+                        </div>
                     </div>
-                    <button onclick="saveClient()" class="w-full mt-10 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded uppercase text-xs">Store Records</button>
+                    <button onclick="saveClient()" class="w-full mt-10 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded uppercase text-xs tracking-widest transition-all shadow-lg">Store Record</button>
                  </div>
             </div>
         </main>
@@ -206,10 +199,10 @@
                 items.forEach(item => {
                     const title = item.querySelector("title").textContent;
                     const desc = item.querySelector("description").textContent;
-                    html += `<div class="traffic-item border-l-4 border-blue-500 mb-2"><div class="font-black text-blue-500 uppercase text-[10px] mb-1">${title}</div><p class="text-slate-400 text-[10px] leading-tight">${desc.split('<br')[0]}</p></div>`;
+                    html += `<div class="p-2 border-l-4 border-blue-500 bg-slate-50 dark:bg-slate-900 mb-2 rounded-r"><div class="font-black text-blue-500 uppercase text-[10px] mb-1">${title}</div><p class="text-slate-500 dark:text-slate-400 text-[10px] leading-tight">${desc.split('<br')[0]}</p></div>`;
                 });
-                feedContainer.innerHTML = html || 'No incidents reported.';
-            } catch (e) { feedContainer.innerHTML = 'Offline'; }
+                feedContainer.innerHTML = html || 'No current incidents.';
+            } catch (e) { feedContainer.innerHTML = 'Data Offline'; }
         }
 
         function showModule(modId, url = null) {
@@ -222,27 +215,27 @@
 
         async function fetchClients() {
             const container = document.getElementById('client-container');
-            container.innerHTML = '<div class="col-span-full text-center py-20 animate-pulse text-blue-500 uppercase text-xs font-bold">Syncing Database...</div>';
+            container.innerHTML = '<div class="col-span-full text-center py-20 text-blue-500 uppercase text-xs font-bold animate-pulse">Syncing Database...</div>';
             const { data, error } = await _supabase.from('crm_customer').select('*').order('coname', { ascending: true });
-            if (!error) {
-                allClients = data;
-                renderClients(data);
-            }
+            if (!error) { allClients = data; renderClients(data); }
         }
 
         function renderClients(data) {
             const container = document.getElementById('client-container');
-            container.innerHTML = data.map(c => `
+            container.innerHTML = data.map(c => {
+                const phoneDisplay = c.phone ? `<a href="tel:${c.phone.replace(/\s+/g, '')}" class="comms-link text-blue-600 dark:text-blue-400 font-bold">${c.phone}</a>` : '-';
+                const emailDisplay = c.email ? `<a href="mailto:${c.email}" class="comms-link text-blue-600 dark:text-blue-400 font-bold italic truncate block">${c.email}</a>` : '-';
+                return `
                 <div class="client-card">
-                    <h4 class="text-white font-black uppercase text-[11px] truncate italic border-b border-slate-700 pb-2 mb-2">${c.coname || 'UNKNOWN'}</h4>
+                    <h4 class="text-slate-900 dark:text-white font-black uppercase text-[11px] truncate italic border-b border-slate-100 dark:border-slate-700 pb-2 mb-2">${c.coname || 'UNKNOWN'}</h4>
                     <div class="space-y-1">
-                        <div class="flex justify-between text-[10px]"><span class="text-slate-500 font-bold uppercase">Area</span><span class="text-slate-300">${c.town || '-'}</span></div>
-                        <div class="flex justify-between text-[10px]"><span class="text-slate-500 font-bold uppercase">P-Code</span><span class="text-slate-300 font-mono">${c.pcode || '-'}</span></div>
-                        <div class="flex justify-between text-[10px] border-t border-slate-800 pt-1 mt-1"><span class="text-blue-500 font-bold">PHONE</span><span class="text-blue-400 font-bold">${c.phone || '-'}</span></div>
-                        <div class="text-[9px] text-slate-500 truncate mt-1 italic">${c.email || ''}</div>
+                        <div class="flex justify-between text-[10px]"><span class="text-slate-400 font-bold uppercase tracking-tighter">Area</span><span class="text-slate-600 dark:text-slate-300">${c.town || '-'}</span></div>
+                        <div class="flex justify-between text-[10px]"><span class="text-slate-400 font-bold uppercase tracking-tighter">P-Code</span><span class="text-slate-600 dark:text-slate-300 font-mono">${c.pcode || '-'}</span></div>
+                        <div class="flex justify-between text-[10px] border-t border-slate-100 dark:border-slate-800 pt-1 mt-1"><span class="text-blue-500 font-bold">PHONE</span>${phoneDisplay}</div>
+                        <div class="mt-1">${emailDisplay}</div>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         function filterClients() {
@@ -260,6 +253,7 @@
             };
             const { error } = await _supabase.from('crm_customer').insert([payload]);
             if(!error) { alert("Stored Successfully"); showModule('clients'); }
+            else { alert("Error: " + error.message); }
         }
 
         function toggleSubmenu(id, arrowId) {
