@@ -8,7 +8,6 @@
     <script>
         tailwind.config = { darkMode: 'class' }
     </script>
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -22,114 +21,119 @@
         .submenu-item:hover { color: #ffffff; background-color: #1e293b; }
         .rotate-180 { transform: rotate(180deg); }
         .hidden { display: none; }
+        
+        /* Night Mode Colors */
+        .dark body, .dark main { background-color: #020617 !important; }
+        .dark aside { background-color: #0f172a; }
+        
         .stat-card { background: white; border-radius: 8px; padding: 1rem; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 0.75rem; }
         .dark .stat-card { background: #1e293b; border-color: #334155; }
-        .frost-card { background: white; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; }
-        .dark .frost-card { background: #0f172a; border-color: #334155; }
+        .client-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 12px; border-left: 4px solid #2563eb; }
+        
+        .frost-input { width: 100%; background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 6px; color: white; font-size: 13px; outline: none; }
+        .label-text { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 4px; display: block; }
+
         #traffic-feed::-webkit-scrollbar { width: 4px; }
         #traffic-feed::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         .traffic-item { border-bottom: 1px solid #334155; padding: 10px; font-size: 11px; }
-        .severity-high { border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); }
-        .severity-med { border-left: 4px solid #f59e0b; background: rgba(245, 158, 11, 0.05); }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 flex h-screen overflow-hidden">
 
-    <aside class="w-56 bg-[#0f172a] text-slate-300 flex flex-col flex-shrink-0 border-r border-slate-800 no-print">
+    <aside class="w-56 bg-[#0f172a] text-slate-300 flex flex-col flex-shrink-0 border-r border-slate-800">
         <div class="p-4 border-b border-slate-800 flex items-center space-x-3">
             <div class="bg-blue-600 p-1.5 rounded-lg"><i class="fas fa-truck-fast text-white text-sm"></i></div>
             <div>
-                <h1 class="text-white text-xs font-bold leading-tight uppercase tracking-wider">Frost Transport</h1>
-                <p class="text-[10px] text-slate-500 uppercase tracking-widest">v1.2.9 | NOTTM HUB</p>
+                <h1 class="text-white text-xs font-bold uppercase tracking-wider leading-tight">Frost Transport</h1>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest italic">Operations</p>
             </div>
         </div>
 
         <nav class="flex-1 pt-4 overflow-y-auto">
-            <div class="px-4 mb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-widest text-opacity-50">Core Modules</div>
-            <a href="#" id="nav-welcome" onclick="showModule('welcome')" class="sidebar-item flex items-center px-4 py-2 mb-1 text-xs">
+            <a href="#" id="nav-welcome" onclick="showModule('welcome')" class="sidebar-item flex items-center px-4 py-2 mb-1 text-xs active-tab">
                 <i class="fas fa-desktop w-5 text-blue-400"></i><span>DASHBOARD</span>
             </a>
             
             <div>
                 <button onclick="toggleSubmenu('tms-menu', 'tms-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
                     <div class="flex items-center"><i class="fas fa-route w-5 text-slate-400"></i><span>TMS</span></div>
-                    <i id="tms-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
+                    <i id="tms-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
                 </button>
                 <div id="tms-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="https://rich01623.github.io/Planner/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Planner</a>
-                    <a href="https://rich01623.github.io/ratetest/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Rate Card</a>
-                    <a href="https://rich01623.github.io/FTS-Customer-Portal/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">QTS Rates</a>
-                    <a href="https://rich01623.github.io/lasershape/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">LaserShape Rates</a>
+                    <a href="https://rich01623.github.io/Planner/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item pl-10 py-2 text-[11px]">Planner</a>
+                    <a href="https://rich01623.github.io/ratetest/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item pl-10 py-2 text-[11px]">Rate Card</a>
+                    <a href="https://rich01623.github.io/FTS-Customer-Portal/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item pl-10 py-2 text-[11px]">QTS Rates</a>
+                    <a href="https://rich01623.github.io/lasershape/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item pl-10 py-2 text-[11px]">LaserShape</a>
                 </div>
             </div>
 
             <div>
                 <button onclick="toggleSubmenu('crm-menu', 'crm-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
                     <div class="flex items-center"><i class="fas fa-users w-5 text-slate-400"></i><span>CRM</span></div>
-                    <i id="crm-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
+                    <i id="crm-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
                 </button>
                 <div id="crm-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="#" onclick="showModule('clients')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Customer Database</a>
-                    <a href="#" onclick="showModule('add-client')" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Add New Client</a>
-                    <a href="https://rich01623.github.io/fts-directory/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Directory</a>
+                    <a href="#" onclick="showModule('clients')" class="submenu-item pl-10 py-2 text-[11px]">Database</a>
+                    <a href="#" onclick="showModule('add-client')" class="submenu-item pl-10 py-2 text-[11px]">Add New</a>
+                    <a href="https://rich01623.github.io/fts-directory/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item pl-10 py-2 text-[11px]">Directory</a>
                 </div>
             </div>
 
             <div>
-                <button onclick="toggleSubmenu('palletforce-menu', 'pallet-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
+                <button onclick="toggleSubmenu('pf-menu', 'pf-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
                     <div class="flex items-center"><i class="fas fa-box w-5 text-slate-400"></i><span>PALLETFORCE</span></div>
-                    <i id="pallet-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
+                    <i id="pf-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
                 </button>
-                <div id="palletforce-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="https://palletforce.net/Login.aspx" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Login</a>
-                    <a href="https://rich01623.github.io/jonstool/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">PF Route Planner</a>
+                <div id="pf-menu" class="hidden bg-[#0a0f1d] pb-1">
+                    <a href="https://palletforce.net/Login.aspx" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item pl-10 py-2 text-[11px]">Login</a>
+                    <a href="https://rich01623.github.io/jonstool/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item pl-10 py-2 text-[11px]">PF Planner</a>
                 </div>
             </div>
 
-            <div class="px-4 mt-6 mb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-widest text-opacity-50">Operations</div>
+            <div class="px-4 mt-6 mb-2 text-[10px] font-semibold text-slate-500 uppercase">Back Office</div>
             
             <div>
-                <button onclick="toggleSubmenu('drivers-menu', 'drivers-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
+                <button onclick="toggleSubmenu('dr-menu', 'dr-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
                     <div class="flex items-center"><i class="fas fa-id-card w-5 text-slate-400"></i><span>DRIVERS</span></div>
-                    <i id="drivers-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
+                    <i id="dr-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
                 </button>
-                <div id="drivers-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="https://rich01623.github.io/Fleet-dash/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Timesheets</a>
+                <div id="dr-menu" class="hidden bg-[#0a0f1d] pb-1">
+                    <a href="https://rich01623.github.io/Fleet-dash/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item pl-10 py-2 text-[11px]">Timesheets</a>
                 </div>
             </div>
 
             <div>
-                <button onclick="toggleSubmenu('accounting-menu', 'accounting-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
+                <button onclick="toggleSubmenu('ac-menu', 'ac-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
                     <div class="flex items-center"><i class="fas fa-file-invoice-dollar w-5 text-slate-400"></i><span>ACCOUNTING</span></div>
-                    <i id="accounting-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
+                    <i id="ac-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
                 </button>
-                <div id="accounting-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="https://login.xero.com/" target="_blank" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Xero Login</a>
-                    <a href="https://drive.google.com/drive/folders/1-5IyWRXZXwbSLePeQpSgWSRl370vM3am" target="_blank" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Invoices Folder</a>
+                <div id="ac-menu" class="hidden bg-[#0a0f1d] pb-1">
+                    <a href="https://login.xero.com/" target="_blank" class="submenu-item pl-10 py-2 text-[11px]">Xero</a>
+                    <a href="https://drive.google.com/drive/folders/1-5IyWRXZXwbSLePeQpSgWSRl370vM3am" target="_blank" class="submenu-item pl-10 py-2 text-[11px]">Invoices Folder</a>
                 </div>
             </div>
 
             <div>
-                <button onclick="toggleSubmenu('fleet-menu', 'fleet-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
-                    <div class="flex items-center"><i class="fas fa-gas-pump w-5 text-slate-400"></i><span>FLEET OPS</span></div>
-                    <i id="fleet-arrow" class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-200"></i>
+                <button onclick="toggleSubmenu('mt-menu', 'mt-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
+                    <div class="flex items-center"><i class="fas fa-gas-pump w-5 text-slate-400"></i><span>MAINTENANCE</span></div>
+                    <i id="mt-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
                 </button>
-                <div id="fleet-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="https://rich01623.github.io/Maintenance/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item flex items-center pl-10 pr-4 py-2 text-[11px] text-slate-400">Maintenance Calendar</a>
+                <div id="mt-menu" class="hidden bg-[#0a0f1d] pb-1">
+                    <a href="https://rich01623.github.io/Maintenance/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item pl-10 py-2 text-[11px]">Fleet Calendar</a>
                 </div>
             </div>
         </nav>
 
         <div class="p-2 border-t border-slate-800">
-            <button onclick="toggleSettings()" class="w-full sidebar-item flex items-center justify-between px-4 py-2 text-xs rounded-md">
-                <i class="fas fa-moon w-5 text-slate-400"></i><span>NIGHT MODE TOGGLE</span>
+            <button onclick="toggleSettings()" class="w-full sidebar-item flex items-center px-4 py-2 text-xs rounded-md">
+                <i class="fas fa-moon w-5 text-slate-400"></i><span>NIGHT MODE</span>
             </button>
         </div>
     </aside>
 
     <div class="flex-1 flex flex-col min-w-0">
         <header class="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6">
-            <h2 class="text-xs font-black uppercase tracking-widest text-slate-500">Nottingham Hub Control Center</h2>
+            <h2 class="text-xs font-black uppercase tracking-widest text-slate-500 italic">Nottingham HQ</h2>
             <div class="flex items-center space-x-4">
                 <span id="live-clock" class="text-xs font-mono font-bold dark:text-slate-400">00:00:00</span>
                 <div class="h-6 w-12 bg-red-600 rounded flex items-center justify-center text-[10px] text-white font-black italic">FTS</div>
@@ -138,49 +142,41 @@
 
         <main class="flex-1 overflow-auto p-6">
             <div id="mod-welcome" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="stat-card">
-                        <div class="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded"><i class="fas fa-satellite text-sm"></i></div>
-                        <div><p class="text-[9px] text-slate-500 font-bold uppercase">System Status</p><p class="text-xs font-black dark:text-white uppercase">Nominal</p></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="p-2 bg-green-100 dark:bg-green-900/30 text-green-600 rounded"><i class="fas fa-signal text-sm"></i></div>
-                        <div><p class="text-[9px] text-slate-500 font-bold uppercase">Data Link</p><p class="text-xs font-black dark:text-white uppercase">Live</p></div>
-                    </div>
-                </div>
-
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="frost-card">
-                        <div class="px-4 py-3 border-b border-slate-800 bg-slate-50 dark:bg-[#0f172a] flex justify-between items-center">
-                            <h3 class="text-[10px] font-black uppercase italic text-blue-500">Live Weather Radar (Nottingham)</h3>
-                        </div>
-                        <div class="h-[450px]">
-                            <iframe src="https://www.meteoblue.com/en/weather/maps/widget/nottingham_united-kingdom_2641170?windAnimation=0&gust=0&satellite=1&cloudsAndPrecipitation=1&temperature=0&sunshine=0&extremeForecast=0&geoloc=fixed&tempunit=C&windunit=mph&lengthunit=metric&zoom=7&autoscale=on" frameborder="0" scrolling="NO" allowtransparency="true" style="width: 100%; height: 100%;"></iframe>
-                        </div>
+                    <div class="frost-card h-[500px]">
+                        <div class="px-4 py-3 border-b border-slate-800 bg-slate-50 dark:bg-[#0f172a]"><h3 class="text-[10px] font-black uppercase italic text-blue-500">Weather Radar</h3></div>
+                        <iframe src="https://www.meteoblue.com/en/weather/maps/widget/nottingham_united-kingdom_2641170?satellite=1&cloudsAndPrecipitation=1&geoloc=fixed&tempunit=C&windunit=mph&zoom=7" frameborder="0" style="width: 100%; height: 90%;"></iframe>
                     </div>
-
-                    <div class="frost-card">
-                        <div class="px-4 py-3 border-b border-slate-800 bg-slate-50 dark:bg-[#0f172a] flex justify-between items-center">
-                            <h3 class="text-[10px] font-black uppercase italic text-red-600">Major Road Incident Feed</h3>
-                            <span class="animate-pulse text-[9px] text-red-500 font-bold">● LIVE</span>
-                        </div>
-                        <div id="traffic-feed" class="h-[450px] overflow-y-auto bg-slate-50 dark:bg-[#0a0f1d] p-2 space-y-2">
-                            <div class="text-center py-20 text-[10px] uppercase font-bold text-slate-600 animate-pulse">Syncing Highways Data...</div>
-                        </div>
+                    <div class="frost-card h-[500px]">
+                        <div class="px-4 py-3 border-b border-slate-800 bg-slate-50 dark:bg-[#0f172a] flex justify-between"><h3 class="text-[10px] font-black uppercase italic text-red-600">Road Incidents</h3><span class="animate-pulse text-[9px] text-red-500 font-bold">● LIVE</span></div>
+                        <div id="traffic-feed" class="h-[440px] overflow-y-auto p-2 space-y-2"></div>
                     </div>
                 </div>
             </div>
 
             <iframe id="mod-iframe" name="main_frame" src="about:blank" class="hidden w-full h-full rounded border-none shadow-2xl"></iframe>
+            
             <div id="mod-clients" class="hidden">
                  <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-black italic uppercase dark:text-white tracking-tighter">Customer Database</h2>
-                    <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Quick Search..." class="bg-white dark:bg-slate-800 border border-slate-700 text-xs px-4 py-2 rounded-lg outline-none focus:border-blue-500">
+                    <h2 class="text-xl font-black italic uppercase dark:text-white">Customer Database</h2>
+                    <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Quick Search..." class="bg-slate-800 border border-slate-700 text-xs px-4 py-2 rounded text-white outline-none">
                 </div>
                 <div id="client-container" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
             </div>
-            <div id="mod-add-client" class="hidden max-w-xl mx-auto">
+
+            <div id="mod-add-client" class="hidden max-w-2xl mx-auto">
+                 <div class="frost-card p-8 border-t-4 border-blue-600">
+                    <h2 class="text-xs font-black uppercase mb-8 text-white border-b border-slate-700 pb-2 italic tracking-widest">Add New Client</h2>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="col-span-2"><span class="label-text">Company Name</span><input type="text" id="new-coname" class="frost-input"></div>
+                        <div><span class="label-text">Town</span><input type="text" id="new-town" class="frost-input"></div>
+                        <div><span class="label-text">Postcode</span><input type="text" id="new-pcode" class="frost-input"></div>
+                        <div><span class="label-text">Phone</span><input type="text" id="new-phone" class="frost-input"></div>
+                        <div><span class="label-text">Email</span><input type="email" id="new-email" class="frost-input"></div>
+                    </div>
+                    <button onclick="saveClient()" class="w-full mt-10 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded uppercase text-xs">Store Records</button>
                  </div>
+            </div>
         </main>
     </div>
 
@@ -188,18 +184,15 @@
         const SUPABASE_URL = 'https://tdrzytgiqvdulityqttr.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkcnp5dGdpcXZkdWxpdHlxdHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTM5NTMsImV4cCI6MjA4ODcyOTk1M30.XN46i7u6STD-2afmN7-Jh1MltADGpEuWlLt_n7wknbA';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let allClients = [];
 
         window.onload = function() {
-            updateTime();
-            setInterval(updateTime, 1000);
-            fetchTraffic();
-            setInterval(fetchTraffic, 300000);
+            updateTime(); setInterval(updateTime, 1000);
+            fetchTraffic(); setInterval(fetchTraffic, 300000);
             showModule(localStorage.getItem('frost_last_module') || 'welcome');
         };
 
-        function updateTime() {
-            document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('en-GB');
-        }
+        function updateTime() { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('en-GB'); }
 
         async function fetchTraffic() {
             const feedContainer = document.getElementById('traffic-feed');
@@ -213,27 +206,60 @@
                 items.forEach(item => {
                     const title = item.querySelector("title").textContent;
                     const desc = item.querySelector("description").textContent;
-                    const pubDate = new Date(item.querySelector("pubDate").textContent).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    const isHigh = title.includes('Serious') || title.includes('Closed') || title.includes('M1');
-                    html += `<div class="traffic-item ${isHigh ? 'severity-high' : 'severity-med'} dark:text-slate-300">
-                        <div class="flex justify-between mb-1"><span class="font-black text-blue-500 uppercase">${title}</span><span class="text-[9px] text-slate-500 font-mono">${pubDate}</span></div>
-                        <p class="text-slate-500 leading-tight">${desc.split('<br')[0]}</p>
-                    </div>`;
+                    html += `<div class="traffic-item border-l-4 border-blue-500 mb-2"><div class="font-black text-blue-500 uppercase text-[10px] mb-1">${title}</div><p class="text-slate-400 text-[10px] leading-tight">${desc.split('<br')[0]}</p></div>`;
                 });
-                feedContainer.innerHTML = html || '<div class="text-center py-20 text-slate-500 uppercase text-[10px]">No major incidents.</div>';
-            } catch (e) { feedContainer.innerHTML = 'Error loading feed'; }
+                feedContainer.innerHTML = html || 'No incidents reported.';
+            } catch (e) { feedContainer.innerHTML = 'Offline'; }
         }
 
         function showModule(modId, url = null) {
             ['mod-welcome', 'mod-iframe', 'mod-clients', 'mod-add-client'].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById('mod-' + modId).classList.remove('hidden');
-            if (modId === 'iframe' && url) {
-                const frame = document.getElementById('mod-iframe');
-                if (frame.src !== url) frame.src = url;
-                localStorage.setItem('frost_last_url', url);
-            }
+            if (modId === 'iframe' && url) document.getElementById('mod-iframe').src = url;
+            if (modId === 'clients') fetchClients();
             localStorage.setItem('frost_last_module', modId);
-            updateActiveTab(modId, url);
+        }
+
+        async function fetchClients() {
+            const container = document.getElementById('client-container');
+            container.innerHTML = '<div class="col-span-full text-center py-20 animate-pulse text-blue-500 uppercase text-xs font-bold">Syncing Database...</div>';
+            const { data, error } = await _supabase.from('crm_customer').select('*').order('coname', { ascending: true });
+            if (!error) {
+                allClients = data;
+                renderClients(data);
+            }
+        }
+
+        function renderClients(data) {
+            const container = document.getElementById('client-container');
+            container.innerHTML = data.map(c => `
+                <div class="client-card">
+                    <h4 class="text-white font-black uppercase text-[11px] truncate italic border-b border-slate-700 pb-2 mb-2">${c.coname || 'UNKNOWN'}</h4>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[10px]"><span class="text-slate-500 font-bold uppercase">Area</span><span class="text-slate-300">${c.town || '-'}</span></div>
+                        <div class="flex justify-between text-[10px]"><span class="text-slate-500 font-bold uppercase">P-Code</span><span class="text-slate-300 font-mono">${c.pcode || '-'}</span></div>
+                        <div class="flex justify-between text-[10px] border-t border-slate-800 pt-1 mt-1"><span class="text-blue-500 font-bold">PHONE</span><span class="text-blue-400 font-bold">${c.phone || '-'}</span></div>
+                        <div class="text-[9px] text-slate-500 truncate mt-1 italic">${c.email || ''}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterClients() {
+            const query = document.getElementById('clientSearch').value.toLowerCase();
+            renderClients(allClients.filter(c => c.coname.toLowerCase().includes(query) || (c.town && c.town.toLowerCase().includes(query))));
+        }
+
+        async function saveClient() {
+            const payload = {
+                coname: document.getElementById('new-coname').value,
+                town: document.getElementById('new-town').value,
+                pcode: document.getElementById('new-pcode').value.toUpperCase(),
+                phone: document.getElementById('new-phone').value,
+                email: document.getElementById('new-email').value
+            };
+            const { error } = await _supabase.from('crm_customer').insert([payload]);
+            if(!error) { alert("Stored Successfully"); showModule('clients'); }
         }
 
         function toggleSubmenu(id, arrowId) {
@@ -241,14 +267,7 @@
             document.getElementById(arrowId).classList.toggle('rotate-180');
         }
 
-        function toggleSettings() {
-            document.documentElement.classList.toggle('dark');
-        }
-
-        function updateActiveTab(modId, url) {
-            document.querySelectorAll('.sidebar-item, .submenu-item').forEach(el => el.classList.remove('active-tab'));
-            if (modId === 'welcome') document.getElementById('nav-welcome').classList.add('active-tab');
-        }
+        function toggleSettings() { document.documentElement.classList.toggle('dark'); }
     </script>
 </body>
 </html>
