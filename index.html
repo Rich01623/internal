@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Frost Transport Solutions | Portal</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -32,12 +32,10 @@
         .rotate-180 { transform: rotate(180deg); }
         .hidden { display: none; }
         
-        /* Night Mode Logic */
         .dark body, .dark main { background-color: #020617 !important; }
         .dark aside { background-color: #0f172a; }
         .dark .frost-field { background: #0f172a !important; color: #ffffff !important; border: 1px solid #334155 !important; }
         
-        /* Day Mode Logic (Contrast Fix) */
         body:not(.dark) .frost-field { background: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
         
         .client-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; border-left: 4px solid #2563eb; }
@@ -190,15 +188,31 @@
 
         async function fetchTraffic() {
             const feedContainer = document.getElementById('traffic-feed');
-            const proxies = ['https://corsproxy.io/?', 'https://api.allorigins.win/get?url='];
             const targetUrl = 'https://nationalhighways.co.uk/travel-updates/traffic-information-rss-feeds/current-incidents/';
+            
+            // Triple-proxy strategy to handle 404s and CORS blocks
+            const proxies = [
+                `https://api.codetabs.com/v1/proxy?quest=${targetUrl}`,
+                `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
+                `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
+            ];
+
             let success = false;
 
-            for (let proxy of proxies) {
+            for (let url of proxies) {
                 if (success) break;
                 try {
-                    const response = await fetch(proxy + encodeURIComponent(targetUrl));
-                    let text = proxy.includes('allorigins') ? (await response.json()).contents : await response.text();
+                    const response = await fetch(url);
+                    if (!response.ok) continue;
+
+                    let text = '';
+                    if (url.includes('allorigins')) {
+                        const json = await response.json();
+                        text = json.contents;
+                    } else {
+                        text = await response.text();
+                    }
+
                     const parser = new DOMParser();
                     const xmlDoc = parser.parseFromString(text, "text/xml");
                     const items = xmlDoc.querySelectorAll("item");
@@ -206,19 +220,28 @@
                     if (items.length > 0) {
                         let html = '';
                         items.forEach(item => {
-                            const title = item.querySelector("title")?.textContent || "Unknown";
+                            const title = item.querySelector("title")?.textContent || "Unknown Incident";
                             const desc = (item.querySelector("description")?.textContent || "").split('<br')[0];
-                            html += `<div class="p-2 border-l-4 border-red-500 bg-slate-50 dark:bg-slate-900/50 mb-2 rounded-r shadow-sm">
-                                <div class="font-black text-red-600 uppercase text-[10px] mb-1">${title}</div>
-                                <p class="text-slate-500 dark:text-slate-400 text-[10px] leading-tight">${desc}</p>
-                             </div>`;
+                            html += `
+                                <div class="p-2 border-l-4 border-red-500 bg-slate-50 dark:bg-slate-900/50 mb-2 rounded-r shadow-sm">
+                                    <div class="font-black text-red-600 uppercase text-[10px] mb-1 tracking-tight">${title}</div>
+                                    <p class="text-slate-500 dark:text-slate-400 text-[10px] leading-tight">${desc}</p>
+                                </div>`;
                         });
                         feedContainer.innerHTML = html;
                         success = true;
                     }
-                } catch (e) { console.error("Proxy error, trying next..."); }
+                } catch (e) { console.error("Proxy rotation: node failed, moving to next."); }
             }
-            if (!success) feedContainer.innerHTML = '<div class="text-center py-10 text-[10px] text-slate-500 uppercase font-bold italic">Feed Temporarily Offline</div>';
+
+            if (!success) {
+                feedContainer.innerHTML = `
+                    <div class="text-center py-10 opacity-50">
+                        <i class="fas fa-satellite-dish mb-2"></i>
+                        <p class="text-[10px] font-black uppercase">Traffic Data Offline</p>
+                        <p class="text-[9px] mt-1 italic">Secure tunnel rejected by host.</p>
+                    </div>`;
+            }
         }
 
         function showModule(modId, url = null) {
@@ -228,9 +251,8 @@
             if (modId === 'clients') fetchClients();
             localStorage.setItem('frost_last_module', modId);
             
-            // UI Visual Update
             document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active-tab'));
-            event?.currentTarget?.classList?.add('active-tab');
+            if(event) event.currentTarget?.classList?.add('active-tab');
         }
 
         async function fetchClients() {
