@@ -32,12 +32,10 @@
         .rotate-180 { transform: rotate(180deg); }
         .hidden { display: none; }
         
-        /* Night Mode Logic */
         .dark body, .dark main { background-color: #020617 !important; }
         .dark aside { background-color: #0f172a; }
         .dark .frost-field { background: #0f172a !important; color: #ffffff !important; border: 1px solid #334155 !important; }
         
-        /* Day Mode Logic */
         body:not(.dark) .frost-field { background: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
         
         .client-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; border-left: 4px solid #2563eb; }
@@ -139,10 +137,10 @@
                     <div class="bg-white dark:bg-[#0f172a] rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden h-[500px]">
                         <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
                             <h3 class="text-[10px] font-black uppercase italic text-red-600">Road Incident Feed</h3>
-                            <button onclick="fetchTraffic()" class="text-[9px] text-blue-500 font-bold uppercase hover:underline">Manual Sync</button>
+                            <button onclick="fetchTraffic()" class="text-[9px] text-blue-500 font-bold hover:underline uppercase">Sync</button>
                         </div>
                         <div id="traffic-feed" class="h-[440px] overflow-y-auto p-2 space-y-2">
-                            <div class="text-center py-10 text-[10px] text-slate-500 uppercase font-bold animate-pulse">Initializing Tunnel...</div>
+                            <div class="text-center py-10 text-[9px] text-slate-500 uppercase font-bold animate-pulse">Establishing Tunnel...</div>
                         </div>
                     </div>
                 </div>
@@ -182,63 +180,80 @@
 
         window.onload = function() {
             updateTime(); setInterval(updateTime, 1000);
-            fetchTraffic(); setInterval(fetchTraffic, 900000); // 15min refresh
+            fetchTraffic(); setInterval(fetchTraffic, 600000);
             showModule(localStorage.getItem('frost_last_module') || 'welcome');
         };
 
         function updateTime() { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('en-GB'); }
 
-        // TRAFFIC ENGINE (v3 - JSON BRIDGING)
         async function fetchTraffic() {
             const feedContainer = document.getElementById('traffic-feed');
-            const targetUrl = 'https://nationalhighways.co.uk/travel-updates/traffic-information-rss-feeds/current-incidents/';
+            const target = 'https://nationalhighways.co.uk/travel-updates/traffic-information-rss-feeds/current-incidents/';
             
-            // Bypass 403 Forbidden by requesting as a JSON object via AllOrigins
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+            // Proxy Rotation Strategy
+            const proxies = [
+                { url: `https://api.allorigins.win/get?url=${encodeURIComponent(target)}`, mode: 'json' },
+                { url: `https://api.codetabs.com/v1/proxy?quest=${target}`, mode: 'text' },
+                { url: `https://corsproxy.io/?${encodeURIComponent(target)}`, mode: 'text' }
+            ];
 
-            feedContainer.innerHTML = '<div class="text-center py-10 text-[9px] text-blue-500 font-black animate-pulse uppercase">Syncing via JSON Bridge...</div>';
+            feedContainer.innerHTML = '<div class="text-center py-10 text-[9px] text-blue-500 font-black animate-pulse uppercase tracking-widest">SCANNING TUNNELS...</div>';
 
-            try {
-                const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error('Proxy Sync Failed');
-                
-                const data = await response.json();
-                const text = data.contents; 
+            let success = false;
+            for (const proxy of proxies) {
+                if (success) break;
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 sec timeout per proxy
 
-                if (!text || text.length < 200) throw new Error('Empty Payload');
+                    const response = await fetch(proxy.url, { signal: controller.signal });
+                    clearTimeout(timeoutId);
 
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(text, "text/xml");
-                const items = xmlDoc.querySelectorAll("item");
-                
-                if (items.length > 0) {
-                    let html = '';
-                    items.forEach(item => {
-                        const title = item.querySelector("title")?.textContent || "Road Alert";
-                        const desc = (item.querySelector("description")?.textContent || "").split('<br')[0];
-                        const pubDate = item.querySelector("pubDate")?.textContent.slice(0, 16) || "";
-                        
-                        html += `
-                            <div class="p-2 border-l-4 border-red-500 bg-slate-50 dark:bg-slate-900/50 mb-2 rounded shadow-sm hover:bg-white dark:hover:bg-slate-800 transition-all">
-                                <div class="flex justify-between items-center mb-1">
-                                    <div class="font-black text-red-600 uppercase text-[10px] tracking-tighter">${title}</div>
-                                    <span class="text-[8px] text-slate-400 font-mono">${pubDate}</span>
-                                </div>
-                                <p class="text-slate-500 dark:text-slate-400 text-[10px] leading-tight">${desc}</p>
-                            </div>`;
-                    });
-                    feedContainer.innerHTML = html;
-                } else {
-                    throw new Error('No Data');
-                }
-            } catch (e) {
-                console.error("Traffic Feed Error:", e);
+                    if (!response.ok) continue;
+
+                    let xmlText = '';
+                    if (proxy.mode === 'json') {
+                        const data = await response.json();
+                        xmlText = data.contents;
+                    } else {
+                        xmlText = await response.text();
+                    }
+
+                    if (!xmlText || xmlText.length < 500) continue;
+
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                    const items = xmlDoc.querySelectorAll("item");
+                    
+                    if (items.length > 0) {
+                        let html = '';
+                        items.forEach(item => {
+                            const title = item.querySelector("title")?.textContent || "Alert";
+                            const desc = (item.querySelector("description")?.textContent || "").split('<br')[0];
+                            const pubDate = item.querySelector("pubDate")?.textContent.slice(0, 16) || "";
+                            
+                            html += `
+                                <div class="p-2 border-l-4 border-red-500 bg-slate-50 dark:bg-slate-900/50 mb-2 rounded shadow-sm hover:bg-white dark:hover:bg-slate-800 transition-all">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <div class="font-black text-red-600 uppercase text-[10px] tracking-tighter leading-tight pr-2">${title}</div>
+                                        <span class="text-[8px] text-slate-400 font-mono whitespace-nowrap">${pubDate}</span>
+                                    </div>
+                                    <p class="text-slate-500 dark:text-slate-400 text-[10px] leading-tight">${desc}</p>
+                                </div>`;
+                        });
+                        feedContainer.innerHTML = html;
+                        success = true;
+                    }
+                } catch (e) { console.warn(`Tunnel node failed: ${proxy.url.substring(0, 30)}`); }
+            }
+
+            if (!success) {
                 feedContainer.innerHTML = `
                     <div class="text-center py-12 opacity-50 border-2 border-dashed border-slate-800 m-2 rounded">
-                        <i class="fas fa-tower-broadcast mb-2"></i>
-                        <p class="text-[10px] font-black uppercase">Sync Failed</p>
-                        <p class="text-[9px] italic">Highway host rejected tunnel request.</p>
-                        <button onclick="fetchTraffic()" class="mt-3 text-[9px] text-blue-500 font-bold hover:underline">RETRY BRIDGE</button>
+                        <i class="fas fa-wifi-slash mb-2 text-xl"></i>
+                        <p class="text-[10px] font-black uppercase">Sync Time Out</p>
+                        <p class="text-[9px] italic">Highway host rejected secure bridge.</p>
+                        <button onclick="fetchTraffic()" class="mt-4 px-4 py-2 bg-slate-800 text-[9px] text-white font-bold rounded hover:bg-slate-700">RETRY SCAN</button>
                     </div>`;
             }
         }
@@ -254,7 +269,6 @@
             if(event) event.currentTarget?.classList?.add('active-tab');
         }
 
-        // DATABASE CRM FUNCTIONS
         async function fetchClients() {
             const container = document.getElementById('client-container');
             container.innerHTML = '<div class="col-span-full text-center py-20 text-blue-500 uppercase text-xs font-bold animate-pulse tracking-widest">SYNCING CRM...</div>';
