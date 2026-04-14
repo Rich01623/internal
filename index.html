@@ -142,7 +142,7 @@
                             <button onclick="fetchTraffic()" class="text-[9px] text-blue-500 font-bold uppercase hover:underline">Manual Sync</button>
                         </div>
                         <div id="traffic-feed" class="h-[440px] overflow-y-auto p-2 space-y-2">
-                            <div class="text-center py-10 text-[10px] text-slate-500 uppercase font-bold animate-pulse">Requesting Secure Tunnel...</div>
+                            <div class="text-center py-10 text-[10px] text-slate-500 uppercase font-bold animate-pulse">Initializing Tunnel...</div>
                         </div>
                     </div>
                 </div>
@@ -153,7 +153,7 @@
             <div id="mod-clients" class="hidden">
                  <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xl font-black italic uppercase dark:text-white">Customer Database</h2>
-                    <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Search Company..." class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs px-4 py-2 rounded dark:text-white outline-none">
+                    <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Search..." class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs px-4 py-2 rounded dark:text-white outline-none">
                 </div>
                 <div id="client-container" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
             </div>
@@ -188,61 +188,57 @@
 
         function updateTime() { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('en-GB'); }
 
+        // TRAFFIC ENGINE (v3 - JSON BRIDGING)
         async function fetchTraffic() {
             const feedContainer = document.getElementById('traffic-feed');
             const targetUrl = 'https://nationalhighways.co.uk/travel-updates/traffic-information-rss-feeds/current-incidents/';
             
-            // 2026 Enhanced Proxy Rotation
-            const proxies = [
-                `https://proxy.corsfix.com/?${targetUrl}`,
-                `https://api.codetabs.com/v1/proxy?quest=${targetUrl}`,
-                `https://thingproxy.freeboard.io/fetch/${targetUrl}`
-            ];
+            // Bypass 403 Forbidden by requesting as a JSON object via AllOrigins
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
 
-            let success = false;
-            feedContainer.innerHTML = '<div class="text-center py-10 text-[9px] text-blue-500 font-black animate-pulse">CYCLING PROXY TUNNELS...</div>';
+            feedContainer.innerHTML = '<div class="text-center py-10 text-[9px] text-blue-500 font-black animate-pulse uppercase">Syncing via JSON Bridge...</div>';
 
-            for (let url of proxies) {
-                if (success) break;
-                try {
-                    const response = await fetch(url);
-                    if (!response.ok) continue;
+            try {
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error('Proxy Sync Failed');
+                
+                const data = await response.json();
+                const text = data.contents; 
 
-                    const text = await response.text();
-                    if (!text || text.length < 500) continue; // Skip suspected error pages
+                if (!text || text.length < 200) throw new Error('Empty Payload');
 
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(text, "text/xml");
-                    const items = xmlDoc.querySelectorAll("item");
-                    
-                    if (items.length > 0) {
-                        let html = '';
-                        items.forEach(item => {
-                            const title = item.querySelector("title")?.textContent || "Alert";
-                            const desc = (item.querySelector("description")?.textContent || "").split('<br')[0];
-                            const pubDate = item.querySelector("pubDate")?.textContent.slice(0, 16) || "";
-                            
-                            html += `
-                                <div class="p-2 border-l-4 border-red-500 bg-slate-50 dark:bg-slate-900/50 mb-2 rounded shadow-sm">
-                                    <div class="flex justify-between items-center mb-1">
-                                        <div class="font-black text-red-600 uppercase text-[10px] tracking-tighter">${title}</div>
-                                        <span class="text-[8px] text-slate-400 font-mono">${pubDate}</span>
-                                    </div>
-                                    <p class="text-slate-500 dark:text-slate-400 text-[10px] leading-tight">${desc}</p>
-                                </div>`;
-                        });
-                        feedContainer.innerHTML = html;
-                        success = true;
-                    }
-                } catch (e) { console.warn("Node skip."); }
-            }
-
-            if (!success) {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(text, "text/xml");
+                const items = xmlDoc.querySelectorAll("item");
+                
+                if (items.length > 0) {
+                    let html = '';
+                    items.forEach(item => {
+                        const title = item.querySelector("title")?.textContent || "Road Alert";
+                        const desc = (item.querySelector("description")?.textContent || "").split('<br')[0];
+                        const pubDate = item.querySelector("pubDate")?.textContent.slice(0, 16) || "";
+                        
+                        html += `
+                            <div class="p-2 border-l-4 border-red-500 bg-slate-50 dark:bg-slate-900/50 mb-2 rounded shadow-sm hover:bg-white dark:hover:bg-slate-800 transition-all">
+                                <div class="flex justify-between items-center mb-1">
+                                    <div class="font-black text-red-600 uppercase text-[10px] tracking-tighter">${title}</div>
+                                    <span class="text-[8px] text-slate-400 font-mono">${pubDate}</span>
+                                </div>
+                                <p class="text-slate-500 dark:text-slate-400 text-[10px] leading-tight">${desc}</p>
+                            </div>`;
+                    });
+                    feedContainer.innerHTML = html;
+                } else {
+                    throw new Error('No Data');
+                }
+            } catch (e) {
+                console.error("Traffic Feed Error:", e);
                 feedContainer.innerHTML = `
-                    <div class="text-center py-12 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded m-2 opacity-50">
-                        <i class="fas fa-link-slash mb-2"></i>
-                        <p class="text-[10px] font-black uppercase">Tunnel Rejection</p>
-                        <p class="text-[9px] italic">Highway Feed CORS Blocked</p>
+                    <div class="text-center py-12 opacity-50 border-2 border-dashed border-slate-800 m-2 rounded">
+                        <i class="fas fa-tower-broadcast mb-2"></i>
+                        <p class="text-[10px] font-black uppercase">Sync Failed</p>
+                        <p class="text-[9px] italic">Highway host rejected tunnel request.</p>
+                        <button onclick="fetchTraffic()" class="mt-3 text-[9px] text-blue-500 font-bold hover:underline">RETRY BRIDGE</button>
                     </div>`;
             }
         }
@@ -258,6 +254,7 @@
             if(event) event.currentTarget?.classList?.add('active-tab');
         }
 
+        // DATABASE CRM FUNCTIONS
         async function fetchClients() {
             const container = document.getElementById('client-container');
             container.innerHTML = '<div class="col-span-full text-center py-20 text-blue-500 uppercase text-xs font-bold animate-pulse tracking-widest">SYNCING CRM...</div>';
