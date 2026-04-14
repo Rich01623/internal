@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Frost Transport Solutions | Portal</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
     <script>
         tailwind.config = { darkMode: 'class' }
     </script>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -22,16 +22,15 @@
         .submenu-item:hover { color: #ffffff; background-color: #1e293b; }
         .rotate-180 { transform: rotate(180deg); }
         .hidden { display: none; }
-        .stat-card { background: white; border-radius: 12px; padding: 1.25rem; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 1rem; }
+        .stat-card { background: white; border-radius: 8px; padding: 1rem; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 0.75rem; }
         .dark .stat-card { background: #1e293b; border-color: #334155; }
-        .frost-card { background: white; border-radius: 10px; border: 1px solid rgba(0,0,0,0.1); overflow: hidden; }
-        .dark .frost-card { background: #1e293b; border-color: #334155; }
-        .client-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
-        .client-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; border-left: 4px solid #94a3b8; }
-        .dark .client-card { background: #1e293b; border-color: #334155; }
-        .frost-input { border: 2px solid #e2e8f0; background: #fff; padding: 0.35rem 0.75rem; border-radius: 6px; width: 100%; font-size: 0.85rem; outline: none; color: #000; }
-        .dark .frost-input { background: #0f172a; border-color: #334155; color: white; }
-        .label-text { font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 2px; display: block; }
+        .frost-card { background: white; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; }
+        .dark .frost-card { background: #0f172a; border-color: #334155; }
+        #traffic-feed::-webkit-scrollbar { width: 4px; }
+        #traffic-feed::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .traffic-item { border-bottom: 1px solid #334155; padding: 10px; font-size: 11px; }
+        .severity-high { border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); }
+        .severity-med { border-left: 4px solid #f59e0b; background: rgba(245, 158, 11, 0.05); }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 flex h-screen overflow-hidden">
@@ -41,7 +40,7 @@
             <div class="bg-blue-600 p-1.5 rounded-lg"><i class="fas fa-truck-fast text-white text-sm"></i></div>
             <div>
                 <h1 class="text-white text-xs font-bold leading-tight uppercase tracking-wider">Frost Transport</h1>
-                <p class="text-[10px] text-slate-500 uppercase tracking-widest">v1.2.7 | NOTTM HUB</p>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest">v1.2.9 | NOTTM HUB</p>
             </div>
         </div>
 
@@ -123,84 +122,65 @@
 
         <div class="p-2 border-t border-slate-800">
             <button onclick="toggleSettings()" class="w-full sidebar-item flex items-center justify-between px-4 py-2 text-xs rounded-md">
-                <div class="flex items-center"><i class="fas fa-moon w-5 text-slate-400"></i><span>NIGHT MODE TOGGLE</span></div>
+                <i class="fas fa-moon w-5 text-slate-400"></i><span>NIGHT MODE TOGGLE</span>
             </button>
         </div>
     </aside>
 
     <div class="flex-1 flex flex-col min-w-0">
-        <header class="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 no-print">
-            <h2 class="text-sm font-bold uppercase tracking-widest text-slate-500">Nottingham Hub Control Center</h2>
+        <header class="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6">
+            <h2 class="text-xs font-black uppercase tracking-widest text-slate-500">Nottingham Hub Control Center</h2>
             <div class="flex items-center space-x-4">
-                <div class="h-8 w-8 rounded-full bg-red-600 flex items-center justify-center text-white text-xs font-bold italic">FTS</div>
+                <span id="live-clock" class="text-xs font-mono font-bold dark:text-slate-400">00:00:00</span>
+                <div class="h-6 w-12 bg-red-600 rounded flex items-center justify-center text-[10px] text-white font-black italic">FTS</div>
             </div>
         </header>
 
-        <main class="flex-1 overflow-auto p-6 relative">
+        <main class="flex-1 overflow-auto p-6">
             <div id="mod-welcome" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div class="stat-card">
-                        <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl"><i class="fas fa-truck text-lg"></i></div>
-                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Fleet Status</p><p class="text-lg font-black dark:text-white uppercase">Active</p></div>
+                        <div class="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded"><i class="fas fa-satellite text-sm"></i></div>
+                        <div><p class="text-[9px] text-slate-500 font-bold uppercase">System Status</p><p class="text-xs font-black dark:text-white uppercase">Nominal</p></div>
                     </div>
                     <div class="stat-card">
-                        <div class="p-3 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-xl"><i class="fas fa-route text-lg"></i></div>
-                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Planner Status</p><p class="text-lg font-black dark:text-white uppercase">Live</p></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="p-3 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-xl"><i class="fas fa-clock text-lg"></i></div>
-                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Current Time</p><p id="live-clock" class="text-lg font-black dark:text-white">00:00</p></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-xl"><i class="fas fa-map-marker-alt text-lg"></i></div>
-                        <div><p class="text-[10px] text-slate-500 font-bold uppercase">Region</p><p class="text-lg font-black dark:text-white uppercase">Nottingham</p></div>
+                        <div class="p-2 bg-green-100 dark:bg-green-900/30 text-green-600 rounded"><i class="fas fa-signal text-sm"></i></div>
+                        <div><p class="text-[9px] text-slate-500 font-bold uppercase">Data Link</p><p class="text-xs font-black dark:text-white uppercase">Live</p></div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="frost-card lg:col-span-1">
-                        <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-[#0f172a]">
-                            <h3 class="text-xs font-black uppercase italic text-red-600">Local Weather Forecast</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="frost-card">
+                        <div class="px-4 py-3 border-b border-slate-800 bg-slate-50 dark:bg-[#0f172a] flex justify-between items-center">
+                            <h3 class="text-[10px] font-black uppercase italic text-blue-500">Live Weather Radar (Nottingham)</h3>
                         </div>
-                        <div class="h-[400px]">
-                            <iframe src="https://www.meteoblue.com/en/weather/widget/daily/nottingham_united-kingdom_2641170?geoloc=fixed&days=4&tempunit=CELSIUS&windunit=MILE_PER_HOUR&precipunit=MILLIMETRE&coloured=coloured&pictoicon=1&elm%5B0%5D=min&elm%5B1%5D=max&elm%5B2%5D=wind&elm%5B3%5D=precipitation&elm%5B4%5D=sun&layout=light"  frameborder="0" scrolling="NO" allowtransparency="true" style="width: 100%; height: 100%;"></iframe>
+                        <div class="h-[450px]">
+                            <iframe src="https://www.meteoblue.com/en/weather/maps/widget/nottingham_united-kingdom_2641170?windAnimation=0&gust=0&satellite=1&cloudsAndPrecipitation=1&temperature=0&sunshine=0&extremeForecast=0&geoloc=fixed&tempunit=C&windunit=mph&lengthunit=metric&zoom=7&autoscale=on" frameborder="0" scrolling="NO" allowtransparency="true" style="width: 100%; height: 100%;"></iframe>
                         </div>
                     </div>
 
-                    <div class="frost-card lg:col-span-2">
-                        <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-[#0f172a]">
-                            <h3 class="text-xs font-black uppercase italic text-red-600">Live Traffic Control Hub</h3>
+                    <div class="frost-card">
+                        <div class="px-4 py-3 border-b border-slate-800 bg-slate-50 dark:bg-[#0f172a] flex justify-between items-center">
+                            <h3 class="text-[10px] font-black uppercase italic text-red-600">Major Road Incident Feed</h3>
+                            <span class="animate-pulse text-[9px] text-red-500 font-bold">● LIVE</span>
                         </div>
-                        <div class="h-[400px]">
-                            <iframe src="https://embed.waze.com/iframe?zoom=13&lat=52.9548&lon=-1.1581&pin=1&desc=Frost+Nottingham+Hub" width="100%" height="100%" allowfullscreen style="border:none;"></iframe>
+                        <div id="traffic-feed" class="h-[450px] overflow-y-auto bg-slate-50 dark:bg-[#0a0f1d] p-2 space-y-2">
+                            <div class="text-center py-20 text-[10px] uppercase font-bold text-slate-600 animate-pulse">Syncing Highways Data...</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <iframe id="mod-iframe" name="main_frame" src="about:blank" class="hidden w-full h-full rounded-xl border-none shadow-2xl"></iframe>
+            <iframe id="mod-iframe" name="main_frame" src="about:blank" class="hidden w-full h-full rounded border-none shadow-2xl"></iframe>
             <div id="mod-clients" class="hidden">
-                <div class="flex justify-between items-center mb-6">
+                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-black italic uppercase dark:text-white tracking-tighter">Customer Database</h2>
                     <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Quick Search..." class="bg-white dark:bg-slate-800 border border-slate-700 text-xs px-4 py-2 rounded-lg outline-none focus:border-blue-500">
                 </div>
-                <div id="client-container" class="client-grid"></div>
+                <div id="client-container" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
             </div>
-            <div id="mod-add-client" class="hidden max-w-2xl mx-auto">
-                <div class="frost-card border-t-4 border-t-red-600 shadow-xl">
-                    <div class="p-6">
-                        <h2 class="text-xs font-black text-slate-800 dark:text-white uppercase mb-6 italic tracking-widest border-b pb-2">New Account Setup</h2>
-                        <div class="grid grid-cols-2 gap-4">
-                           <div class="col-span-2"><span class="label-text">Full Company Name</span><input type="text" id="new-coname" class="frost-input"></div>
-                           <div><span class="label-text">City/Town</span><input type="text" id="new-town" class="frost-input"></div>
-                           <div><span class="label-text">Postcode</span><input type="text" id="new-pcode" class="frost-input"></div>
-                           <div><span class="label-text">Contact Phone</span><input type="text" id="new-phone" class="frost-input"></div>
-                           <div class="col-span-2"><span class="label-text">Billing Email</span><input type="email" id="new-email" class="frost-input"></div>
-                        </div>
-                        <button onclick="saveClient()" class="w-full mt-6 bg-blue-700 text-white font-black py-4 rounded-lg uppercase text-xs tracking-widest hover:bg-red-600 transition-all shadow-lg">Commit to Database</button>
-                    </div>
-                </div>
-            </div>
+            <div id="mod-add-client" class="hidden max-w-xl mx-auto">
+                 </div>
         </main>
     </div>
 
@@ -208,17 +188,41 @@
         const SUPABASE_URL = 'https://tdrzytgiqvdulityqttr.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkcnp5dGdpcXZkdWxpdHlxdHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTM5NTMsImV4cCI6MjA4ODcyOTk1M30.XN46i7u6STD-2afmN7-Jh1MltADGpEuWlLt_n7wknbA';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        let allClients = [];
 
         window.onload = function() {
-            setInterval(() => {
-                document.getElementById('live-clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            }, 1000);
-            const lastModule = localStorage.getItem('frost_last_module') || 'welcome';
-            const lastUrl = localStorage.getItem('frost_last_url');
-            if (lastModule === 'iframe' && lastUrl) showModule('iframe', lastUrl);
-            else showModule(lastModule);
+            updateTime();
+            setInterval(updateTime, 1000);
+            fetchTraffic();
+            setInterval(fetchTraffic, 300000);
+            showModule(localStorage.getItem('frost_last_module') || 'welcome');
         };
+
+        function updateTime() {
+            document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('en-GB');
+        }
+
+        async function fetchTraffic() {
+            const feedContainer = document.getElementById('traffic-feed');
+            try {
+                const response = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://nationalhighways.co.uk/travel-updates/traffic-information-rss-feeds/current-incidents/'));
+                const data = await response.json();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data.contents, "text/xml");
+                const items = xmlDoc.querySelectorAll("item");
+                let html = '';
+                items.forEach(item => {
+                    const title = item.querySelector("title").textContent;
+                    const desc = item.querySelector("description").textContent;
+                    const pubDate = new Date(item.querySelector("pubDate").textContent).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const isHigh = title.includes('Serious') || title.includes('Closed') || title.includes('M1');
+                    html += `<div class="traffic-item ${isHigh ? 'severity-high' : 'severity-med'} dark:text-slate-300">
+                        <div class="flex justify-between mb-1"><span class="font-black text-blue-500 uppercase">${title}</span><span class="text-[9px] text-slate-500 font-mono">${pubDate}</span></div>
+                        <p class="text-slate-500 leading-tight">${desc.split('<br')[0]}</p>
+                    </div>`;
+                });
+                feedContainer.innerHTML = html || '<div class="text-center py-20 text-slate-500 uppercase text-[10px]">No major incidents.</div>';
+            } catch (e) { feedContainer.innerHTML = 'Error loading feed'; }
+        }
 
         function showModule(modId, url = null) {
             ['mod-welcome', 'mod-iframe', 'mod-clients', 'mod-add-client'].forEach(id => document.getElementById(id).classList.add('hidden'));
@@ -229,61 +233,7 @@
                 localStorage.setItem('frost_last_url', url);
             }
             localStorage.setItem('frost_last_module', modId);
-            if(modId === 'clients') fetchClients();
             updateActiveTab(modId, url);
-        }
-
-        function updateActiveTab(modId, url) {
-            document.querySelectorAll('.sidebar-item, .submenu-item').forEach(el => el.classList.remove('active-tab'));
-            if (modId === 'welcome') document.getElementById('nav-welcome').classList.add('active-tab');
-            else if (url) {
-                const activeLink = Array.from(document.querySelectorAll('.submenu-item')).find(a => a.href === url);
-                if (activeLink) activeLink.classList.add('active-tab');
-            }
-        }
-
-        async function saveClient() {
-            const payload = {
-                coname: document.getElementById('new-coname').value,
-                town: document.getElementById('new-town').value,
-                pcode: document.getElementById('new-pcode').value.toUpperCase(),
-                phone: document.getElementById('new-phone').value,
-                email: document.getElementById('new-email').value
-            };
-            const { error } = await _supabase.from('crm_customer').insert([payload]);
-            if(!error) { alert("Customer Saved Successfully!"); showModule('clients'); }
-        }
-
-        async function fetchClients() {
-            const container = document.getElementById('client-container');
-            container.innerHTML = '<div class="col-span-full py-10 text-center text-[10px] uppercase font-bold text-slate-500 animate-pulse tracking-widest">Querying Ledger...</div>';
-            try {
-                const { data, error } = await _supabase.from('crm_customer').select('*').order('coname', { ascending: true });
-                if (!error) { allClients = data; renderClients(data); }
-            } catch (e) { console.error(e); }
-        }
-
-        function renderClients(data) {
-            const container = document.getElementById('client-container');
-            if (data.length === 0) {
-                container.innerHTML = '<p class="col-span-full text-center py-10 text-slate-500 uppercase text-xs">No records found.</p>';
-                return;
-            }
-            container.innerHTML = data.map(c => `
-                <div class="client-card shadow-sm hover:shadow-md transition-shadow">
-                    <h4 class="dark:text-white font-black uppercase text-[11px] mb-2 italic tracking-tighter truncate">${c.coname || 'UNKNOWN COMPANY'}</h4>
-                    <div class="space-y-1 text-[10px] text-slate-500 font-bold uppercase">
-                        <div><i class="fas fa-location-dot w-4 text-slate-400"></i> ${c.town || '---'}, ${c.pcode || '---'}</div>
-                        <div><i class="fas fa-phone w-4 text-slate-400"></i> <a href="tel:${c.phone}" class="hover:text-blue-500">${c.phone || 'N/A'}</a></div>
-                        <div class="truncate"><i class="fas fa-envelope w-4 text-slate-400"></i> <a href="mailto:${c.email}" class="hover:text-blue-500 lowercase font-normal">${c.email || 'N/A'}</a></div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function filterClients() {
-            const term = document.getElementById('clientSearch').value.toLowerCase();
-            renderClients(allClients.filter(c => (c.coname || '').toLowerCase().includes(term)));
         }
 
         function toggleSubmenu(id, arrowId) {
@@ -293,6 +243,11 @@
 
         function toggleSettings() {
             document.documentElement.classList.toggle('dark');
+        }
+
+        function updateActiveTab(modId, url) {
+            document.querySelectorAll('.sidebar-item, .submenu-item').forEach(el => el.classList.remove('active-tab'));
+            if (modId === 'welcome') document.getElementById('nav-welcome').classList.add('active-tab');
         }
     </script>
 </body>
