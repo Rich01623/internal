@@ -137,7 +137,10 @@
                         <iframe src="https://www.meteoblue.com/en/weather/maps/widget/nottingham_united-kingdom_2641170?satellite=1&cloudsAndPrecipitation=1&geoloc=fixed&tempunit=C&windunit=mph&zoom=6" frameborder="0" style="width: 100%; height: 90%;"></iframe>
                     </div>
                     <div class="bg-white dark:bg-[#0f172a] rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden h-[500px]">
-                        <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex justify-between"><h3 class="text-[10px] font-black uppercase italic text-red-600">Road Incident Feed</h3><button onclick="fetchTraffic()" class="text-[9px] text-blue-500 font-bold uppercase hover:underline">Refresh</button></div>
+                        <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex justify-between">
+                            <h3 class="text-[10px] font-black uppercase italic text-red-600">Road Incident Feed</h3>
+                            <button onclick="fetchTraffic()" class="text-[9px] text-blue-500 font-bold uppercase hover:underline">Refresh</button>
+                        </div>
                         <div id="traffic-feed" class="h-[440px] overflow-y-auto p-2 space-y-2">
                             <div class="text-center py-10 text-[10px] text-slate-500 uppercase font-bold animate-pulse">Establishing Live Feed...</div>
                         </div>
@@ -187,28 +190,35 @@
 
         async function fetchTraffic() {
             const feedContainer = document.getElementById('traffic-feed');
-            try {
-                const response = await fetch('https://corsproxy.io/?' + encodeURIComponent('https://nationalhighways.co.uk/travel-updates/traffic-information-rss-feeds/current-incidents/'));
-                const text = await response.text();
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(text, "text/xml");
-                const items = xmlDoc.querySelectorAll("item");
-                let html = '';
-                
-                if (items.length === 0) throw new Error("Empty Feed");
+            const proxies = ['https://corsproxy.io/?', 'https://api.allorigins.win/get?url='];
+            const targetUrl = 'https://nationalhighways.co.uk/travel-updates/traffic-information-rss-feeds/current-incidents/';
+            let success = false;
 
-                items.forEach(item => {
-                    const title = item.querySelector("title").textContent;
-                    const desc = item.querySelector("description").textContent;
-                    html += `<div class="p-2 border-l-4 border-red-500 bg-slate-50 dark:bg-slate-900 mb-2 rounded-r shadow-sm">
+            for (let proxy of proxies) {
+                if (success) break;
+                try {
+                    const response = await fetch(proxy + encodeURIComponent(targetUrl));
+                    let text = proxy.includes('allorigins') ? (await response.json()).contents : await response.text();
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(text, "text/xml");
+                    const items = xmlDoc.querySelectorAll("item");
+                    
+                    if (items.length > 0) {
+                        let html = '';
+                        items.forEach(item => {
+                            const title = item.querySelector("title")?.textContent || "Unknown";
+                            const desc = (item.querySelector("description")?.textContent || "").split('<br')[0];
+                            html += `<div class="p-2 border-l-4 border-red-500 bg-slate-50 dark:bg-slate-900/50 mb-2 rounded-r shadow-sm">
                                 <div class="font-black text-red-600 uppercase text-[10px] mb-1">${title}</div>
-                                <p class="text-slate-500 dark:text-slate-400 text-[10px] leading-tight">${desc.split('<br')[0]}</p>
+                                <p class="text-slate-500 dark:text-slate-400 text-[10px] leading-tight">${desc}</p>
                              </div>`;
-                });
-                feedContainer.innerHTML = html;
-            } catch (e) { 
-                feedContainer.innerHTML = `<div class="text-center py-10"><p class="text-[10px] text-slate-500 font-bold uppercase">Feed Unavailable</p></div>`;
+                        });
+                        feedContainer.innerHTML = html;
+                        success = true;
+                    }
+                } catch (e) { console.error("Proxy error, trying next..."); }
             }
+            if (!success) feedContainer.innerHTML = '<div class="text-center py-10 text-[10px] text-slate-500 uppercase font-bold italic">Feed Temporarily Offline</div>';
         }
 
         function showModule(modId, url = null) {
@@ -217,6 +227,10 @@
             if (modId === 'iframe' && url) document.getElementById('mod-iframe').src = url;
             if (modId === 'clients') fetchClients();
             localStorage.setItem('frost_last_module', modId);
+            
+            // UI Visual Update
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active-tab'));
+            event?.currentTarget?.classList?.add('active-tab');
         }
 
         async function fetchClients() {
@@ -240,8 +254,7 @@
                         <div class="flex justify-between text-[10px] border-t border-slate-100 dark:border-slate-800 pt-1 mt-1"><span class="text-blue-500 font-bold">PHONE</span>${phoneDisplay}</div>
                         <div class="mt-1">${emailDisplay}</div>
                     </div>
-                </div>
-            `}).join('');
+                </div>`}).join('');
         }
 
         function filterClients() {
