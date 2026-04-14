@@ -32,10 +32,12 @@
         .rotate-180 { transform: rotate(180deg); }
         .hidden { display: none; }
         
+        /* Night Mode Logic */
         .dark body, .dark main { background-color: #020617 !important; }
         .dark aside { background-color: #0f172a; }
         .dark .frost-field { background: #0f172a !important; color: #ffffff !important; border: 1px solid #334155 !important; }
         
+        /* Day Mode Logic */
         body:not(.dark) .frost-field { background: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
         
         .client-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; border-left: 4px solid #2563eb; }
@@ -135,12 +137,12 @@
                         <iframe src="https://www.meteoblue.com/en/weather/maps/widget/nottingham_united-kingdom_2641170?satellite=1&cloudsAndPrecipitation=1&geoloc=fixed&tempunit=C&windunit=mph&zoom=6" frameborder="0" style="width: 100%; height: 90%;"></iframe>
                     </div>
                     <div class="bg-white dark:bg-[#0f172a] rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden h-[500px]">
-                        <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex justify-between">
+                        <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
                             <h3 class="text-[10px] font-black uppercase italic text-red-600">Road Incident Feed</h3>
-                            <button onclick="fetchTraffic()" class="text-[9px] text-blue-500 font-bold uppercase hover:underline">Refresh</button>
+                            <button onclick="fetchTraffic()" class="text-[9px] text-blue-500 font-bold uppercase hover:underline">Manual Sync</button>
                         </div>
                         <div id="traffic-feed" class="h-[440px] overflow-y-auto p-2 space-y-2">
-                            <div class="text-center py-10 text-[10px] text-slate-500 uppercase font-bold animate-pulse">Establishing Live Feed...</div>
+                            <div class="text-center py-10 text-[10px] text-slate-500 uppercase font-bold animate-pulse">Requesting Secure Tunnel...</div>
                         </div>
                     </div>
                 </div>
@@ -151,7 +153,7 @@
             <div id="mod-clients" class="hidden">
                  <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xl font-black italic uppercase dark:text-white">Customer Database</h2>
-                    <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Search..." class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs px-4 py-2 rounded dark:text-white outline-none">
+                    <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Search Company..." class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs px-4 py-2 rounded dark:text-white outline-none">
                 </div>
                 <div id="client-container" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
             </div>
@@ -180,7 +182,7 @@
 
         window.onload = function() {
             updateTime(); setInterval(updateTime, 1000);
-            fetchTraffic(); setInterval(fetchTraffic, 600000);
+            fetchTraffic(); setInterval(fetchTraffic, 900000); // 15min refresh
             showModule(localStorage.getItem('frost_last_module') || 'welcome');
         };
 
@@ -190,14 +192,15 @@
             const feedContainer = document.getElementById('traffic-feed');
             const targetUrl = 'https://nationalhighways.co.uk/travel-updates/traffic-information-rss-feeds/current-incidents/';
             
-            // Triple-proxy strategy to handle 404s and CORS blocks
+            // 2026 Enhanced Proxy Rotation
             const proxies = [
+                `https://proxy.corsfix.com/?${targetUrl}`,
                 `https://api.codetabs.com/v1/proxy?quest=${targetUrl}`,
-                `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
-                `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
+                `https://thingproxy.freeboard.io/fetch/${targetUrl}`
             ];
 
             let success = false;
+            feedContainer.innerHTML = '<div class="text-center py-10 text-[9px] text-blue-500 font-black animate-pulse">CYCLING PROXY TUNNELS...</div>';
 
             for (let url of proxies) {
                 if (success) break;
@@ -205,13 +208,8 @@
                     const response = await fetch(url);
                     if (!response.ok) continue;
 
-                    let text = '';
-                    if (url.includes('allorigins')) {
-                        const json = await response.json();
-                        text = json.contents;
-                    } else {
-                        text = await response.text();
-                    }
+                    const text = await response.text();
+                    if (!text || text.length < 500) continue; // Skip suspected error pages
 
                     const parser = new DOMParser();
                     const xmlDoc = parser.parseFromString(text, "text/xml");
@@ -220,26 +218,31 @@
                     if (items.length > 0) {
                         let html = '';
                         items.forEach(item => {
-                            const title = item.querySelector("title")?.textContent || "Unknown Incident";
+                            const title = item.querySelector("title")?.textContent || "Alert";
                             const desc = (item.querySelector("description")?.textContent || "").split('<br')[0];
+                            const pubDate = item.querySelector("pubDate")?.textContent.slice(0, 16) || "";
+                            
                             html += `
-                                <div class="p-2 border-l-4 border-red-500 bg-slate-50 dark:bg-slate-900/50 mb-2 rounded-r shadow-sm">
-                                    <div class="font-black text-red-600 uppercase text-[10px] mb-1 tracking-tight">${title}</div>
+                                <div class="p-2 border-l-4 border-red-500 bg-slate-50 dark:bg-slate-900/50 mb-2 rounded shadow-sm">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <div class="font-black text-red-600 uppercase text-[10px] tracking-tighter">${title}</div>
+                                        <span class="text-[8px] text-slate-400 font-mono">${pubDate}</span>
+                                    </div>
                                     <p class="text-slate-500 dark:text-slate-400 text-[10px] leading-tight">${desc}</p>
                                 </div>`;
                         });
                         feedContainer.innerHTML = html;
                         success = true;
                     }
-                } catch (e) { console.error("Proxy rotation: node failed, moving to next."); }
+                } catch (e) { console.warn("Node skip."); }
             }
 
             if (!success) {
                 feedContainer.innerHTML = `
-                    <div class="text-center py-10 opacity-50">
-                        <i class="fas fa-satellite-dish mb-2"></i>
-                        <p class="text-[10px] font-black uppercase">Traffic Data Offline</p>
-                        <p class="text-[9px] mt-1 italic">Secure tunnel rejected by host.</p>
+                    <div class="text-center py-12 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded m-2 opacity-50">
+                        <i class="fas fa-link-slash mb-2"></i>
+                        <p class="text-[10px] font-black uppercase">Tunnel Rejection</p>
+                        <p class="text-[9px] italic">Highway Feed CORS Blocked</p>
                     </div>`;
             }
         }
@@ -257,26 +260,28 @@
 
         async function fetchClients() {
             const container = document.getElementById('client-container');
-            container.innerHTML = '<div class="col-span-full text-center py-20 text-blue-500 uppercase text-xs font-bold animate-pulse">Syncing Database...</div>';
+            container.innerHTML = '<div class="col-span-full text-center py-20 text-blue-500 uppercase text-xs font-bold animate-pulse tracking-widest">SYNCING CRM...</div>';
             const { data, error } = await _supabase.from('crm_customer').select('*').order('coname', { ascending: true });
             if (!error) { allClients = data; renderClients(data); }
         }
 
         function renderClients(data) {
             const container = document.getElementById('client-container');
-            container.innerHTML = data.map(c => {
-                const phoneDisplay = c.phone ? `<a href="tel:${c.phone.replace(/\s+/g, '')}" class="comms-link text-blue-600 dark:text-blue-400 font-bold">${c.phone}</a>` : '-';
-                const emailDisplay = c.email ? `<a href="mailto:${c.email}" class="comms-link text-blue-600 dark:text-blue-400 font-bold italic truncate block">${c.email}</a>` : '-';
-                return `
+            container.innerHTML = data.map(c => `
                 <div class="client-card">
                     <h4 class="text-slate-900 dark:text-white font-black uppercase text-[11px] truncate italic border-b border-slate-100 dark:border-slate-700 pb-2 mb-2">${c.coname || 'UNKNOWN'}</h4>
                     <div class="space-y-1">
-                        <div class="flex justify-between text-[10px]"><span class="text-slate-400 font-bold uppercase tracking-tighter">Area</span><span class="text-slate-600 dark:text-slate-300">${c.town || '-'}</span></div>
+                        <div class="flex justify-between text-[10px]"><span class="text-slate-400 font-bold uppercase tracking-tighter">Town</span><span class="text-slate-600 dark:text-slate-300 font-semibold">${c.town || '-'}</span></div>
                         <div class="flex justify-between text-[10px]"><span class="text-slate-400 font-bold uppercase tracking-tighter">P-Code</span><span class="text-slate-600 dark:text-slate-300 font-mono">${c.pcode || '-'}</span></div>
-                        <div class="flex justify-between text-[10px] border-t border-slate-100 dark:border-slate-800 pt-1 mt-1"><span class="text-blue-500 font-bold">PHONE</span>${phoneDisplay}</div>
-                        <div class="mt-1">${emailDisplay}</div>
+                        <div class="flex justify-between text-[10px] border-t border-slate-100 dark:border-slate-800 pt-1 mt-1 font-bold">
+                            <span class="text-blue-500 uppercase">Tel</span>
+                            <a href="tel:${c.phone}" class="comms-link text-blue-600 dark:text-blue-400">${c.phone || '-'}</a>
+                        </div>
+                        <div class="mt-1">
+                             <a href="mailto:${c.email}" class="comms-link text-[10px] text-blue-600 dark:text-blue-400 italic truncate block">${c.email || ''}</a>
+                        </div>
                     </div>
-                </div>`}).join('');
+                </div>`).join('');
         }
 
         function filterClients() {
