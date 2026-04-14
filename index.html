@@ -4,9 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Frost Transport Solutions | Portal</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = { darkMode: 'class' }
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        frostNight: '#020617',
+                        frostSlate: '#0f172a'
+                    }
+                }
+            }
+        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -22,26 +32,27 @@
         .rotate-180 { transform: rotate(180deg); }
         .hidden { display: none; }
         
-        /* Night Mode Overrides */
+        /* Night Mode Logic */
         .dark body, .dark main { background-color: #020617 !important; }
         .dark aside { background-color: #0f172a; }
         .dark .frost-field { background: #0f172a !important; color: #ffffff !important; border: 1px solid #334155 !important; }
         
-        /* Day Mode Overrides (Contrast Fix) */
+        /* Day Mode Logic (Contrast Fix) */
         body:not(.dark) .frost-field { background: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
         
         .client-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; border-left: 4px solid #2563eb; }
         .dark .client-card { background: #1e293b; border-color: #334155; }
         
         .frost-field { width: 100%; padding: 12px; border-radius: 6px; font-size: 14px; outline: none; display: block; }
-        .frost-field:focus { border-color: #3b82f6 !important; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
-        
         .label-text { font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase; margin-bottom: 6px; display: block; }
         .dark .label-text { color: #94a3b8; }
         
         .comms-link { transition: color 0.2s; }
         .comms-link:hover { text-decoration: underline; color: #2563eb !important; }
         .dark .comms-link:hover { color: #60a5fa !important; }
+
+        #traffic-feed::-webkit-scrollbar { width: 4px; }
+        #traffic-feed::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 flex h-screen overflow-hidden">
@@ -114,7 +125,7 @@
             <h2 class="text-xs font-black uppercase tracking-widest text-slate-500 italic">Nottingham HQ Hub</h2>
             <div class="flex items-center space-x-4">
                 <span id="live-clock" class="text-xs font-mono font-bold dark:text-slate-400">00:00:00</span>
-                <div class="h-6 w-12 bg-red-600 rounded flex items-center justify-center text-[10px] text-white font-black italic">FTS</div>
+                <div class="h-6 w-12 bg-red-600 rounded flex items-center justify-center text-[10px] text-white font-black italic shadow-lg">FTS</div>
             </div>
         </header>
 
@@ -122,12 +133,14 @@
             <div id="mod-welcome" class="space-y-6">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-white dark:bg-[#0f172a] rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden h-[500px]">
-                        <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-800"><h3 class="text-[10px] font-black uppercase italic text-blue-500">Weather Radar</h3></div>
-                        <iframe src="https://www.meteoblue.com/en/weather/maps/widget/nottingham_united-kingdom_2641170?satellite=1&cloudsAndPrecipitation=1&geoloc=fixed&tempunit=C&windunit=mph&zoom=7" frameborder="0" style="width: 100%; height: 90%;"></iframe>
+                        <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-800"><h3 class="text-[10px] font-black uppercase italic text-blue-500">Live Weather Radar</h3></div>
+                        <iframe src="https://www.meteoblue.com/en/weather/maps/widget/nottingham_united-kingdom_2641170?satellite=1&cloudsAndPrecipitation=1&geoloc=fixed&tempunit=C&windunit=mph&zoom=6" frameborder="0" style="width: 100%; height: 90%;"></iframe>
                     </div>
                     <div class="bg-white dark:bg-[#0f172a] rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden h-[500px]">
-                        <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex justify-between"><h3 class="text-[10px] font-black uppercase italic text-red-600">Road Incident Feed</h3><span class="animate-pulse text-[9px] text-red-500 font-bold">● LIVE</span></div>
-                        <div id="traffic-feed" class="h-[440px] overflow-y-auto p-2 space-y-2"></div>
+                        <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex justify-between"><h3 class="text-[10px] font-black uppercase italic text-red-600">Road Incident Feed</h3><button onclick="fetchTraffic()" class="text-[9px] text-blue-500 font-bold uppercase hover:underline">Refresh</button></div>
+                        <div id="traffic-feed" class="h-[440px] overflow-y-auto p-2 space-y-2">
+                            <div class="text-center py-10 text-[10px] text-slate-500 uppercase font-bold animate-pulse">Establishing Live Feed...</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -146,28 +159,13 @@
                  <div class="bg-white dark:bg-[#0f172a] rounded-lg p-8 border-t-4 border-blue-600 shadow-xl">
                     <h2 class="text-xs font-black uppercase mb-8 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-2 italic tracking-widest">Add New Client</h2>
                     <div class="grid grid-cols-2 gap-6">
-                        <div class="col-span-2">
-                            <label class="label-text">Company Name</label>
-                            <input type="text" id="new-coname" class="frost-field" placeholder="Enter name...">
-                        </div>
-                        <div>
-                            <label class="label-text">Town</label>
-                            <input type="text" id="new-town" class="frost-field" placeholder="Enter town...">
-                        </div>
-                        <div>
-                            <label class="label-text">Postcode</label>
-                            <input type="text" id="new-pcode" class="frost-field" placeholder="Enter postcode...">
-                        </div>
-                        <div>
-                            <label class="label-text">Phone Number</label>
-                            <input type="text" id="new-phone" class="frost-field" placeholder="Enter number...">
-                        </div>
-                        <div>
-                            <label class="label-text">Email Address</label>
-                            <input type="email" id="new-email" class="frost-field" placeholder="Enter email...">
-                        </div>
+                        <div class="col-span-2"><label class="label-text">Company Name</label><input type="text" id="new-coname" class="frost-field"></div>
+                        <div><label class="label-text">Town</label><input type="text" id="new-town" class="frost-field"></div>
+                        <div><label class="label-text">Postcode</label><input type="text" id="new-pcode" class="frost-field"></div>
+                        <div><label class="label-text">Phone</label><input type="text" id="new-phone" class="frost-field"></div>
+                        <div><label class="label-text">Email</label><input type="email" id="new-email" class="frost-field"></div>
                     </div>
-                    <button onclick="saveClient()" class="w-full mt-10 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded uppercase text-xs tracking-widest transition-all shadow-lg">Store Record</button>
+                    <button onclick="saveClient()" class="w-full mt-10 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded uppercase text-xs tracking-widest transition-all">Store Record</button>
                  </div>
             </div>
         </main>
@@ -181,7 +179,7 @@
 
         window.onload = function() {
             updateTime(); setInterval(updateTime, 1000);
-            fetchTraffic(); setInterval(fetchTraffic, 300000);
+            fetchTraffic(); setInterval(fetchTraffic, 600000);
             showModule(localStorage.getItem('frost_last_module') || 'welcome');
         };
 
@@ -190,19 +188,27 @@
         async function fetchTraffic() {
             const feedContainer = document.getElementById('traffic-feed');
             try {
-                const response = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://nationalhighways.co.uk/travel-updates/traffic-information-rss-feeds/current-incidents/'));
-                const data = await response.json();
+                const response = await fetch('https://corsproxy.io/?' + encodeURIComponent('https://nationalhighways.co.uk/travel-updates/traffic-information-rss-feeds/current-incidents/'));
+                const text = await response.text();
                 const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(data.contents, "text/xml");
+                const xmlDoc = parser.parseFromString(text, "text/xml");
                 const items = xmlDoc.querySelectorAll("item");
                 let html = '';
+                
+                if (items.length === 0) throw new Error("Empty Feed");
+
                 items.forEach(item => {
                     const title = item.querySelector("title").textContent;
                     const desc = item.querySelector("description").textContent;
-                    html += `<div class="p-2 border-l-4 border-blue-500 bg-slate-50 dark:bg-slate-900 mb-2 rounded-r"><div class="font-black text-blue-500 uppercase text-[10px] mb-1">${title}</div><p class="text-slate-500 dark:text-slate-400 text-[10px] leading-tight">${desc.split('<br')[0]}</p></div>`;
+                    html += `<div class="p-2 border-l-4 border-red-500 bg-slate-50 dark:bg-slate-900 mb-2 rounded-r shadow-sm">
+                                <div class="font-black text-red-600 uppercase text-[10px] mb-1">${title}</div>
+                                <p class="text-slate-500 dark:text-slate-400 text-[10px] leading-tight">${desc.split('<br')[0]}</p>
+                             </div>`;
                 });
-                feedContainer.innerHTML = html || 'No current incidents.';
-            } catch (e) { feedContainer.innerHTML = 'Data Offline'; }
+                feedContainer.innerHTML = html;
+            } catch (e) { 
+                feedContainer.innerHTML = `<div class="text-center py-10"><p class="text-[10px] text-slate-500 font-bold uppercase">Feed Unavailable</p></div>`;
+            }
         }
 
         function showModule(modId, url = null) {
@@ -253,7 +259,6 @@
             };
             const { error } = await _supabase.from('crm_customer').insert([payload]);
             if(!error) { alert("Stored Successfully"); showModule('clients'); }
-            else { alert("Error: " + error.message); }
         }
 
         function toggleSubmenu(id, arrowId) {
