@@ -8,14 +8,7 @@
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        frostNight: '#020617',
-                        frostSlate: '#0f172a'
-                    }
-                }
-            }
+            theme: { extend: { colors: { frostNight: '#020617', frostSlate: '#0f172a' } } }
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -31,24 +24,18 @@
         .submenu-item:hover { color: #ffffff; background-color: #1e293b; }
         .rotate-180 { transform: rotate(180deg); }
         .hidden { display: none; }
-        
         .dark body, .dark main { background-color: #020617 !important; }
         .dark aside { background-color: #0f172a; }
         .dark .frost-field { background: #0f172a !important; color: #ffffff !important; border: 1px solid #334155 !important; }
-        
         body:not(.dark) .frost-field { background: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
-        
         .client-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; border-left: 4px solid #2563eb; }
         .dark .client-card { background: #1e293b; border-color: #334155; }
-        
         .frost-field { width: 100%; padding: 12px; border-radius: 6px; font-size: 14px; outline: none; display: block; }
         .label-text { font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase; margin-bottom: 6px; display: block; }
         .dark .label-text { color: #94a3b8; }
-        
         .comms-link { transition: color 0.2s; }
         .comms-link:hover { text-decoration: underline; color: #2563eb !important; }
         .dark .comms-link:hover { color: #60a5fa !important; }
-
         #traffic-feed::-webkit-scrollbar { width: 4px; }
         #traffic-feed::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
@@ -137,10 +124,10 @@
                     <div class="bg-white dark:bg-[#0f172a] rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden h-[500px]">
                         <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
                             <h3 class="text-[10px] font-black uppercase italic text-red-600">Road Incident Feed</h3>
-                            <button onclick="fetchTraffic()" class="text-[9px] text-blue-500 font-bold hover:underline uppercase">Sync</button>
+                            <button onclick="fetchTraffic()" class="text-[9px] text-blue-500 font-bold hover:underline uppercase tracking-widest">Manual Sync</button>
                         </div>
                         <div id="traffic-feed" class="h-[440px] overflow-y-auto p-2 space-y-2">
-                            <div class="text-center py-10 text-[9px] text-slate-500 uppercase font-bold animate-pulse">Establishing Tunnel...</div>
+                            <div class="text-center py-10 text-[9px] text-slate-500 uppercase font-black animate-pulse">Requesting Clearance...</div>
                         </div>
                     </div>
                 </div>
@@ -190,21 +177,21 @@
             const feedContainer = document.getElementById('traffic-feed');
             const target = 'https://nationalhighways.co.uk/travel-updates/traffic-information-rss-feeds/current-incidents/';
             
-            // Proxy Rotation Strategy
+            // New Aggressive Proxy Order for 2026
             const proxies = [
-                { url: `https://api.allorigins.win/get?url=${encodeURIComponent(target)}`, mode: 'json' },
                 { url: `https://api.codetabs.com/v1/proxy?quest=${target}`, mode: 'text' },
-                { url: `https://corsproxy.io/?${encodeURIComponent(target)}`, mode: 'text' }
+                { url: `https://api.allorigins.win/get?url=${encodeURIComponent(target)}`, mode: 'json' },
+                { url: `https://thingproxy.freeboard.io/fetch/${target}`, mode: 'text' }
             ];
 
-            feedContainer.innerHTML = '<div class="text-center py-10 text-[9px] text-blue-500 font-black animate-pulse uppercase tracking-widest">SCANNING TUNNELS...</div>';
+            feedContainer.innerHTML = '<div class="text-center py-10 text-[9px] text-blue-500 font-black animate-pulse uppercase tracking-[0.2em]">Rotating Secure Nodes...</div>';
 
             let success = false;
             for (const proxy of proxies) {
                 if (success) break;
                 try {
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 sec timeout per proxy
+                    const timeoutId = setTimeout(() => controller.abort(), 4000); // Faster failover
 
                     const response = await fetch(proxy.url, { signal: controller.signal });
                     clearTimeout(timeoutId);
@@ -228,14 +215,14 @@
                     if (items.length > 0) {
                         let html = '';
                         items.forEach(item => {
-                            const title = item.querySelector("title")?.textContent || "Alert";
+                            const title = item.querySelector("title")?.textContent || "Update";
                             const desc = (item.querySelector("description")?.textContent || "").split('<br')[0];
                             const pubDate = item.querySelector("pubDate")?.textContent.slice(0, 16) || "";
                             
                             html += `
                                 <div class="p-2 border-l-4 border-red-500 bg-slate-50 dark:bg-slate-900/50 mb-2 rounded shadow-sm hover:bg-white dark:hover:bg-slate-800 transition-all">
                                     <div class="flex justify-between items-center mb-1">
-                                        <div class="font-black text-red-600 uppercase text-[10px] tracking-tighter leading-tight pr-2">${title}</div>
+                                        <div class="font-black text-red-600 uppercase text-[10px] tracking-tighter pr-2 leading-none">${title}</div>
                                         <span class="text-[8px] text-slate-400 font-mono whitespace-nowrap">${pubDate}</span>
                                     </div>
                                     <p class="text-slate-500 dark:text-slate-400 text-[10px] leading-tight">${desc}</p>
@@ -244,16 +231,16 @@
                         feedContainer.innerHTML = html;
                         success = true;
                     }
-                } catch (e) { console.warn(`Tunnel node failed: ${proxy.url.substring(0, 30)}`); }
+                } catch (e) { console.warn("Node timeout."); }
             }
 
             if (!success) {
                 feedContainer.innerHTML = `
                     <div class="text-center py-12 opacity-50 border-2 border-dashed border-slate-800 m-2 rounded">
-                        <i class="fas fa-wifi-slash mb-2 text-xl"></i>
-                        <p class="text-[10px] font-black uppercase">Sync Time Out</p>
-                        <p class="text-[9px] italic">Highway host rejected secure bridge.</p>
-                        <button onclick="fetchTraffic()" class="mt-4 px-4 py-2 bg-slate-800 text-[9px] text-white font-bold rounded hover:bg-slate-700">RETRY SCAN</button>
+                        <i class="fas fa-satellite-dish mb-2 text-xl"></i>
+                        <p class="text-[10px] font-black uppercase">Traffic Offline</p>
+                        <p class="text-[9px] italic">Host refused all proxy handshake attempts.</p>
+                        <button onclick="fetchTraffic()" class="mt-4 px-4 py-2 bg-blue-600 text-[9px] text-white font-black rounded uppercase hover:bg-blue-700 transition-colors">Emergency Re-Sync</button>
                     </div>`;
             }
         }
@@ -264,7 +251,6 @@
             if (modId === 'iframe' && url) document.getElementById('mod-iframe').src = url;
             if (modId === 'clients') fetchClients();
             localStorage.setItem('frost_last_module', modId);
-            
             document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active-tab'));
             if(event) event.currentTarget?.classList?.add('active-tab');
         }
@@ -287,9 +273,6 @@
                         <div class="flex justify-between text-[10px] border-t border-slate-100 dark:border-slate-800 pt-1 mt-1 font-bold">
                             <span class="text-blue-500 uppercase">Tel</span>
                             <a href="tel:${c.phone}" class="comms-link text-blue-600 dark:text-blue-400">${c.phone || '-'}</a>
-                        </div>
-                        <div class="mt-1">
-                             <a href="mailto:${c.email}" class="comms-link text-[10px] text-blue-600 dark:text-blue-400 italic truncate block">${c.email || ''}</a>
                         </div>
                     </div>
                 </div>`).join('');
