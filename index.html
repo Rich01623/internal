@@ -178,8 +178,13 @@
                 </div>
             </div>
 
+            <div id="mod-invoices" class="hidden">
+                <h2 class="text-xl font-black italic uppercase dark:text-white mb-6">Cloud Invoice Archive</h2>
+                <div id="invoice-archive-list" class="space-y-4">
+                    </div>
+            </div>
+
             <div id="mod-holiday-calendar" class="hidden"><h2 class="text-xl font-black italic uppercase dark:text-white">Holiday Calendar</h2></div>
-            <div id="mod-invoices" class="hidden"><h2 class="text-xl font-black italic uppercase dark:text-white">Invoices</h2></div>
             <div id="mod-manual-invoice" class="hidden"><h2 class="text-xl font-black italic uppercase dark:text-white">Create Manual Invoice</h2></div>
         </main>
     </div>
@@ -193,6 +198,7 @@
         window.onload = function() {
             updateTime(); setInterval(updateTime, 1000);
             showModule(localStorage.getItem('frost_last_module') || 'welcome');
+            fetchInvoices(); // Fetch existing cloud invoices
         };
 
         function updateTime() { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('en-GB'); }
@@ -209,16 +215,15 @@
             if (modId === 'iframe' && url) document.getElementById('mod-iframe').src = url;
             if (modId === 'clients') fetchClients();
             if (modId === 'staff-profiles') fetchStaff();
+            if (modId === 'invoices') fetchInvoices();
             
             localStorage.setItem('frost_last_module', modId);
-            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active-tab'));
-            if(event && event.currentTarget) event.currentTarget.classList.add('active-tab');
         }
 
-        // --- CLIENT LOGIC ---
+        // --- DATABASE SYNC: CLIENTS ---
         async function fetchClients() {
             const container = document.getElementById('client-container');
-            container.innerHTML = '<div class="col-span-full text-center py-20 text-blue-500 uppercase text-xs font-bold animate-pulse tracking-widest">SYNCING CRM...</div>';
+            container.innerHTML = '<div class="col-span-full text-center py-20 text-blue-500 uppercase text-xs font-bold animate-pulse">Syncing CRM...</div>';
             const { data, error } = await _supabase.from('crm_customer').select('*').order('coname', { ascending: true });
             if (!error) { allClients = data; renderClients(data); }
         }
@@ -227,11 +232,10 @@
             const container = document.getElementById('client-container');
             container.innerHTML = data.map(c => `
                 <div class="client-card">
-                    <h4 class="text-slate-900 dark:text-white font-black uppercase text-[11px] truncate italic border-b border-slate-100 dark:border-slate-700 pb-2 mb-2">${c.coname || 'UNKNOWN'}</h4>
-                    <div class="space-y-1">
-                        <div class="flex justify-between text-[10px]"><span class="text-slate-400 font-bold uppercase tracking-tighter">Town</span><span class="text-slate-600 dark:text-slate-300 font-semibold">${c.town || '-'}</span></div>
-                        <div class="flex justify-between text-[10px]"><span class="text-slate-400 font-bold uppercase tracking-tighter">P-Code</span><span class="text-slate-600 dark:text-slate-300 font-mono">${c.pcode || '-'}</span></div>
-                        <div class="flex justify-between text-[10px] border-t border-slate-100 dark:border-slate-800 pt-1 mt-1 font-bold">
+                    <h4 class="text-slate-900 dark:text-white font-black uppercase text-[11px] italic border-b border-slate-100 dark:border-slate-700 pb-2 mb-2">${c.coname || 'UNKNOWN'}</h4>
+                    <div class="space-y-1 text-[10px]">
+                        <div class="flex justify-between"><span class="text-slate-400 font-bold uppercase">Town</span><span class="text-slate-600 dark:text-slate-300 font-semibold">${c.town || '-'}</span></div>
+                        <div class="flex justify-between border-t border-slate-100 dark:border-slate-800 pt-1 mt-1 font-bold">
                             <span class="text-blue-500 uppercase">Tel</span>
                             <a href="tel:${c.phone}" class="comms-link text-blue-600 dark:text-blue-400">${c.phone || '-'}</a>
                         </div>
@@ -241,7 +245,7 @@
 
         function filterClients() {
             const query = document.getElementById('clientSearch').value.toLowerCase();
-            renderClients(allClients.filter(c => c.coname.toLowerCase().includes(query) || (c.town && c.town.toLowerCase().includes(query))));
+            renderClients(allClients.filter(c => c.coname.toLowerCase().includes(query)));
         }
 
         async function saveClient() {
@@ -256,21 +260,19 @@
             if(!error) { alert("Stored Successfully"); showModule('clients'); }
         }
 
-        // --- STAFF LOGIC ---
+        // --- DATABASE SYNC: STAFF ---
         async function fetchStaff() {
             const container = document.getElementById('staff-container');
-            container.innerHTML = '<div class="col-span-full text-center py-20 text-amber-500 uppercase text-xs font-bold animate-pulse tracking-widest">LOADING PERSONNEL FILES...</div>';
+            container.innerHTML = '<div class="col-span-full text-center py-20 text-amber-500 animate-pulse">Loading Personnel...</div>';
             const { data, error } = await _supabase.from('staff_profiles').select('*').order('name', { ascending: true });
             if (!error) {
                 container.innerHTML = data.map(s => `
                     <div class="client-card" style="border-left-color: #f59e0b;">
-                        <h4 class="text-slate-900 dark:text-white font-black uppercase text-[11px] italic border-b border-slate-100 dark:border-slate-700 pb-2 mb-2">${s.name}</h4>
+                        <h4 class="text-slate-900 dark:text-white font-black uppercase text-[11px] italic mb-2">${s.name}</h4>
                         <div class="space-y-1 text-[10px]">
-                            <div class="flex justify-between"><span class="text-slate-400 font-bold uppercase">Role</span><span class="text-amber-500 font-black">${s.job_title || '-'}</span></div>
-                            <div class="flex justify-between"><span class="text-slate-400 font-bold uppercase">Licences</span><span class="text-slate-600 dark:text-slate-300">${s.licences_held || '-'}</span></div>
-                            <div class="flex justify-between pt-1 mt-1 border-t border-slate-100 dark:border-slate-800 font-bold">
+                            <div class="flex justify-between"><span class="text-slate-400 uppercase">Role</span><span class="text-amber-500 font-black">${s.job_title || '-'}</span></div>
+                            <div class="flex justify-between pt-1 mt-1 border-t border-slate-800 font-bold">
                                 <a href="tel:${s.contact_number}" class="text-blue-500">${s.contact_number || '-'}</a>
-                                <a href="mailto:${s.email_address}" class="text-slate-400 italic">Email</a>
                             </div>
                         </div>
                     </div>`).join('');
@@ -287,16 +289,8 @@
                 address: document.getElementById('st-address').value,
                 licences_held: document.getElementById('st-licences').value
             };
-
             const { error } = await _supabase.from('staff_profiles').insert([payload]);
-            if(error) {
-                alert("Error: " + error.message);
-            } else {
-                alert("Personnel File Created Successfully");
-                showModule('staff-profiles');
-                // Clear fields
-                ['st-name', 'st-age', 'st-job', 'st-phone', 'st-email', 'st-address', 'st-licences'].forEach(id => document.getElementById(id).value = '');
-            }
+            if(!error) { alert("Personnel File Created"); showModule('staff-profiles'); }
         }
 
         function toggleSubmenu(id, arrowId) {
@@ -305,6 +299,102 @@
         }
 
         function toggleSettings() { document.documentElement.classList.toggle('dark'); }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // 1. LISTEN FOR NEWLY COMPLETED QUOTES
+        _supabase.channel('invoice-automation')
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'quotes' }, (payload) => {
+                if (payload.new.status === 'completed' && payload.old.status !== 'completed') {
+                    processAndStoreInvoice(payload.new);
+                }
+            })
+            .subscribe();
+
+        // 2. LISTEN FOR NEW INVOICE DATABASE RECORDS (UI UPDATER)
+        _supabase.channel('archive-live-sync')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'generated_invoices' }, (payload) => {
+                renderInvoiceRow(payload.new, true);
+            })
+            .subscribe();
+
+        // 3. FETCH EXISTING INVOICES ON LOAD
+        async function fetchInvoices() {
+            const container = document.getElementById('invoice-archive-list');
+            container.innerHTML = '<div class="text-center py-10 text-slate-500 uppercase text-[10px] font-bold animate-pulse">Syncing Cloud Vault...</div>';
+            
+            const { data, error } = await _supabase.from('generated_invoices').select('*').order('created_at', { ascending: false });
+            
+            if (!error) {
+                container.innerHTML = data.length === 0 ? '<p class="text-center py-10 text-slate-500 text-[10px] uppercase">No Invoices Found</p>' : '';
+                data.forEach(inv => renderInvoiceRow(inv));
+            }
+        }
+
+        function renderInvoiceRow(inv, isNew = false) {
+            const list = document.getElementById('invoice-archive-list');
+            const row = document.createElement('div');
+            row.className = `client-card flex justify-between items-center bg-white dark:bg-slate-800 shadow-sm border-l-4 border-blue-600 p-4 rounded-lg mb-3 ${isNew ? 'animate-bounce' : ''}`;
+            row.innerHTML = `
+                <div>
+                    <h4 class="text-slate-900 dark:text-white font-black uppercase text-[11px] italic">REF: ${inv.reference}</h4>
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest">${inv.customer_name}</p>
+                    <p class="text-[8px] text-slate-400 mt-1">${new Date(inv.created_at).toLocaleDateString('en-GB')}</p>
+                </div>
+                <a href="${inv.file_url}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white text-[9px] font-black py-2 px-4 rounded uppercase transition-all shadow-md">
+                    <i class="fas fa-file-pdf mr-1"></i> View PDF
+                </a>
+            `;
+            isNew ? list.prepend(row) : list.appendChild(row);
+        }
+
+        // 4. THE GENERATOR & CLOUD UPLOADER
+        async function processAndStoreInvoice(quoteData) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Generate PDF Visuals
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont("helvetica", "bold");
+            doc.text("FROST TRANSPORT SOLUTIONS", 20, 25);
+            doc.setTextColor(0,0,0); doc.setFontSize(10); doc.setFont("helvetica", "normal");
+            doc.text(`REF: ${quoteData.reference || 'N/A'}`, 160, 50);
+            doc.text(`DATE: ${quoteData.date || '-'}`, 160, 55);
+            
+            doc.setFontSize(16); doc.setFont("helvetica", "bold");
+            doc.text("INVOICE / JOB SUMMARY", 20, 55);
+            doc.line(20, 60, 190, 60);
+
+            doc.setFontSize(10); doc.setFont("helvetica", "normal");
+            doc.text(`Customer: ${quoteData.customer_name || '-'}`, 25, 75);
+            doc.text(`Pickup: ${quoteData.pickup || '-'}`, 25, 82);
+            doc.text(`Delivery: ${quoteData.delivery || '-'}`, 25, 89);
+            doc.text(`Vehicle: ${quoteData.vehicle_type || '-'}`, 25, 96);
+            doc.setFont("helvetica", "bold");
+            doc.text(`TOTAL PRICE: £${quoteData.total_price || '0.00'}`, 25, 110);
+
+            // Step A: Convert to Blob
+            const pdfBlob = doc.output('blob');
+            const fileName = `inv_${quoteData.reference}_${Date.now()}.pdf`;
+
+            // Step B: Upload to Supabase Storage Bucket
+            const { data: uploadData, error: uploadError } = await _supabase.storage
+                .from('invoices')
+                .upload(fileName, pdfBlob, { contentType: 'application/pdf', upsert: true });
+
+            if (uploadError) { console.error("Cloud Upload Failed:", uploadError); return; }
+
+            // Step C: Get Public Link
+            const { data: { publicUrl } } = _supabase.storage.from('invoices').getPublicUrl(fileName);
+
+            // Step D: Record in Database Table
+            await _supabase.from('generated_invoices').insert([{
+                reference: quoteData.reference || 'N/A',
+                customer_name: quoteData.customer_name || 'Manual',
+                file_url: publicUrl
+            }]);
+        }
     </script>
 </body>
 </html>
