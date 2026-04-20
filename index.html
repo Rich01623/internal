@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frost Transport Solutions | Portal</title>
+    <title>Frost Transport Solutions | Portal v1.3.2</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
     <script>
         tailwind.config = {
@@ -34,6 +34,8 @@
         .frost-field { width: 100%; padding: 12px; border-radius: 6px; font-size: 14px; outline: none; display: block; }
         .label-text { font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase; margin-bottom: 6px; display: block; }
         .dark .label-text { color: #94a3b8; }
+        .barcode-scroll::-webkit-scrollbar { width: 6px; }
+        .barcode-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 flex h-screen overflow-hidden">
@@ -141,19 +143,14 @@
                 </div>
             </div>
 
-            <div id="mod-barcode-tool" class="hidden max-w-xl mx-auto">
+            <div id="mod-barcode-tool" class="hidden max-w-2xl mx-auto">
                 <div class="bg-white dark:bg-[#0f172a] p-8 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xl">
-                    <h3 class="text-[10px] font-black uppercase tracking-widest text-amber-500 italic mb-6 border-b border-slate-800 pb-2">Palletforce Barcode Asset Generator</h3>
-                    <label class="label-text">Reference String</label>
-                    <input type="text" id="barcode-input" class="frost-field mb-6" placeholder="e.g. FTS-10045" onkeyup="generateClassicBarcode()">
-                    
-                    <div class="bg-white p-10 rounded border border-slate-200 flex justify-center items-center">
-                        <svg id="barcode-svg"></svg>
+                    <h3 class="text-[10px] font-black uppercase tracking-widest text-amber-500 italic mb-6 border-b border-slate-800 pb-2">Palletforce Bulk Barcode Generator</h3>
+                    <div class="mb-6">
+                        <label class="label-text">References (Paste from Spreadsheet or use spaces)</label>
+                        <textarea id="barcode-input" class="frost-field h-24 font-mono text-xs" placeholder="FTS-001 FTS-002 FTS-003" onkeyup="generateBulkBarcodes()"></textarea>
                     </div>
-
-                    <button onclick="downloadBarcodeSVG()" class="w-full mt-6 py-4 bg-slate-800 text-white font-black text-[10px] uppercase tracking-widest rounded hover:bg-slate-700 transition-all">
-                        Download SVG Asset
-                    </button>
+                    <div id="barcode-list" class="barcode-scroll space-y-6 max-h-[400px] overflow-y-auto pr-2"></div>
                 </div>
             </div>
 
@@ -177,7 +174,7 @@
                         <div><label class="label-text">Phone</label><input type="text" id="new-phone" class="frost-field"></div>
                         <div><label class="label-text">Email</label><input type="email" id="new-email" class="frost-field"></div>
                     </div>
-                    <button onclick="saveClient()" class="w-full mt-10 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded uppercase text-xs tracking-widest transition-all">Store Record</button>
+                    <button onclick="saveClient()" class="w-full mt-10 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded uppercase text-xs tracking-widest">Store Record</button>
                  </div>
             </div>
 
@@ -190,15 +187,15 @@
                 <div class="bg-white dark:bg-[#0f172a] rounded-lg p-8 border-t-4 border-amber-500 shadow-xl">
                     <h2 class="text-xs font-black uppercase mb-8 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-2 italic tracking-widest">Register New Staff Member</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="md:col-span-2"><label class="label-text">Full Name</label><input type="text" id="st-name" class="frost-field" placeholder="e.g. John Smith"></div>
+                        <div class="md:col-span-2"><label class="label-text">Full Name</label><input type="text" id="st-name" class="frost-field"></div>
                         <div><label class="label-text">Age</label><input type="number" id="st-age" class="frost-field"></div>
-                        <div><label class="label-text">Job Title</label><input type="text" id="st-job" class="frost-field" placeholder="e.g. HGV Driver"></div>
+                        <div><label class="label-text">Job Title</label><input type="text" id="st-job" class="frost-field"></div>
                         <div><label class="label-text">Contact Number</label><input type="text" id="st-phone" class="frost-field"></div>
                         <div><label class="label-text">Email Address</label><input type="email" id="st-email" class="frost-field"></div>
                         <div class="md:col-span-2"><label class="label-text">Home Address</label><input type="text" id="st-address" class="frost-field"></div>
-                        <div class="md:col-span-2"><label class="label-text">Licences Held</label><input type="text" id="st-licences" class="frost-field" placeholder="e.g. Class 1, Class 2, ADR, CPC"></div>
+                        <div class="md:col-span-2"><label class="label-text">Licences Held</label><input type="text" id="st-licences" class="frost-field"></div>
                     </div>
-                    <button onclick="saveStaff()" class="w-full mt-10 bg-amber-500 hover:bg-amber-600 text-white font-black py-4 rounded uppercase text-xs tracking-widest transition-all shadow-lg">Commit to Personnel File</button>
+                    <button onclick="saveStaff()" class="w-full mt-10 bg-amber-500 hover:bg-amber-600 text-white font-black py-4 rounded uppercase text-xs tracking-widest transition-all">Commit to Personnel File</button>
                 </div>
             </div>
 
@@ -209,20 +206,17 @@
 
             <div id="mod-manual-invoice" class="hidden max-w-4xl mx-auto">
                 <div class="bg-white dark:bg-[#0f172a] rounded-lg p-8 border-t-4 border-blue-600 shadow-xl">
-                    <div class="flex justify-between items-center mb-8 border-b border-slate-200 dark:border-slate-700 pb-2">
-                        <h2 class="text-xs font-black uppercase dark:text-white italic tracking-widest">Create Manual Invoice</h2>
-                        <span class="text-[10px] text-slate-400 font-mono italic">SUPABASE: QUOTES</span>
-                    </div>
+                    <h2 class="text-xs font-black uppercase mb-8 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-2 italic tracking-widest">Create Manual Invoice</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2"><label class="label-text">Customer Name</label><input type="text" id="man-customer" class="frost-field"></div>
                         <div class="md:col-span-2"><label class="label-text">Customer Address</label><input type="text" id="man-address" class="frost-field"></div>
-                        <div><label class="label-text">Collection Address (Pickup)</label><textarea id="man-collection" class="frost-field h-20"></textarea></div>
+                        <div><label class="label-text">Collection (Pickup)</label><textarea id="man-collection" class="frost-field h-20"></textarea></div>
                         <div><label class="label-text">Delivery Address</label><textarea id="man-delivery" class="frost-field h-20"></textarea></div>
                         <div><label class="label-text">Job Date</label><input type="date" id="man-date" class="frost-field"></div>
-                        <div><label class="label-text">Invoice Number</label><input type="text" id="man-inv-num" class="frost-field" placeholder="FTS-1001"></div>
-                        <div class="md:col-span-2"><label class="label-text">Total Price (£)</label><input type="number" id="man-price" class="frost-field" placeholder="0.00"></div>
+                        <div><label class="label-text">Invoice Number</label><input type="text" id="man-inv-num" class="frost-field"></div>
+                        <div class="md:col-span-2"><label class="label-text">Total Price (£)</label><input type="number" id="man-price" class="frost-field"></div>
                     </div>
-                    <button onclick="saveManualInvoice()" id="man-inv-btn" class="w-full mt-10 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded uppercase text-xs tracking-widest transition-all shadow-lg flex items-center justify-center">
+                    <button onclick="saveManualInvoice()" id="man-inv-btn" class="w-full mt-10 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded uppercase text-xs tracking-widest shadow-lg flex items-center justify-center">
                         <i class="fas fa-file-invoice mr-2"></i> Generate & Store Invoice
                     </button>
                 </div>
@@ -230,6 +224,7 @@
         </main>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         const SUPABASE_URL = 'https://tdrzytgiqvdulityqttr.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkcnp5dGdpcXZkdWxpdHlxdHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTM5NTMsImV4cCI6MjA4ODcyOTk1M30.XN46i7u6STD-2afmN7-Jh1MltADGpEuWlLt_n7wknbA';
@@ -239,7 +234,6 @@
         window.onload = function() {
             updateTime(); setInterval(updateTime, 1000);
             showModule(localStorage.getItem('frost_last_module') || 'welcome');
-            fetchInvoices();
         };
 
         function updateTime() { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('en-GB'); }
@@ -249,162 +243,101 @@
                 const el = document.getElementById(id);
                 if(el) el.classList.add('hidden');
             });
-            
             const activeMod = document.getElementById('mod-' + modId);
             if(activeMod) activeMod.classList.remove('hidden');
-
             if (modId === 'iframe' && url) document.getElementById('mod-iframe').src = url;
             if (modId === 'clients') fetchClients();
             if (modId === 'staff-profiles') fetchStaff();
             if (modId === 'invoices') fetchInvoices();
-            
             localStorage.setItem('frost_last_module', modId);
         }
 
-        // BARCODE LOGIC
-        function generateClassicBarcode() {
-            const text = document.getElementById('barcode-input').value;
-            if(!text) { document.getElementById('barcode-svg').innerHTML = ""; return; }
-            JsBarcode("#barcode-svg", text, { format: "CODE128", width: 2, height: 60, displayValue: true });
+        // v1.3.1 BARCODER
+        function generateBulkBarcodes() {
+            const rawText = document.getElementById('barcode-input').value;
+            const container = document.getElementById('barcode-list');
+            container.innerHTML = "";
+            if(!rawText.trim()) return;
+            const refs = rawText.split(/\s+/).filter(s => s.length > 0);
+            refs.forEach((ref, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = "bg-white p-6 rounded border border-slate-200 flex flex-col items-center space-y-4 shadow-sm";
+                const svgId = `barcode-svg-${index}`;
+                wrapper.innerHTML = `<div class="w-full flex justify-between items-center mb-2"><span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${ref}</span><button onclick="downloadSpecificSVG('${svgId}', '${ref}')" class="text-blue-600 hover:text-blue-800 text-[10px] font-bold uppercase"><i class="fas fa-download mr-1"></i> Download</button></div><svg id="${svgId}"></svg>`;
+                container.appendChild(wrapper);
+                JsBarcode(`#${svgId}`, ref, { format: "CODE128", width: 2, height: 60, displayValue: true });
+            });
         }
 
-        function downloadBarcodeSVG() {
-            const svg = document.getElementById('barcode-svg');
-            if (!svg.innerHTML) return alert("Enter text first");
-            const serializer = new XMLSerializer();
-            const source = serializer.serializeToString(svg);
+        function downloadSpecificSVG(svgId, filename) {
+            const svg = document.getElementById(svgId);
+            const source = new XMLSerializer().serializeToString(svg);
             const link = document.createElement("a");
             link.href = URL.createObjectURL(new Blob([source], {type: "image/svg+xml;charset=utf-8"}));
-            link.download = `FTS-BARCODE.svg`; link.click();
+            link.download = `${filename}.svg`; link.click();
         }
 
+        // CRM FETCH (Fixed Contact Links)
         async function fetchClients() {
             const container = document.getElementById('client-container');
-            container.innerHTML = '<div class="col-span-full text-center py-20 text-blue-500 uppercase text-xs font-bold animate-pulse">Syncing CRM...</div>';
+            container.innerHTML = '<div class="col-span-full text-center py-20 text-blue-500 animate-pulse">Syncing...</div>';
             const { data, error } = await _supabase.from('crm_customer').select('*').order('coname', { ascending: true });
             if (!error) { allClients = data; renderClients(data); }
         }
 
         function renderClients(data) {
-            const container = document.getElementById('client-container');
-            container.innerHTML = data.map(c => `
+            document.getElementById('client-container').innerHTML = data.map(c => `
                 <div class="client-card">
-                    <h4 class="text-slate-900 dark:text-white font-black uppercase text-[11px] italic border-b border-slate-100 dark:border-slate-700 pb-2 mb-2">${c.coname || 'UNKNOWN'}</h4>
+                    <h4 class="text-slate-900 dark:text-white font-black uppercase text-[11px] italic mb-2 border-b border-slate-100 dark:border-slate-800 pb-2">${c.coname || 'UNKNOWN'}</h4>
                     <div class="space-y-1 text-[10px]">
-                        <div class="flex justify-between"><span class="text-slate-400 font-bold uppercase">Town</span><span class="text-slate-600 dark:text-slate-300 font-semibold">${c.town || '-'}</span></div>
+                        <div class="flex justify-between"><span class="text-slate-400">Town</span><span class="dark:text-white">${c.town || '-'}</span></div>
                         <div class="flex justify-between border-t border-slate-100 dark:border-slate-800 pt-1 mt-1 font-bold">
                             <span class="text-blue-500 uppercase">Tel</span>
-                            <a href="tel:${c.phone}" class="comms-link text-blue-600 dark:text-blue-400">${c.phone || '-'}</a>
+                            <a href="tel:${c.phone}" class="text-blue-600 dark:text-blue-400 underline">${c.phone || '-'}</a>
+                        </div>
+                        <div class="flex justify-between font-bold">
+                            <span class="text-slate-400 uppercase italic">Email</span>
+                            <a href="mailto:${c.email}" class="text-slate-600 dark:text-slate-300 truncate ml-4">${c.email || '-'}</a>
                         </div>
                     </div>
                 </div>`).join('');
         }
 
         function filterClients() {
-            const query = document.getElementById('clientSearch').value.toLowerCase();
-            renderClients(allClients.filter(c => c.coname.toLowerCase().includes(query)));
+            const q = document.getElementById('clientSearch').value.toLowerCase();
+            renderClients(allClients.filter(c => c.coname.toLowerCase().includes(q)));
         }
 
-        async function saveClient() {
-            const payload = {
-                coname: document.getElementById('new-coname').value,
-                town: document.getElementById('new-town').value,
-                pcode: document.getElementById('new-pcode').value.toUpperCase(),
-                phone: document.getElementById('new-phone').value,
-                email: document.getElementById('new-email').value
-            };
-            const { error } = await _supabase.from('crm_customer').insert([payload]);
-            if(!error) { alert("Stored Successfully"); showModule('clients'); }
-        }
-
+        // STAFF
         async function fetchStaff() {
             const container = document.getElementById('staff-container');
-            container.innerHTML = '<div class="col-span-full text-center py-20 text-amber-500 animate-pulse">Loading Personnel...</div>';
+            container.innerHTML = '<div class="col-span-full text-center py-20 text-amber-500 animate-pulse">Loading...</div>';
             const { data, error } = await _supabase.from('staff_profiles').select('*').order('name', { ascending: true });
             if (!error) {
-                container.innerHTML = data.map(s => `
-                    <div class="client-card" style="border-left-color: #f59e0b;">
-                        <h4 class="text-slate-900 dark:text-white font-black uppercase text-[11px] italic mb-2">${s.name}</h4>
-                        <div class="space-y-1 text-[10px]">
-                            <div class="flex justify-between"><span class="text-slate-400 uppercase">Role</span><span class="text-amber-500 font-black">${s.job_title || '-'}</span></div>
-                            <div class="flex justify-between pt-1 mt-1 border-t border-slate-800 font-bold">
-                                <a href="tel:${s.contact_number}" class="text-blue-500">${s.contact_number || '-'}</a>
-                            </div>
-                        </div>
-                    </div>`).join('');
+                container.innerHTML = data.map(s => `<div class="client-card" style="border-left-color: #f59e0b;"><h4 class="text-slate-900 dark:text-white font-black uppercase text-[11px] italic">${s.name}</h4><div class="text-[10px] flex justify-between"><span class="text-amber-500 font-bold">${s.job_title}</span><a href="tel:${s.contact_number}" class="text-blue-500">${s.contact_number}</a></div></div>`).join('');
             }
         }
 
-        async function saveStaff() {
-            const payload = {
-                name: document.getElementById('st-name').value,
-                age: document.getElementById('st-age').value,
-                job_title: document.getElementById('st-job').value,
-                contact_number: document.getElementById('st-phone').value,
-                email_address: document.getElementById('st-email').value,
-                address: document.getElementById('st-address').value,
-                licences_held: document.getElementById('st-licences').value
-            };
-            const { error } = await _supabase.from('staff_profiles').insert([payload]);
-            if(!error) { alert("Personnel File Created"); showModule('staff-profiles'); }
-        }
-
-        function toggleSubmenu(id, arrowId) {
-            document.getElementById(id).classList.toggle('hidden');
-            document.getElementById(arrowId).classList.toggle('rotate-180');
-        }
-
-        function toggleSettings() { document.documentElement.classList.toggle('dark'); }
-    </script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script>
-        // Supabase / PDF Logic (Kept Intact)
+        // INVOICES (Restored Logic)
         async function fetchInvoices() {
             const container = document.getElementById('invoice-archive-list');
             if(!container) return;
-            container.innerHTML = '<div class="text-center py-10 text-slate-500 uppercase text-[10px] font-bold animate-pulse tracking-widest">Accessing Archive...</div>';
+            container.innerHTML = '<div class="text-center py-10 text-slate-500 text-[10px] uppercase font-bold animate-pulse tracking-widest">Accessing Archive...</div>';
             const { data, error } = await _supabase.from('generated_invoices').select('*').order('created_at', { ascending: false });
             if (!error) {
                 container.innerHTML = data.length === 0 ? '<p class="text-center py-10 text-slate-500 text-[10px] uppercase">Archive Empty</p>' : '';
-                data.forEach(inv => renderInvoiceRow(inv));
-            }
-        }
-
-        function renderInvoiceRow(inv) {
-            const list = document.getElementById('invoice-archive-list');
-            const row = document.createElement('div');
-            row.className = "client-card flex justify-between items-center bg-white dark:bg-slate-800 shadow-sm border-l-4 border-blue-600 p-4 rounded-lg mb-3 transition-all";
-            row.innerHTML = `
-                <div>
-                    <h4 class="text-slate-900 dark:text-white font-black uppercase text-[11px] italic">REF: ${inv.reference}</h4>
-                    <p class="text-[10px] text-slate-500 uppercase tracking-widest">${inv.customer_name}</p>
-                </div>
-                <div class="flex space-x-2">
-                    <a href="${inv.file_url}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white text-[9px] font-black py-2 px-4 rounded uppercase tracking-tighter transition-all shadow-md">
-                        <i class="fas fa-file-pdf mr-1"></i> View
-                    </a>
-                    <button onclick="sendEmailViaClient('${inv.file_url}', '${inv.reference}', '${inv.customer_name}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-black py-2 px-4 rounded uppercase tracking-tighter transition-all shadow-md">
-                        <i class="fas fa-envelope mr-1"></i> Email
-                    </button>
-                </div>
-            `;
-            list.appendChild(row);
-        }
-
-        function sendEmailViaClient(url, ref, customer) {
-            const emailTo = prompt("Enter recipient email address:", "");
-            if (emailTo && emailTo.includes("@")) {
-                const subject = encodeURIComponent(`Invoice from Frost Transport - REF: ${ref}`);
-                const body = encodeURIComponent(`Hi,\n\nPlease find the invoice for ${customer} (Ref: ${ref}) at the link below:\n\n${url}\n\nRegards,\nFrost Transport Team`);
-                window.location.href = `mailto:${emailTo}?subject=${subject}&body=${body}`;
+                data.forEach(inv => {
+                    const row = document.createElement('div');
+                    row.className = "client-card flex justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-lg mb-3 shadow-sm";
+                    row.innerHTML = `<div><h4 class="text-slate-900 dark:text-white font-black uppercase text-[11px] italic">REF: ${inv.reference}</h4><p class="text-[10px] text-slate-500 uppercase">${inv.customer_name}</p></div><div class="flex space-x-2"><a href="${inv.file_url}" target="_blank" class="bg-blue-600 text-white text-[9px] font-black py-2 px-4 rounded uppercase tracking-tighter">View</a><button onclick="sendEmailViaClient('${inv.file_url}', '${inv.reference}', '${inv.customer_name}')" class="bg-emerald-600 text-white text-[9px] font-black py-2 px-4 rounded uppercase tracking-tighter">Email</button></div>`;
+                    container.appendChild(row);
+                });
             }
         }
 
         async function saveManualInvoice() {
             const btn = document.getElementById('man-inv-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner animate-spin mr-2"></i> GENERATING...';
+            btn.innerHTML = '<i class="fas fa-spinner animate-spin"></i> SAVING...';
             const payload = {
                 customer_name: document.getElementById('man-customer').value,
                 customer_address: document.getElementById('man-address').value,
@@ -418,15 +351,9 @@
             const { data, error } = await _supabase.from('quotes').insert([payload]).select();
             if (!error && data && data[0]) {
                 await processAndStoreInvoice(data[0]);
-                alert("Invoice Created and Uploaded Successfully.");
-                ['man-customer', 'man-address', 'man-collection', 'man-delivery', 'man-date', 'man-inv-num', 'man-price'].forEach(id => {
-                    document.getElementById(id).value = '';
-                });
+                alert("Invoice Saved Successfully");
                 showModule('invoices');
-            } else {
-                alert(`Error: ${error?.message || "Failed to save record"}`);
-            }
-            btn.disabled = false;
+            } else { alert("Error saving invoice"); }
             btn.innerHTML = '<i class="fas fa-file-invoice mr-2"></i> Generate & Store Invoice';
         }
 
@@ -434,30 +361,31 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont("helvetica", "bold");
-            doc.text("FROST TRANSPORT SOLUTIONS", 20, 25);
-            doc.setTextColor(0,0,0); doc.setFontSize(10); doc.setFont("helvetica", "normal");
-            const ref = quoteData.invoice_number || quoteData.reference || 'N/A';
-            doc.text(`REF: ${ref}`, 160, 50);
-            doc.text(`DATE: ${quoteData.date || '-'}`, 160, 55);
-            doc.setFontSize(16); doc.setFont("helvetica", "bold");
-            doc.text("INVOICE / JOB SUMMARY", 20, 55);
-            doc.line(20, 60, 190, 60);
-            doc.setFontSize(10); doc.setFont("helvetica", "normal");
-            doc.text(`Customer: ${quoteData.customer_name || '-'}`, 25, 75);
-            doc.text(`Billing: ${quoteData.customer_address || '-'}`, 25, 82);
-            doc.text(`Pickup: ${quoteData.pickup || quoteData.collection_address || '-'}`, 25, 92);
-            doc.text(`Delivery: ${quoteData.delivery || '-'}`, 25, 102);
-            doc.setFont("helvetica", "bold");
-            doc.text(`TOTAL PRICE: £${quoteData.total_price || '0.00'}`, 25, 120);
+            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("FROST TRANSPORT SOLUTIONS", 20, 25);
+            doc.setTextColor(0,0,0); doc.setFontSize(10);
+            const ref = quoteData.invoice_number || 'N/A';
+            doc.text(`REF: ${ref}`, 160, 50); doc.text(`DATE: ${quoteData.date}`, 160, 55);
+            doc.text(`Customer: ${quoteData.customer_name}`, 25, 75);
+            doc.text(`TOTAL: £${quoteData.total_price}`, 25, 120);
             const pdfBlob = doc.output('blob');
             const fileName = `inv_${ref}_${Date.now()}.pdf`;
-            const { data: uploadData, error: uploadError } = await _supabase.storage.from('invoices').upload(fileName, pdfBlob, { contentType: 'application/pdf', upsert: true });
-            if (uploadError) return;
+            const { data: uploadData } = await _supabase.storage.from('invoices').upload(fileName, pdfBlob, { contentType: 'application/pdf' });
             const { data: { publicUrl } } = _supabase.storage.from('invoices').getPublicUrl(fileName);
-            await _supabase.from('generated_invoices').insert([{ reference: ref, customer_name: quoteData.customer_name || 'Manual', file_url: publicUrl }]);
+            await _supabase.from('generated_invoices').insert([{ reference: ref, customer_name: quoteData.customer_name, file_url: publicUrl }]);
             fetchInvoices();
         }
+
+        function sendEmailViaClient(url, ref, customer) {
+            const email = prompt("Recipient Email:");
+            if(email) window.location.href = `mailto:${email}?subject=Invoice ${ref}&body=Invoice for ${customer}: ${url}`;
+        }
+
+        function toggleSubmenu(id, arrowId) {
+            document.getElementById(id).classList.toggle('hidden');
+            document.getElementById(arrowId).classList.toggle('rotate-180');
+        }
+
+        function toggleSettings() { document.documentElement.classList.toggle('dark'); }
     </script>
 </body>
 </html>
