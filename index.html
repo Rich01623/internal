@@ -162,6 +162,11 @@
                 <div id="staff-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6"></div>
             </div>
 
+            <div id="mod-invoices" class="hidden">
+                <h2 class="text-xl font-black italic uppercase dark:text-white mb-6">Invoice Archive</h2>
+                <div id="invoice-archive-list" class="space-y-4"></div>
+            </div>
+
             <div id="mod-add-staff" class="hidden max-w-3xl mx-auto">
                 <div class="bg-white dark:bg-[#0f172a] rounded-lg p-8 border-t-4 border-amber-500 shadow-xl">
                     <h2 class="text-xs font-black uppercase mb-8 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-2 italic tracking-widest">Register New Staff Member</h2>
@@ -178,12 +183,6 @@
                 </div>
             </div>
 
-            <div id="mod-invoices" class="hidden">
-                <h2 class="text-xl font-black italic uppercase dark:text-white mb-6">Cloud Invoice Archive</h2>
-                <div id="invoice-archive-list" class="space-y-4">
-                    </div>
-            </div>
-
             <div id="mod-holiday-calendar" class="hidden"><h2 class="text-xl font-black italic uppercase dark:text-white">Holiday Calendar</h2></div>
             <div id="mod-manual-invoice" class="hidden"><h2 class="text-xl font-black italic uppercase dark:text-white">Create Manual Invoice</h2></div>
         </main>
@@ -198,7 +197,7 @@
         window.onload = function() {
             updateTime(); setInterval(updateTime, 1000);
             showModule(localStorage.getItem('frost_last_module') || 'welcome');
-            fetchInvoices(); // Fetch existing cloud invoices
+            fetchInvoices();
         };
 
         function updateTime() { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('en-GB'); }
@@ -220,7 +219,6 @@
             localStorage.setItem('frost_last_module', modId);
         }
 
-        // --- DATABASE SYNC: CLIENTS ---
         async function fetchClients() {
             const container = document.getElementById('client-container');
             container.innerHTML = '<div class="col-span-full text-center py-20 text-blue-500 uppercase text-xs font-bold animate-pulse">Syncing CRM...</div>';
@@ -260,7 +258,6 @@
             if(!error) { alert("Stored Successfully"); showModule('clients'); }
         }
 
-        // --- DATABASE SYNC: STAFF ---
         async function fetchStaff() {
             const container = document.getElementById('staff-container');
             container.innerHTML = '<div class="col-span-full text-center py-20 text-amber-500 animate-pulse">Loading Personnel...</div>';
@@ -303,7 +300,10 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        // 1. LISTEN FOR NEWLY COMPLETED QUOTES
+        // INTEGRATED BASE64 BACKGROUND DATA
+        // Paste your long code between the quotes below
+        const INVOICE_BG_BASE64 = ""; 
+
         _supabase.channel('invoice-automation')
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'quotes' }, (payload) => {
                 if (payload.new.status === 'completed' && payload.old.status !== 'completed') {
@@ -312,60 +312,70 @@
             })
             .subscribe();
 
-        // 2. LISTEN FOR NEW INVOICE DATABASE RECORDS (UI UPDATER)
-        _supabase.channel('archive-live-sync')
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'generated_invoices' }, (payload) => {
-                renderInvoiceRow(payload.new, true);
-            })
-            .subscribe();
-
-        // 3. FETCH EXISTING INVOICES ON LOAD
         async function fetchInvoices() {
             const container = document.getElementById('invoice-archive-list');
-            container.innerHTML = '<div class="text-center py-10 text-slate-500 uppercase text-[10px] font-bold animate-pulse">Syncing Cloud Vault...</div>';
-            
+            if(!container) return;
+            container.innerHTML = '<div class="text-center py-10 text-slate-500 uppercase text-[10px] font-bold animate-pulse tracking-widest">Accessing Archive...</div>';
             const { data, error } = await _supabase.from('generated_invoices').select('*').order('created_at', { ascending: false });
-            
             if (!error) {
-                container.innerHTML = data.length === 0 ? '<p class="text-center py-10 text-slate-500 text-[10px] uppercase">No Invoices Found</p>' : '';
+                container.innerHTML = data.length === 0 ? '<p class="text-center py-10 text-slate-500 text-[10px] uppercase">Archive Empty</p>' : '';
                 data.forEach(inv => renderInvoiceRow(inv));
             }
         }
 
-        function renderInvoiceRow(inv, isNew = false) {
+        function renderInvoiceRow(inv) {
             const list = document.getElementById('invoice-archive-list');
             const row = document.createElement('div');
-            row.className = `client-card flex justify-between items-center bg-white dark:bg-slate-800 shadow-sm border-l-4 border-blue-600 p-4 rounded-lg mb-3 ${isNew ? 'animate-bounce' : ''}`;
+            row.className = "client-card flex justify-between items-center bg-white dark:bg-slate-800 shadow-sm border-l-4 border-blue-600 p-4 rounded-lg mb-3 transition-all";
             row.innerHTML = `
                 <div>
                     <h4 class="text-slate-900 dark:text-white font-black uppercase text-[11px] italic">REF: ${inv.reference}</h4>
                     <p class="text-[10px] text-slate-500 uppercase tracking-widest">${inv.customer_name}</p>
-                    <p class="text-[8px] text-slate-400 mt-1">${new Date(inv.created_at).toLocaleDateString('en-GB')}</p>
                 </div>
-                <a href="${inv.file_url}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white text-[9px] font-black py-2 px-4 rounded uppercase transition-all shadow-md">
-                    <i class="fas fa-file-pdf mr-1"></i> View PDF
-                </a>
+                <div class="flex space-x-2">
+                    <a href="${inv.file_url}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white text-[9px] font-black py-2 px-4 rounded uppercase tracking-tighter transition-all shadow-md">
+                        <i class="fas fa-file-pdf mr-1"></i> View
+                    </a>
+                    <button onclick="sendEmailViaClient('${inv.file_url}', '${inv.reference}', '${inv.customer_name}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-black py-2 px-4 rounded uppercase tracking-tighter transition-all shadow-md">
+                        <i class="fas fa-envelope mr-1"></i> Email
+                    </button>
+                </div>
             `;
-            isNew ? list.prepend(row) : list.appendChild(row);
+            list.appendChild(row);
         }
 
-        // 4. THE GENERATOR & CLOUD UPLOADER
+        function sendEmailViaClient(url, ref, customer) {
+            const emailTo = prompt("Enter recipient email address:", "");
+            if (emailTo && emailTo.includes("@")) {
+                const subject = encodeURIComponent(`Invoice from Frost Transport - REF: ${ref}`);
+                const body = encodeURIComponent(`Hi,\n\nPlease find the invoice for ${customer} (Ref: ${ref}) at the link below:\n\n${url}\n\nRegards,\nFrost Transport Team`);
+                window.location.href = `mailto:${emailTo}?subject=${subject}&body=${body}`;
+            } else if (emailTo !== null) {
+                alert("Please enter a valid email address.");
+            }
+        }
+
         async function processAndStoreInvoice(quoteData) {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            const doc = new jsPDF('p', 'mm', 'a4');
+
+            // ADD BASE64 BACKGROUND IMAGE FIRST
+            try {
+                // Draws image from (0,0) to cover the whole A4 page (210x297mm)
+                doc.addImage(INVOICE_BG_BASE64, 'JPEG', 0, 0, 210, 297);
+            } catch (e) {
+                console.error("Background image failed to load", e);
+            }
             
-            // Generate PDF Visuals
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
+            // Add text on top of the background
             doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont("helvetica", "bold");
             doc.text("FROST TRANSPORT SOLUTIONS", 20, 25);
             doc.setTextColor(0,0,0); doc.setFontSize(10); doc.setFont("helvetica", "normal");
             doc.text(`REF: ${quoteData.reference || 'N/A'}`, 160, 50);
             doc.text(`DATE: ${quoteData.date || '-'}`, 160, 55);
-            
             doc.setFontSize(16); doc.setFont("helvetica", "bold");
             doc.text("INVOICE / JOB SUMMARY", 20, 55);
             doc.line(20, 60, 190, 60);
-
             doc.setFontSize(10); doc.setFont("helvetica", "normal");
             doc.text(`Customer: ${quoteData.customer_name || '-'}`, 25, 75);
             doc.text(`Pickup: ${quoteData.pickup || '-'}`, 25, 82);
@@ -373,27 +383,14 @@
             doc.text(`Vehicle: ${quoteData.vehicle_type || '-'}`, 25, 96);
             doc.setFont("helvetica", "bold");
             doc.text(`TOTAL PRICE: £${quoteData.total_price || '0.00'}`, 25, 110);
-
-            // Step A: Convert to Blob
+            
             const pdfBlob = doc.output('blob');
             const fileName = `inv_${quoteData.reference}_${Date.now()}.pdf`;
-
-            // Step B: Upload to Supabase Storage Bucket
-            const { data: uploadData, error: uploadError } = await _supabase.storage
-                .from('invoices')
-                .upload(fileName, pdfBlob, { contentType: 'application/pdf', upsert: true });
-
-            if (uploadError) { console.error("Cloud Upload Failed:", uploadError); return; }
-
-            // Step C: Get Public Link
+            const { data: uploadData, error: uploadError } = await _supabase.storage.from('invoices').upload(fileName, pdfBlob, { contentType: 'application/pdf', upsert: true });
+            if (uploadError) return;
             const { data: { publicUrl } } = _supabase.storage.from('invoices').getPublicUrl(fileName);
-
-            // Step D: Record in Database Table
-            await _supabase.from('generated_invoices').insert([{
-                reference: quoteData.reference || 'N/A',
-                customer_name: quoteData.customer_name || 'Manual',
-                file_url: publicUrl
-            }]);
+            await _supabase.from('generated_invoices').insert([{ reference: quoteData.reference || 'N/A', customer_name: quoteData.customer_name || 'Manual', file_url: publicUrl }]);
+            fetchInvoices();
         }
     </script>
 </body>
