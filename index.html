@@ -79,27 +79,18 @@
                 </div>
             </div>
 
-            <div>
-                <button onclick="toggleSubmenu('pf-menu', 'pf-arrow')" class="w-full sidebar-item flex items-center justify-between px-4 py-2 mb-1 text-xs outline-none">
-                    <div class="flex items-center"><i class="fas fa-box w-5 text-slate-400"></i><span>PALLETFORCE</span></div>
-                    <i id="pf-arrow" class="fas fa-chevron-down text-[10px] transition-transform"></i>
-                </button>
-                <div id="pf-menu" class="hidden bg-[#0a0f1d] pb-1">
-                    <a href="https://palletforce.net/Login.aspx" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item pl-10 py-2 text-[11px]">Login</a>
-                    <a href="https://rich01623.github.io/jonstool/" target="main_frame" onclick="showModule('iframe', this.href)" class="submenu-item pl-10 py-2 text-[11px]">PF Planner</a>
-                </div>
-            </div>
-
-            <div class="px-4 mt-6 mb-2 text-[10px] font-black uppercase text-slate-600">Operations</div>
+            <div class="px-4 mt-6 mb-2 text-[10px] font-black uppercase text-slate-600">Personnel & Ops</div>
             <a href="https://rich01623.github.io/Fleet-dash/" target="main_frame" onclick="showModule('iframe', this.href)" class="sidebar-item flex items-center px-4 py-2 text-xs"><i class="fas fa-id-card w-5"></i><span>TIMESHEETS</span></a>
-            <a href="https://rich01623.github.io/Maintenance/" target="main_frame" onclick="showModule('iframe', this.href)" class="sidebar-item flex items-center px-4 py-2 text-xs"><i class="fas fa-gas-pump w-5"></i><span>MAINTENANCE</span></a>
-            
             <a href="#" onclick="showModule('staff-profiles')" class="sidebar-item flex items-center px-4 py-2 text-xs"><i class="fas fa-user-tie w-5 text-amber-500"></i><span>STAFF PROFILES</span></a>
             <a href="#" onclick="showModule('add-staff')" class="sidebar-item flex items-center px-4 py-2 text-xs"><i class="fas fa-user-plus w-5 text-blue-400"></i><span>ADD NEW STAFF</span></a>
-            <a href="#" onclick="showModule('holiday-calendar')" class="sidebar-item flex items-center px-4 py-2 text-xs"><i class="fas fa-calendar-check w-5 text-emerald-500"></i><span>HOLIDAY CALENDAR</span></a>
-            <a href="#" onclick="showModule('invoices')" class="sidebar-item flex items-center px-4 py-2 text-xs"><i class="fas fa-file-invoice w-5 text-slate-400"></i><span>INVOICES</span></a>
-            <a href="#" onclick="showModule('manual-invoice')" class="sidebar-item flex items-center px-4 py-2 text-xs"><i class="fas fa-file-signature w-5 text-blue-400"></i><span>CREATE MANUAL INVOICE</span></a>
             
+            <a href="https://docs.google.com/spreadsheets/d/1j0uxfK1CdQeFrYBANl-z9FvpDdegcYKh/preview" target="main_frame" onclick="showModule('iframe', this.href)" class="sidebar-item flex items-center px-4 py-2 text-xs">
+                <i class="fas fa-calendar-check w-5 text-emerald-500"></i><span>HOLIDAY CALENDAR</span>
+            </a>
+
+            <div class="px-4 mt-6 mb-2 text-[10px] font-black uppercase text-slate-600">Accounts</div>
+            <a href="#" onclick="showModule('invoices')" class="sidebar-item flex items-center px-4 py-2 text-xs"><i class="fas fa-file-invoice w-5 text-slate-400"></i><span>INVOICE ARCHIVE</span></a>
+            <a href="#" onclick="showModule('manual-invoice')" class="sidebar-item flex items-center px-4 py-2 text-xs"><i class="fas fa-file-signature w-5 text-blue-400"></i><span>CREATE MANUAL INVOICE</span></a>
             <a href="https://login.xero.com/" target="_blank" class="sidebar-item flex items-center px-4 py-2 text-xs"><i class="fas fa-file-invoice-dollar w-5"></i><span>XERO</span></a>
         </nav>
 
@@ -162,11 +153,6 @@
                 <div id="staff-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6"></div>
             </div>
 
-            <div id="mod-invoices" class="hidden">
-                <h2 class="text-xl font-black italic uppercase dark:text-white mb-6">Invoice Archive</h2>
-                <div id="invoice-archive-list" class="space-y-4"></div>
-            </div>
-
             <div id="mod-add-staff" class="hidden max-w-3xl mx-auto">
                 <div class="bg-white dark:bg-[#0f172a] rounded-lg p-8 border-t-4 border-amber-500 shadow-xl">
                     <h2 class="text-xs font-black uppercase mb-8 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-2 italic tracking-widest">Register New Staff Member</h2>
@@ -183,8 +169,31 @@
                 </div>
             </div>
 
-            <div id="mod-holiday-calendar" class="hidden"><h2 class="text-xl font-black italic uppercase dark:text-white">Holiday Calendar</h2></div>
-            <div id="mod-manual-invoice" class="hidden"><h2 class="text-xl font-black italic uppercase dark:text-white">Create Manual Invoice</h2></div>
+            <div id="mod-invoices" class="hidden">
+                <h2 class="text-xl font-black italic uppercase dark:text-white mb-6">Invoice Archive</h2>
+                <div id="invoice-archive-list" class="space-y-4"></div>
+            </div>
+
+            <div id="mod-manual-invoice" class="hidden max-w-4xl mx-auto">
+                <div class="bg-white dark:bg-[#0f172a] rounded-lg p-8 border-t-4 border-blue-600 shadow-xl">
+                    <div class="flex justify-between items-center mb-8 border-b border-slate-200 dark:border-slate-700 pb-2">
+                        <h2 class="text-xs font-black uppercase dark:text-white italic tracking-widest">Create Manual Invoice</h2>
+                        <span class="text-[10px] text-slate-400 font-mono italic">SUPABASE: QUOTES</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2"><label class="label-text">Customer Name</label><input type="text" id="man-customer" class="frost-field"></div>
+                        <div class="md:col-span-2"><label class="label-text">Customer Address</label><input type="text" id="man-address" class="frost-field"></div>
+                        <div><label class="label-text">Collection Address (Pickup)</label><textarea id="man-collection" class="frost-field h-20"></textarea></div>
+                        <div><label class="label-text">Delivery Address</label><textarea id="man-delivery" class="frost-field h-20"></textarea></div>
+                        <div><label class="label-text">Job Date</label><input type="date" id="man-date" class="frost-field"></div>
+                        <div><label class="label-text">Invoice Number</label><input type="text" id="man-inv-num" class="frost-field" placeholder="FTS-1001"></div>
+                        <div class="md:col-span-2"><label class="label-text">Total Price (£)</label><input type="number" id="man-price" class="frost-field" placeholder="0.00"></div>
+                    </div>
+                    <button onclick="saveManualInvoice()" id="man-inv-btn" class="w-full mt-10 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded uppercase text-xs tracking-widest transition-all shadow-lg flex items-center justify-center">
+                        <i class="fas fa-file-invoice mr-2"></i> Generate & Store Invoice
+                    </button>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -203,7 +212,7 @@
         function updateTime() { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('en-GB'); }
 
         function showModule(modId, url = null) {
-            ['mod-welcome', 'mod-iframe', 'mod-clients', 'mod-add-client', 'mod-staff-profiles', 'mod-add-staff', 'mod-holiday-calendar', 'mod-invoices', 'mod-manual-invoice'].forEach(id => {
+            ['mod-welcome', 'mod-iframe', 'mod-clients', 'mod-add-client', 'mod-staff-profiles', 'mod-add-staff', 'mod-invoices', 'mod-manual-invoice'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.classList.add('hidden');
             });
@@ -300,10 +309,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        // INTEGRATED BASE64 BACKGROUND DATA
-        // Paste your long code between the quotes below
-        const INVOICE_BG_BASE64 = ""; 
-
+        // PDF and Archive Logic
         _supabase.channel('invoice-automation')
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'quotes' }, (payload) => {
                 if (payload.new.status === 'completed' && payload.old.status !== 'completed') {
@@ -350,46 +356,84 @@
                 const subject = encodeURIComponent(`Invoice from Frost Transport - REF: ${ref}`);
                 const body = encodeURIComponent(`Hi,\n\nPlease find the invoice for ${customer} (Ref: ${ref}) at the link below:\n\n${url}\n\nRegards,\nFrost Transport Team`);
                 window.location.href = `mailto:${emailTo}?subject=${subject}&body=${body}`;
-            } else if (emailTo !== null) {
-                alert("Please enter a valid email address.");
             }
+        }
+
+        async function saveManualInvoice() {
+            const btn = document.getElementById('man-inv-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner animate-spin mr-2"></i> GENERATING...';
+
+            const payload = {
+                customer_name: document.getElementById('man-customer').value,
+                customer_address: document.getElementById('man-address').value,
+                pickup: document.getElementById('man-collection').value,
+                delivery: document.getElementById('man-delivery').value,
+                date: document.getElementById('man-date').value || new Date().toISOString().split('T')[0],
+                invoice_number: document.getElementById('man-inv-num').value,
+                total_price: parseFloat(document.getElementById('man-price').value) || 0,
+                status: 'completed'
+            };
+
+            const { data, error } = await _supabase.from('quotes').insert([payload]).select();
+
+            if (!error && data && data[0]) {
+                await processAndStoreInvoice(data[0]);
+                alert("Invoice Created and Uploaded Successfully.");
+                
+                // Clear Form
+                ['man-customer', 'man-address', 'man-collection', 'man-delivery', 'man-date', 'man-inv-num', 'man-price'].forEach(id => {
+                    document.getElementById(id).value = '';
+                });
+                showModule('invoices');
+            } else {
+                console.error("Supabase Error:", error);
+                alert(`Error: ${error?.message || "Failed to save record"}`);
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-file-invoice mr-2"></i> Generate & Store Invoice';
         }
 
         async function processAndStoreInvoice(quoteData) {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
-
-            // ADD BASE64 BACKGROUND IMAGE FIRST
-            try {
-                // Draws image from (0,0) to cover the whole A4 page (210x297mm)
-                doc.addImage(INVOICE_BG_BASE64, 'JPEG', 0, 0, 210, 297);
-            } catch (e) {
-                console.error("Background image failed to load", e);
-            }
+            const doc = new jsPDF();
             
-            // Add text on top of the background
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
             doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont("helvetica", "bold");
             doc.text("FROST TRANSPORT SOLUTIONS", 20, 25);
+            
             doc.setTextColor(0,0,0); doc.setFontSize(10); doc.setFont("helvetica", "normal");
-            doc.text(`REF: ${quoteData.reference || 'N/A'}`, 160, 50);
+            const ref = quoteData.invoice_number || quoteData.reference || 'N/A';
+            doc.text(`REF: ${ref}`, 160, 50);
             doc.text(`DATE: ${quoteData.date || '-'}`, 160, 55);
+            
             doc.setFontSize(16); doc.setFont("helvetica", "bold");
             doc.text("INVOICE / JOB SUMMARY", 20, 55);
             doc.line(20, 60, 190, 60);
+            
             doc.setFontSize(10); doc.setFont("helvetica", "normal");
             doc.text(`Customer: ${quoteData.customer_name || '-'}`, 25, 75);
-            doc.text(`Pickup: ${quoteData.pickup || '-'}`, 25, 82);
-            doc.text(`Delivery: ${quoteData.delivery || '-'}`, 25, 89);
-            doc.text(`Vehicle: ${quoteData.vehicle_type || '-'}`, 25, 96);
+            doc.text(`Billing: ${quoteData.customer_address || '-'}`, 25, 82);
+            doc.text(`Pickup: ${quoteData.pickup || quoteData.collection_address || '-'}`, 25, 92);
+            doc.text(`Delivery: ${quoteData.delivery || '-'}`, 25, 102);
+            
             doc.setFont("helvetica", "bold");
-            doc.text(`TOTAL PRICE: £${quoteData.total_price || '0.00'}`, 25, 110);
+            doc.text(`TOTAL PRICE: £${quoteData.total_price || '0.00'}`, 25, 120);
             
             const pdfBlob = doc.output('blob');
-            const fileName = `inv_${quoteData.reference}_${Date.now()}.pdf`;
+            const fileName = `inv_${ref}_${Date.now()}.pdf`;
+            
             const { data: uploadData, error: uploadError } = await _supabase.storage.from('invoices').upload(fileName, pdfBlob, { contentType: 'application/pdf', upsert: true });
             if (uploadError) return;
+            
             const { data: { publicUrl } } = _supabase.storage.from('invoices').getPublicUrl(fileName);
-            await _supabase.from('generated_invoices').insert([{ reference: quoteData.reference || 'N/A', customer_name: quoteData.customer_name || 'Manual', file_url: publicUrl }]);
+            await _supabase.from('generated_invoices').insert([{ 
+                reference: ref, 
+                customer_name: quoteData.customer_name || 'Manual', 
+                file_url: publicUrl 
+            }]);
+            
             fetchInvoices();
         }
     </script>
